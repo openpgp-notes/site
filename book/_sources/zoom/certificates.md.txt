@@ -1,0 +1,810 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Zooming in: Packet structure of certificates
+
+Now that we've established the concepts and components that make up OpenPGP certificates, let's look at the internal details of an example certificate.
+
+## A very minimal OpenPGP certificate
+
+In this section, we will examine a very minimal version of a "public key" variant of [Alice's OpenPGP key](alice_priv), specifically an OpenPGP certificate that excludes private key material.
+
+To achieve this, we will use the Sequoia-PGP tool `sq` to handle and transform our example OpenPGP key, as well as to inspect internal OpenPGP packet data.
+
+Starting from [Alice's OpenPGP private key](alice_priv), we first produce the corresponding public key/certificate using the following command:
+
+```text
+$ sq key extract-cert alice.priv > alice.pub
+```
+
+(split_alice)=
+### Splitting the OpenPGP certificate into packets
+
+To create a very minimal version of Alice's certificate, we will split the data in `alice.pub` into its component packets and reassemble only the relevant ones back into a new variant.
+
+Execute the following command to achieve this:
+
+```text
+$ sq packet split alice.pub
+```
+
+With this command, `sq` generates a set of files, each containing an individual OpenPGP packet extracted from the original full certificate in `alice.pub`:
+
+```text
+alice.pub-0--PublicKey
+alice.pub-1--Signature
+alice.pub-2--UserID
+alice.pub-3--Signature
+alice.pub-4--PublicSubkey
+alice.pub-5--Signature
+alice.pub-6--PublicSubkey
+alice.pub-7--Signature
+alice.pub-8--PublicSubkey
+alice.pub-9--Signature
+```
+
+
+```{figure} ../plain_svg/certificate_packet_list.svg
+:name: fig-certificate-packet-list
+:alt: Depicts a box with white background and the title "Certificate packet list". Inside, a list of several boxes on white background and varying frame colors represent a list of OpenPGP packets from top to bottom. The first box, with green frame, represents the "Public-Key packet", and includes the green public key symbol. The second box, with yellow frame, represents a "Signature packet" ("Direct Key Signature") and includes the green cryptographic signature symbol. The third box, with black frame, represents a "User ID packet", and includes the black User ID symbol. The fourth box, with yellow frame, represents a "Signature packet" ("Certifying self-signature for User ID"), and includes the green cryptographic signature symbol. The fifth box, with green frame, represents a "Public-Subkey packet" and includes the green public key symbol. The sixth box, with yellow frame, represents a "Signature packet" ("Subkey binding signature") and includes the green cryptographic signature symbol. The seventh box, with green frame, represents a "Public-Subkey packet" and includes the green public key symbol. The eighth box, with yellow frame, represents a "Signature packet" ("Subkey binding signature") and includes the green cryptographic signature symbol. The ninth box, with green frame, represents a "Public-Subkey packet" and includes the green public key symbol. The tenth box, with yellow frame, represents a "Signature packet" ("Subkey binding signature") and includes the green cryptographic signature symbol.
+
+Overview of the packets in Alice's OpenPGP certificate 
+```
+
+This process allows us to focus on the specific packets within Alice's OpenPGP certificate.
+
+### Assembling packets into an OpenPGP certificate
+
+In this step, we'll merge the first two packets of Alice's certificate to create a very minimal certificate:
+
+Execute the following:
+
+```text
+$ sq packet join alice.pub-0--PublicKey alice.pub-1--Signature --output alice_minimal.pub
+```
+
+This command combines the contents of `alice.pub-0--PublicKey` and `alice.pub-1--Signature` into a single file named `alice_minimal.pub`.
+
+### Inspecting this certificate
+
+This version of Alice's certificate contains just two packets:
+
+- the [*Public-Key packet*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-packet-formats) for the primary key, and
+- a [*Direct Key Signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-direct-key), which is a self-signature that binds metadata to the primary key.
+
+This is the shape of the packets we'll explore in the subsequent sections:
+
+```{figure} ../plain_svg/Minimal_OpenPGP_certificate.svg
+:name: fig-public-certificate-minimal
+:alt: TODO
+
+A minimal OpenPGP certificate, visualized
+```
+
+```{admonition} VISUAL
+:class: warning
+
+This diagram needs adjustments about
+ - what exactly is signed
+ - fix naming of fields?
+ 
+We could show repeat-copies of the individual packet visualization again, below for each packet-related section.
+```
+
+In real-world scenarios, OpenPGP certificates are typically far more complex than this minimal example. However, this is indeed a valid OpenPGP certificate. In the following sections, we will introduce more components to this certificate, increasing its complexity and exploring their details.
+
+In ASCII-armored representation, this very minimal key appears as follows:
+
+```text
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xioGZRbqphsAAAAgUyTpQ6+rFfdu1bUSmHlpzRtdEGXr50Liq0f0hrOuZT7CtgYf
+GwoAAAA9BYJlFuqmBYkFpI+9AwsJBwMVCggCmwECHgEiIQaqoYy7JUaFxYNYMgVj
+/Te2fzMA+fsOxFc3jNKfECaYswAAAAoJEKqhjLslRoXFZ0cgouNjgeNr0E9W18g4
+gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
++BXIoY2sIEQrLd4TAEEy0BA8aQZTPEmMdiOCM1QB+V+BQZAO
+=5nyq
+-----END PGP PUBLIC KEY BLOCK-----
+```
+
+The output of `sq` is presented as a block of text. We will now decode this OpenPGP data and inspect the two packets it contains.
+
+To achieve this, we will use the Sequoia-PGP tool `sq` and run the `packet dump` subcommand:
+
+```text
+$ sq packet dump --hex alice_minimal.pub
+```
+
+This will allow us to gain a detailed understanding of the packet contents.
+
+(public_key)=
+### Public-Key packet
+
+The output begins with a (primary) [Public-Key packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-packet-formats):
+
+```text
+Public-Key Packet, new CTB, 2 header bytes + 42 bytes
+    Version: 6
+    Creation time: 2023-09-29 15:17:58 UTC
+    Pk algo: Ed25519
+    Pk size: 256 bits
+    Fingerprint: AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3
+    KeyID: AAA18CBB254685C5
+
+    00000000  c6                                                 CTB
+    00000001     2a                                              length
+    00000002        06                                           version
+    00000003           65 16 ea a6                               creation_time
+    00000007                       1b                            pk_algo
+    00000008                           00 00 00 20               public_len
+    0000000c                                       53 24 e9 43   ed25519_public
+    00000010  af ab 15 f7 6e d5 b5 12  98 79 69 cd 1b 5d 10 65
+    00000020  eb e7 42 e2 ab 47 f4 86  b3 ae 65 3e
+```
+
+The Public-Key packet consists primarily of the cryptographic key data. Let's look at the packet field by field:
+
+**OpenPGP packet syntax**
+
+The first fields of a packet are governed by the general [Packet Syntax](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-syntax):
+
+- `CTB: 0xc6`[^CTB]: This is the [packet type ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers) for this packet. The binary representation of the value `0xc6` is `11000110`. The first two bits show that the packet is in *OpenPGP packet format* (as opposed to in *Legacy packet format*) and the remaining 6 bits encode the type ID value, which is "6." This type ID value corresponds to a Public-Key packet, as listed in the [packet type IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-types).
+
+- `length: 0x2a`: This indicates the remaining length of this packet.
+
+**Public-Key packet syntax**
+
+The packet type ID ("6") defines the semantics of the following data within the packet. In this case, it is a Public-Key packet, which is a kind of [Key Material Packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-material-packets).
+
+- `version: 0x06`: The key material is in version 6 format. This means that the next part of the packet adheres to the structure of [Version 6 Public Keys](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-6-public-keys).
+
+- `creation_time: 0x6516eaa6`: This field represents the key's creation time. (See also [Time Fields](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-time-fields)).
+
+- `pk_algo: 0x1b`: This corresponds to the key's public-key algorithm ID, which has a decimal value of 27. Refer to the list of [Public-Key Algorithms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms)) for more details.
+
+- `public_len: 0x00000020`: This field specifies the octet count for the subsequent public key material. In this case, it represents the length of the following `ed25519_public` field.
+
+- `ed25519_public`: This is the [algorithm-specific representation](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ed2) of the public key material. The format is based on the value of `pk_algo`, which, in this case, is 32 bytes of Ed25519 public key data.
+
+[^CTB]: Sequoia uses the term CTB ({term}`Cipher Type Byte`) to refer to the [packet type ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers).
+
+Note that the *Public-Key packet* contains only the public part of the key.
+
+```{figure} ../plain_svg/public-key_packet.svg
+:name: fig-public-key-packet
+:alt: Depicts a box with white background and title "Public-Key packet". In the center a box with white background and green frame is shown. Inside it several items are listed, separated by green dotted horizontal lines. The first three are "Version", "Creation Time", "Public-Key Algorithm" written in black. The last one is written in green and reads "Public Key Material" and has the green public key symbol at its right side.
+
+Structure of a Public-Key packet.
+```
+
+(zooming_in_dks)=
+### Direct Key Signature
+
+The next packet in the certificate is a [*Direct Key Signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-direct-key), which plays a crucial role in binding specific information to the primary key. This signature is contained within the file `alice.pub-1--Signature`.
+
+This packet binds the data within the signature subpackets with the primary key. Each entry under "Signature Packet -> Hashed area" is one signature subpacket, providing essential information such as algorithm preferences, including *symmetric algorithm preference* and *hash algorithm preferences*.
+
+```text
+Signature Packet, new CTB, 2 header bytes + 182 bytes
+    Version: 6
+    Type: DirectKey
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-09-29 15:17:58 UTC (critical)
+      Key expiration time: P1095DT62781S (critical)
+      Symmetric algo preferences: AES256, AES128
+      Hash preferences: SHA512, SHA256
+      Key flags: C (critical)
+      Features: MDC
+      Issuer Fingerprint: AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3
+    Unhashed area:
+      Issuer: AAA18CBB254685C5
+    Digest prefix: 6747
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     b6                                              length
+    00000002        06                                           version
+    00000003           1f                                        type
+    00000004              1b                                     pk_algo
+    00000005                 0a                                  hash_algo
+    00000006                    00 00  00 3d                     hashed_area_len
+    0000000a                                 05                  subpacket length
+    0000000b                                    82               subpacket tag
+    0000000c                                       65 16 ea a6   sig creation time
+    00000010  05                                                 subpacket length
+    00000011     89                                              subpacket tag
+    00000012        05 a4 8f bd                                  key expiry time
+    00000016                    03                               subpacket length
+    00000017                       0b                            subpacket tag
+    00000018                           09 07                     pref sym algos
+    0000001a                                 03                  subpacket length
+    0000001b                                    15               subpacket tag
+    0000001c                                       0a 08         pref hash algos
+    0000001e                                             02      subpacket length
+    0000001f                                                9b   subpacket tag
+    00000020  01                                                 key flags
+    00000021     02                                              subpacket length
+    00000022        1e                                           subpacket tag
+    00000023           01                                        features
+    00000024              22                                     subpacket length
+    00000025                 21                                  subpacket tag
+    00000026                    06                               version
+    00000027                       aa  a1 8c bb 25 46 85 c5 83   issuer fp
+    00000030  58 32 05 63 fd 37 b6 7f  33 00 f9 fb 0e c4 57 37
+    00000040  8c d2 9f 10 26 98 b3
+    00000047                       00  00 00 0a                  unhashed_area_len
+    0000004b                                    09               subpacket length
+    0000004c                                       10            subpacket tag
+    0000004d                                          aa a1 8c   issuer
+    00000050  bb 25 46 85 c5
+    00000055                 67                                  digest_prefix1
+    00000056                    47                               digest_prefix2
+    00000057                       20                            salt_len
+    00000058                           a2 e3 63 81 e3 6b d0 4f   salt
+    00000060  56 d7 c8 38 80 02 25 e8  53 39 49 6b 90 c6 0d 76
+    00000070  8f 44 b4 ec 4c 42 38 8e
+    00000078                           4d 3d 10 c2 ad 29 c0 57   ed25519_sig
+    00000080  ce 66 01 73 b3 78 81 9e  89 52 cf 43 8d 28 11 a9
+    00000090  77 09 7f cb f8 15 c8 a1  8d ac 20 44 2b 2d de 13
+    000000a0  00 41 32 d0 10 3c 69 06  53 3c 49 8c 76 23 82 33
+    000000b0  54 01 f9 5f 81 41 90 0e
+```
+
+Below is a field-by-field examination of the packet:
+
+**OpenPGP packet syntax**
+
+The first fields of a packet are governed by the general [Packet Syntax](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-syntax):
+
+- `CTB: 0xc2`: This field indicates the Packet type ID for this packet. Bits 7 and 6 show that the packet is in “OpenPGP packet format.” The remaining 6 bits encode the type ID’s value, which is “2” for a Signature packet.
+
+- `length: 0xb6`: This field shows the remaining length of this packet. 
+
+**Signature packet syntax**
+
+The packet type ID (“2”) defines the semantics of the remaining data in the packet. In this case, as it indicates a [Signature packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#signature-packet), the following data is specific to this packet type:
+
+- `version: 0x06`: This is a version 6 signature.
+
+- `type: 0x1f`: This indicates the [Signature Type](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types).
+
+- `pk_algo: 0x1b`: This specifies the Public-Key algorithm ID, with decimal 27 corresponding to [Ed25519](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms)).
+
+- `hash_algo: 0x0a`: This specifies the hash algorithm ID, with decimal 10 corresponding to [SHA2-512](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithms)).
+
+- `hashed_area_len: 0x0000003d`: This specifies the length of the following hashed subpacket data.
+
+The next segment of this packet contains the hashed subpacket data. 
+
+In OpenPGP Signatures, there are two sets of subpacket data: hashed and unhashed. Hashed subpackets are protected by the digital signature of the packet, while unhashed subpackets are not.
+
+A subpacket data set in an OpenPGP Signature contains a list of zero or more Signature subpackets.
+
+The following subpacket data consists of sets of "subpacket length, subpacket type ID, data." Each subpacket is displayed as one line, starting with the [subpacket type description](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-subpacket-specifi) (based on the subpacket type ID). Note that bit 7 of the subpacket type ID signals if that subpacket is ["critical."](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.2.3.7-7)
+
+```{note}
+Critical here means that the receiver must interpret the subpacket and is expected to fail, otherwise. Non-critical subpackets may be ignored by the receiver.
+```
+
+The subpacket details are as follows:
+
+- [**Signature Creation Time**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#signature-creation-subpacket)
+  - Type: `2`
+  - Critical: `Yes`
+  - Value: `0x6516eaa6`
+  - Notes: See also [Time Fields](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-time-fields).
+
+- [**Key Expiration Time**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-expiration-subpacket)
+  - Type: `9`
+  - Critical: `Yes`
+  - Value: `0x05a48fbd`
+  - Notes: Defined as number of seconds after the key creation time
+
+- [**Preferred Symmetric Ciphers for v1 SEIPD**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-v1-seipd)
+  - Type: `11`
+  - Critical: `No`
+  - Value: `0x09 0x07`
+  - Notes: Values correspond to *AES with 256-bit key* and *AES with 128-bit key*
+
+- [**Preferred Hash Algorithms**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-hashes-subpacket)
+  - Type: `21`
+  - Critical: `No`
+  - Value: `0x0a 0x08`
+  - Notes: Values correspond to *SHA2-512* and *SHA2-256*.
+
+- [**Key Flags**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-flags)
+  - Type: `27`
+  - Critical: `Yes`
+  - Value: `0x01`
+  - Notes: Value corresponds to the *certifications* key flag.
+
+- [**Features**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#features-subpacket)
+  - Type: `30`
+  - Critical: `No`
+  - Value: `0x01`
+  - Notes: Value corresponds to *Symmetrically Encrypted Integrity Protected Data packet version 1*
+
+- [**Issuer Fingerprint**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-fingerprint-subpacket)
+  - Type: `33`
+  - Critical: `No`
+  - Value: `aaa18cbb254685c58358320563fd37b67f3300f9fb0ec457378cd29f102698b3`
+  - Notes: The fingerprint identifies the component key that issued the signature in this packet. In this instance, the value is the primary key fingerprint of the certificate we're looking at.
+
+The next part of this packet contains unhashed subpacket data:
+
+- `unhashed_area_len: 0x0000000a`: length of the following unhashed subpacket data (value: 10 bytes).
+
+As above, the following subpacket data consists of sets of subpacket length, subpacket type id, and data. In this case, only one subpacket follows:
+
+- [**Issuer Key ID**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-keyid-subpacket)
+  - Type: `16`
+  - Critical: `No`
+  - Value: `aaa18cbb254685c5`
+  - Notes: This is the shortened version 6 *Key ID* of the fingerprint of this certificate's primary key.
+
+This concludes the unhashed subpacket data.
+
+This next section shows the remaining fields of this signature packet, which relate to the cryptographic digital signature:
+
+- `digest_prefix: 0x6747`: the left 16 bits of the signed hash digest
+
+- `salt_len, salt`: a random [salt value](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-advantages-of-salted-signat) with size [matching the hash algorithm](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#hash-algorithms-registry))
+
+- `ed25519_sig`: [algorithm-specific](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for-ed2) representation of the signature (here: 64 bytes of Ed25519 signature)
+
+The hash digest is calculated from the following data (see [Computing Signatures](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-computing-signatures) in the RFC):
+
+- the signature's salt
+- the serialized primary key's public data
+- the serialized direct key signature packet (excluding the unhashed area)
+
+The signature is calculated from this hash digest.
+
+```{figure} ../plain_svg/direct_key_signature_packet.svg
+:name: fig-direct-key-signature-packet
+:alt: Depicts a box with white background, title "Signature packet" and subtitle "Direct Key Signature (type ID 0x1F)". In the center a box with white background and yellow frame is shown. Inside it several items are listed, separated by yellow dotted horizontal lines. The first three are "Version", "Public-Key Algorithm" and "Hash Algorithm". The fourth item is called "Hashed area" and confines further sub-items by a light-yellow frame on the top and left side. The sub-items are "Signature Creation Time", "Key Expiration Time", "Preferred Symmetric Ciphers for v1 SEIPD", "Preferred Hash Algorithms", "Key Flags", "Features" and "Issuer Fingerprint". The fifth item is named "Unhashed area" and again introduces an area for sub-items, this time using a light-gray border on the top and left side. The unhashed area has no sub-items though. The last item is called "Cryptographic Signature", with the subtitle "by the primary key over primary key, subkey and signature metadata" and includes the green cryptographic signature symbol on the right side.
+
+Structure of a direct key signature packet.
+```
+
+(zoom_enc_subkey)=
+## Encryption subkey
+
+Let's now look at a subkey in Alice's OpenPGP certificate. A subkey, when linked to an OpenPGP certificate via its primary key, consists of two elements:
+
+- a key packet that contains the component key itself, and
+- a signature packet that links this component key to the primary key and, implicitly, to the full OpenPGP certificate.
+
+We will use the files containing individual packets of Alice's certificate, which we separated above. In this split representation, the encryption subkey is stored in `alice.pub-4--PublicSubkey`, while the associated binding self-signature is stored in `alice.pub-5--Signature`.
+
+````{note}
+It's common to look at a packet dump for a full OpenPGP certificate as shown below:
+
+```text
+$ sq packet dump --hex alice.pub
+```
+
+This command shows the details for the full series of packets in an OpenPGP certificate (refer to the list of [packets of Alice's certificate](split_alice)). Finding a particular packet in that list can take a bit of focus and practice though.
+
+In the following sections,we make it easier for ourselves by directly examining individual packets from the files we created with `sq packet split` above.
+````
+
+### Public-Subkey packet
+
+We'll now look at the *Public-Subkey packet* that contains the component key data of this subkey:
+
+```text
+$ sq packet dump --hex alice.pub-4--PublicSubkey
+Public-Subkey Packet, new CTB, 2 header bytes + 42 bytes
+    Version: 6
+    Creation time: 2023-09-29 15:17:58 UTC
+    Pk algo: X25519
+    Pk size: 256 bits
+    Fingerprint: C0A58384A438E5A14F73712426A4D45DBAEEF4A39E6B30B09D5513F978ACCA94
+    KeyID: C0A58384A438E5A1
+
+  00000000  ce                                                 CTB
+  00000001     2a                                              length
+  00000002        06                                           version
+  00000003           65 16 ea a6                               creation_time
+  00000007                       19                            pk_algo
+  00000008                           00 00 00 20               public_len
+  0000000c                                       d1 ae 87 d7   x25519_public
+  00000010  cc 42 af 99 34 c5 c2 5c  ca fa b7 4a c8 43 fc 86
+  00000020  35 2a 46 01 f3 cc 00 f5  4a 09 3e 3f
+```
+
+Notice that the structure of this *Public-Subkey packet* mirrors the primary key's [*Public-Key packet*](public_key) above. However, there are notable differences between the two packets:
+
+- The packet type ID (`CTB`) in this packet shows type 14 ([*Public-Subkey packet*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-subkey-packet-type-i)).
+
+- The `pk_algo` value is set to `0x19` (decimal 25), which [corresponds to X25519](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms). Notably, though both the primary key and this subkey use a cryptographic mechanism based on Curve25519, the encryption key uses Curve 25519 in a different way: namely, X25519 is a Diffie–Hellman function constructed from Curve25519.
+- Accordingly, the public part of the cryptographic key pair is labeled `x25519_public`, as implied by the value (`0x19`) of `pk_algo`. However, the actual data is just 32 bytes of cryptographic key material, without any type information.
+
+### Subkey binding signature
+
+The aforementioned subkey packet is disconnected from the OpenPGP certificate to which it belongs. The link between the subkey and the complete OpenPGP certificate is made with a cryptographic signature, generated by primary key of the OpenPGP certificate.
+
+The type of signature is called a *subkey binding signature*, because it "binds" or connects the subkey to the rest of the key.
+
+```{admonition} VISUAL
+:class: warning
+
+Add detailed packet diagram analogous to 4.6.1
+```
+
+```{admonition} TODO
+:class: warning
+
+david points out: "The information on metadata in binding signatures may also make sense in other contexts (direct key signature)?"
+
+Should this text go elsewhere?
+- 4.2.3?
+- ch 6?
+```
+
+The signature does more than just bind the subkey; it also carries additional metadata about the subkey. This metadata is in the binding signature, and not in the subkey packet, because it may change over time, while the subkey packet itself remains unchanged. This evolving metadata is stored in self-signatures: if the key holder wants to modify the metadata (for example, to change the key's expiration time), a newer version of the same signature type can be issued. The recipient OpenPGP software will recognize that the newer self-signature supersedes the older one, and that the metadata in the newer signature reflects the most current intent of the key holder.
+
+Note that this subkey binding signature packet is quite similar to the Direct Key Signature discussed above. Both signatures serve a similar purpose in adding metadata to a component key, particularly as the hashed subpacket data contains much of the same metadata elements.
+
+```text
+$ sq packet dump --hex alice.pub-5--Signature
+Signature Packet, new CTB, 2 header bytes + 171 bytes
+    Version: 6
+    Type: SubkeyBinding
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-09-29 15:17:58 UTC (critical)
+      Key expiration time: P1095DT62781S (critical)
+      Key flags: EtEr (critical)
+      Issuer Fingerprint: AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3
+    Unhashed area:
+      Issuer: AAA18CBB254685C5
+    Digest prefix: 2289
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     ab                                              length
+    00000002        06                                           version
+    00000003           18                                        type
+    00000004              1b                                     pk_algo
+    00000005                 0a                                  hash_algo
+    00000006                    00 00  00 32                     hashed_area_len
+    0000000a                                 05                  subpacket length
+    0000000b                                    82               subpacket tag
+    0000000c                                       65 16 ea a6   sig creation time
+    00000010  05                                                 subpacket length
+    00000011     89                                              subpacket tag
+    00000012        05 a4 8f bd                                  key expiry time
+    00000016                    02                               subpacket length
+    00000017                       9b                            subpacket tag
+    00000018                           0c                        key flags
+    00000019                              22                     subpacket length
+    0000001a                                 21                  subpacket tag
+    0000001b                                    06               version
+    0000001c                                       aa a1 8c bb   issuer fp
+    00000020  25 46 85 c5 83 58 32 05  63 fd 37 b6 7f 33 00 f9
+    00000030  fb 0e c4 57 37 8c d2 9f  10 26 98 b3
+    0000003c                                       00 00 00 0a   unhashed_area_len
+    00000040  09                                                 subpacket length
+    00000041     10                                              subpacket tag
+    00000042        aa a1 8c bb 25 46  85 c5                     issuer
+    0000004a                                 22                  digest_prefix1
+    0000004b                                    89               digest_prefix2
+    0000004c                                       20            salt_len
+    0000004d                                          0b 0c 89   salt
+    00000050  b5 ab 15 e3 7f e4 4d b9  a7 ef 71 48 14 3b ab 26
+    00000060  5f 34 7f 6d 48 2e 9f 78  48 58 6d 9a fb
+    0000006d                                          6d b2 db   ed25519_sig
+    00000070  2f 97 8e c8 12 fc 57 7f  85 aa d1 59 bc 80 40 0b
+    00000080  be 2e f0 e1 23 2d bf 4b  71 7e d0 e4 c0 36 e4 d2
+    00000090  cf b2 9f b4 a8 4f 3e 2a  21 89 74 c2 33 55 af ac
+    000000a0  41 36 1b 2b 60 09 f2 d9  19 f4 41 12 0b
+```
+
+The analysis of this packet dump will be less extensive, given that its structure mirrors the *Direct Key Signature* explored above.
+
+One notable difference is the `type` field, showing that this signature is of type `0x18` ([Subkey Binding Signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-subkey-binding-signature-ty)).
+
+The `pk_algo` value of this signature derives from the algorithm of the primary key (`0x1b`, corresponding to Ed25519). This signature is issued by the primary key, thus using the signing algorithm of the primary key. (The algorithm used to produce the cryptographic signature in this packet is entirely independent of the `pk_algo` of the key material of this subkey itself, which uses the X25519 mechanism.)
+
+As shown in the text at the top of this packet dump, the hashed subpacket data contains four pieces of information:
+
+- signature creation time: `2023-09-29 15:17:58 UTC` (**critical**)
+- key expiration time: `P1095DT62781S` (**critical**)
+- key flags: `EtEr` (**critical**) (encryption for communication, encryption for storage)
+- issuer fingerprint: `AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3`
+
+The rest of the packet mirrors the *Direct Key Signature* discussed above:
+- a 16-bit digest prefix
+- a salt value 
+- the cryptographic signature itself
+
+The signature is calculated over a hash digest. In this case, the hash digest is derived from the following data:
+
+- the signature's salt 
+- the serialized primary key's public data 
+- the serialized subkey's public data
+- the serialized subkey binding signature packet (excluding the unhashed area)
+
+Refer to [Computing Signatures](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-computing-signatures) in the RFC for details.
+
+## Signing subkey
+
+```{admonition} TODO
+:class: warning
+
+write 
+```
+
+```text
+$ sq packet dump --hex alice.pub-6--PublicSubkey
+Public-Subkey Packet, new CTB, 2 header bytes + 42 bytes
+    Version: 6
+    Creation time: 2023-09-29 15:17:58 UTC
+    Pk algo: Ed25519
+    Pk size: 256 bits
+    Fingerprint: D07B24EC91A14DD240AC2D53E6C8A9E054949A41222EA738576ED19CAEA3DC99
+    KeyID: D07B24EC91A14DD2
+
+    00000000  ce                                                 CTB
+    00000001     2a                                              length
+    00000002        06                                           version
+    00000003           65 16 ea a6                               creation_time
+    00000007                       1b                            pk_algo
+    00000008                           00 00 00 20               public_len
+    0000000c                                       33 8c d4 f5   ed25519_public
+    00000010  1a 73 39 ef ce d6 0f 21  8d a0 58 a2 3c 3d 44 a8
+    00000020  59 e9 13 1f 12 9c 6f 19  d0 3d 40 a0
+```
+
+```text
+$ sq packet dump --hex alice.pub-7--Signature
+Signature Packet, new CTB, 3 header bytes + 325 bytes
+    Version: 6
+    Type: SubkeyBinding
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-09-29 15:17:58 UTC (critical)
+      Key expiration time: P1095DT62781S (critical)
+      Key flags: S (critical)
+      Embedded signature:  (critical)
+        Signature Packet
+          Version: 6
+          Type: PrimaryKeyBinding
+          Pk algo: Ed25519
+          Hash algo: SHA512
+          Hashed area:
+            Signature creation time: 2023-09-29 15:17:58 UTC (critical)
+            Issuer Fingerprint: D07B24EC91A14DD240AC2D53E6C8A9E054949A41222EA738576ED19CAEA3DC99
+          Digest prefix: 5365
+          Level: 0 (signature over data)
+
+      Issuer Fingerprint: AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3
+    Unhashed area:
+      Issuer: AAA18CBB254685C5
+    Digest prefix: 841C
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     c0 85                                           length
+    00000003           06                                        version
+    00000004              18                                     type
+    00000005                 1b                                  pk_algo
+    00000006                    0a                               hash_algo
+    00000007                       00  00 00 cc                  hashed_area_len
+    0000000b                                    05               subpacket length
+    0000000c                                       82            subpacket tag
+    0000000d                                          65 16 ea   sig creation time
+    00000010  a6
+    00000011     05                                              subpacket length
+    00000012        89                                           subpacket tag
+    00000013           05 a4 8f bd                               key expiry time
+    00000017                       02                            subpacket length
+    00000018                           9b                        subpacket tag
+    00000019                              02                     key flags
+    0000001a                                 99                  subpacket length
+    0000001b                                    a0               subpacket tag
+    0000001c                                       06 19 1b 0a   embedded sig
+    00000020  00 00 00 29 05 82 65 16  ea a6 22 21 06 d0 7b 24
+    00000030  ec 91 a1 4d d2 40 ac 2d  53 e6 c8 a9 e0 54 94 9a
+    00000040  41 22 2e a7 38 57 6e d1  9c ae a3 dc 99 00 00 00
+    00000050  00 53 65 20 42 03 ad 0c  db fc b5 9a 98 a6 15 27
+    00000060  e4 11 5e f5 f2 a0 3d bc  ed 8d 94 27 41 09 f6 3c
+    00000070  4b f8 8a e5 af 73 e1 7d  54 07 40 3f f3 29 34 c2
+    00000080  e7 60 56 a5 e1 43 cb 08  ba 66 fe 8b 26 ce e7 cb
+    00000090  a5 3a 46 bb a5 c8 5d e4  6a de ae 49 e1 3e 07 bf
+    000000a0  c4 9e 98 14 2f 3e c5 f7  01 3e 3e 4f f6 18 2a ac
+    000000b0  bd ed 52 0c
+    000000b4              22                                     subpacket length
+    000000b5                 21                                  subpacket tag
+    000000b6                    06                               version
+    000000b7                       aa  a1 8c bb 25 46 85 c5 83   issuer fp
+    000000c0  58 32 05 63 fd 37 b6 7f  33 00 f9 fb 0e c4 57 37
+    000000d0  8c d2 9f 10 26 98 b3
+    000000d7                       00  00 00 0a                  unhashed_area_len
+    000000db                                    09               subpacket length
+    000000dc                                       10            subpacket tag
+    000000dd                                          aa a1 8c   issuer
+    000000e0  bb 25 46 85 c5
+    000000e5                 84                                  digest_prefix1
+    000000e6                    1c                               digest_prefix2
+    000000e7                       20                            salt_len
+    000000e8                           23 3d b2 49 f3 02 4b 08   salt
+    000000f0  93 af ba 08 89 f0 e0 91  0f ab 22 26 aa b3 56 57
+    00000100  30 ea 95 29 06 60 6f 00
+    00000108                           be 44 a1 95 38 a9 6b 3a   ed25519_sig
+    00000110  3e 51 f0 55 09 b1 e2 91  a9 17 86 fa f5 1e 3f d0
+    00000120  28 46 3c ce 6e 88 14 37  32 ec 3d fa c6 01 ca e5
+    00000130  a9 4b b7 63 94 c3 0d 92  ab dc fa 23 50 71 60 31
+    00000140  a6 73 c8 33 5a 9c d9 0a
+```
+
+(zooming_in_user_id)=
+## Adding an identity component
+
+In this section, we'll look at an identity associated with Alice's certificate.
+
+User IDs are a mechanism for connecting [identities](identity_components) with an OpenPGP certificate. Typically, a User ID is a string combining a name and an email address.
+
+To understand the internal packet structure of this identity and its connection to the OpenPGP certificate, we'll examine two packets that constitute the identity component. One is the [User ID packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid), located in the file `alice.pub-2--UserID`, which contains identity information. The other is a  certifying self-signature, specifically a [Positive certification of a User ID and Public-Key packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-positive-certification-of-a) located in the file `alice.pub-3--Signature`. This certification, issued after substantial verification of the identity claim, validates the association between the User ID and the certificate's public key. These packets are snippets from Alice's full OpenPGP certificate.
+
+### User ID packet
+
+First, let's look at the User ID packet, which encodes an identity that is associated with an OpenPGP certificate:
+
+```text
+$ sq packet dump --hex alice.pub-2--UserID
+User ID Packet, new CTB, 2 header bytes + 19 bytes
+    Value: <alice@example.org>
+
+    00000000  cd                                                 CTB
+    00000001     13                                              length
+    00000002        3c 61 6c 69 63 65  40 65 78 61 6d 70 6c 65   value
+    00000010  2e 6f 72 67 3e
+```
+
+- `CTB: 0xcd`: This is the packet type ID for this packet. Bits 7 and 6 show that the packet is in “OpenPGP packet format” (not “Legacy packet format”). The remaining 6 bits encode the type ID’s value: “13,” which is the value for a [User ID packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid).
+
+- `length: 0x13`: This field shows the remaining length of the packet (here: 19 bytes).
+
+- `value`: This comprises 19 bytes of data that contain UTF-8 encoded text. The value corresponds to the string `<alice@example.org>`. With this identity component, Alice asserts usage and control over the specified email address. Note that the email address is enclosed in `<` and `>` characters, in line with the conventions of  [RFC 2822](https://www.rfc-editor.org/rfc/rfc2822).
+
+Essentially, a User ID packet is just a string marked as a User ID by the packet type ID.
+
+### Linking the User ID with a certification self-signature
+
+Similar to [linking a subkey](zoom_enc_subkey) to the OpenPGP certificate, a self-signature is used to connect this new component to the certificate.
+
+To bind identities to a certificate with a self-signature, signature types `0x10` - `0x13` can be used. Here, the signature type `0x13` (*positive certification*) is used.
+
+```text
+$ sq packet dump --hex alice.pub-3--Signature
+Signature Packet, new CTB, 2 header bytes + 185 bytes
+    Version: 6
+    Type: PositiveCertification
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-09-29 15:17:58 UTC (critical)
+      Key expiration time: P1095DT62781S (critical)
+      Symmetric algo preferences: AES256, AES128
+      Hash preferences: SHA512, SHA256
+      Primary User ID: true (critical)
+      Key flags: C (critical)
+      Features: MDC
+      Issuer Fingerprint: AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3
+    Unhashed area:
+      Issuer: AAA18CBB254685C5
+    Digest prefix: DBB8
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     b9                                              length
+    00000002        06                                           version
+    00000003           13                                        type
+    00000004              1b                                     pk_algo
+    00000005                 0a                                  hash_algo
+    00000006                    00 00  00 40                     hashed_area_len
+    0000000a                                 05                  subpacket length
+    0000000b                                    82               subpacket tag
+    0000000c                                       65 16 ea a6   sig creation time
+    00000010  05                                                 subpacket length
+    00000011     89                                              subpacket tag
+    00000012        05 a4 8f bd                                  key expiry time
+    00000016                    03                               subpacket length
+    00000017                       0b                            subpacket tag
+    00000018                           09 07                     pref sym algos
+    0000001a                                 03                  subpacket length
+    0000001b                                    15               subpacket tag
+    0000001c                                       0a 08         pref hash algos
+    0000001e                                             02      subpacket length
+    0000001f                                                99   subpacket tag
+    00000020  01                                                 primary user id
+    00000021     02                                              subpacket length
+    00000022        9b                                           subpacket tag
+    00000023           01                                        key flags
+    00000024              02                                     subpacket length
+    00000025                 1e                                  subpacket tag
+    00000026                    01                               features
+    00000027                       22                            subpacket length
+    00000028                           21                        subpacket tag
+    00000029                              06                     version
+    0000002a                                 aa a1 8c bb 25 46   issuer fp
+    00000030  85 c5 83 58 32 05 63 fd  37 b6 7f 33 00 f9 fb 0e
+    00000040  c4 57 37 8c d2 9f 10 26  98 b3
+    0000004a                                 00 00 00 0a         unhashed_area_len
+    0000004e                                             09      subpacket length
+    0000004f                                                10   subpacket tag
+    00000050  aa a1 8c bb 25 46 85 c5                            issuer
+    00000058                           db                        digest_prefix1
+    00000059                              b8                     digest_prefix2
+    0000005a                                 20                  salt_len
+    0000005b                                    8a 2d 6f da 67   salt
+    00000060  35 bc 5d 04 77 b4 9d 67  a8 6e c5 d6 88 53 5f e2
+    00000070  ef f9 66 08 bf c2 e0 db  c0 56 0d
+    0000007b                                    eb d4 2c a5 19   ed25519_sig
+    00000080  01 0f ba 26 d0 82 a2 cf  5c eb 7a a9 72 d9 f3 b2
+    00000090  66 07 8b b2 ba 3d b7 89  e4 76 04 6e 35 24 2b 27
+    000000a0  29 83 be 91 9c 78 6a cc  b4 d5 69 47 76 2c 29 d6
+    000000b0  54 bf 43 19 04 ff 53 98  c0 d5 0b 
+```
+
+
+Because this packet structure closely mirrors the [Direct Key Signature](zooming_in_dks) discussed above, we will cover this succinctly.
+
+We're again looking at a Signature packet. Its `type` is `0x13` ([corresponding to a *positive certification* signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types)).
+
+The designated public key algorithm and hash function for this signature are Ed25519 and SHA512, respectively.
+
+As shown in the text atop this packet dump, the hashed subpacket data contains the following metadata:
+
+- Signature creation time: `2023-09-29 15:17:58 UTC` (**critical**)
+- Key expiration time: `P1095DT62781S` (**critical**)
+- Symmetric algo preferences: `AES256, AES128`
+- Hash preferences: `SHA512, SHA256`
+- Primary User ID: `true` (**critical**)
+- Key flags: `C` (**critical**)
+- Features: `MDC`
+- Issuer fingerprint: `AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3`
+
+This is a combination of metadata about the User ID itself (designating this User ID as the *primary User ID* of this certificate), algorithm preferences for this identity, and settings that apply to the primary key.
+
+````{note}
+Historically, the self-signature that binds the primary User ID to the certificate also contains subpackets relevant not to the User ID, but to the primary key itself.
+
+Setting key expiration time and key flags on the primary User ID self-signature is one mechanism to configure the primary key.
+
+The interaction between metadata on direct key signatures and User ID binding self-signatures [is subtle](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-notes-on-self-signatures), with changes between version 6 and version 4.
+
+
+```{admonition} TODO
+:class: warning
+
+- link to a section that goes into more depth about "#name-notes-on-self-signatures"?
+```
+
+````
+
+This section is followed, again, by the (informational) unhashed subpacket area.
+
+Subsequently, we see a salt value for the signature and the signature itself.
+
+The signature is calculated over a hash. The hash, in this case, is derived from the following data:
+
+- the signature's salt
+- the serialized primary key's public data
+- the serialized User ID
+  This section specifies- the serialized self-signature packet (excluding the unhashed area)
+
+Refer to [Computing Signatures](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-computing-signatures) in the RFC for details.
+
+## Certifications (Third Party Signatures)
+
+## Revocations

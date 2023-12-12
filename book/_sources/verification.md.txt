@@ -1,0 +1,123 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Signature verification
+
+Signature verification in the OpenPGP protocol is a complex process.
+Many factors influence the validity of a signature.
+
+Firstly, its expiration time: A signature can be valid at one point in time and expired a second later.
+
+Signatures can be invalid due to the absence or presence of other signatures (e.g., revocations).
+Some signatures can be verified standalone, while others require the verification of a chain-like structure of signatures, mostly within the issuer's certificate.
+
+## When are signatures valid?
+
+As a necessary condition, a valid signature must be [cryptographically correct](sig-verify). This means that both the signature and its signed input data must be intact.
+
+However, there is a difference between signature *correctness* and *validity*:
+
+A signature may be cryptographically correct, but still not qualify as a *valid* signature.
+Put mathematically, the set of valid signatures is a subset of the set of correct signatures.
+
+The validity of a correct signature is additionally constrained by a number of conditions:
+
+* **Well-formedness**: Signature packets need to be well-formed. This means that they must contain suitable signature metadata (this includes: the required signature subpackets must be present in the proper subpacket area). The signature metadata must not contain unknown critical subpackets or unknown critical notations[^unknown-critical]. Some implementations additionally apply a policy that constrains accepted hash algorithms, cryptographic algorithms, and key strengths.
+* **Temporal validity**: Most signatures have a limited validity period, constrained by the signature creation- and expiration time.
+* **Qualification**: Furthermore, some signatures need to be *qualified* by other valid signatures in order to be considered valid. This is especially the case with signatures created by dedicated signing subkeys, where, in addition to the signature itself, the subkeys binding signature(s) must be verified.
+* **Revocation**: Lastly, signatures can be invalidated by revocations.
+
+[^unknown-critical]: Note that this implies that a signature might be considered valid by one implementation and be rejected by another, based on the set of subpackets and notations each implementation is aware of.
+
+## Well-formedness of signatures
+
+There are a number of criteria that a signature must fulfill to be considered well-formed:
+
+- Each signature MUST have a signature creation time subpacket in its hashed subpacket area. A signature with only an unhashed creation time - or none at all - is not well-formed.
+- The signature cannot be older than the component key that issued it.
+- Analogously, a signature with a creation time in the future needs to be rejected as well.
+- A well-formed signature needs to carry an Issuer Fingerprint subpacket, or an Issuer KeyID subpacket. It is generally recommended to place Issuer subpackets in the hashed area of the signature, but a receiving implementation may also accept signatures which only contain unhashed copies of these subpackets.
+- A signature disqualifies as well-formed if it contains subpackets which are marked as critical, but unknown to the receiving implementation. Unknown subpackets which are not marked as critical do not have an effect on whether the signature is well-formed.
+- The same applies to notations. Unknown notations that are marked as critical render the signature malformed.
+
+(temporal-validity)=
+## Temporal validity
+
+A signature is valid only for a constrained period of time:
+
+- The creation time of the signature acts as a lower bound for the validity. A signature only becomes valid at its creation time. Hard revocation signatures are an exception: They are by definition valid at any point in time, and have no lower temporal bound.
+- If present, the signature's expiration time acts as a natural upper bound for its validity.
+
+When checking a signature for validity, a reference time is used. The validity of the signature is evaluated at that reference time.
+
+The reference time can be:
+
+- the current time during validation, or
+- another point in time that is significant to the signature that is validated. For example, when checking the signature of an email, the reference time might be the signature creation time, or the time of receipt of the email.
+
+For the signature to qualify as valid, it needs to be in effect. In other words, the reference time must fall into the period between signature creation and signature expiration.
+
+The same reference time must be used when verifying required qualifying signatures, if any.
+
+## Self-qualifying and non-self-qualifying signatures
+
+Some signatures can be verified on their own, while others require the verification of additional signatures on the issuer certificate. We will call the former category *self-qualifying* signatures.
+
+Typically, self-qualifying signatures are self-signatures, meaning signatures issued by an OpenPGP primary key for the components in its certificate.
+
+Examples for self-qualifying signatures are:
+
+- direct key self-signatures (`0x1F`),
+- User ID self-certifications (`0x10`-`0x13`),
+- key-revocation self-signatures (`0x20`),
+- certification revocation self-signatures (`0x30`) or
+- self-signatures used to bind or revoke subkeys (`0x18`, `0x19`, `0x28`).
+
+Examples for signatures which are not self-qualifying are:
+
+- data signatures (`0x00`, `0x01`) and
+- signatures issued over third-party certificates, such as:
+  - third-party direct key signatures (`0x1F`),
+  - third-party key-revocations (`0x20`),
+  - third-party certification (`0x10`-`0x13`), or
+  - third-party certification revocation signatures (`0x30`).
+
+## Signature qualification
+
+To verify non-self-qualifying signatures, it is necessary to look at more than just the signature itself.
+
+This is required because the issuing component key needs to be qualified to create such a signature (e.g., because a specific capability key flag is required). The qualification typically emerges via a self-signature on the key itself.
+
+In short, a chain of valid signatures from the signature itself to the primary key of the issuer certificate needs to be established.
+
+For example, a subkey may issue a data signature over an email body only if that subkey is validly bound to the issuer's certificate via a subkey binding signature. That binding signature needs to contain a *key flags* subpacket that marks the subkey as *signing* capable.
+Similarly, certification signatures over third-party certificates require the issuer key to carry a valid self-signature with the *certification* key flag.
+
+Self-qualifying signatures have no such limitations.
+
+For example, a certificate consisting only of a primary key and a single key-revocation self-signature contains everything needed to verify the revocation, as key-revocation self-signatures are self-qualifying.
+This construct is referred to as a [revocation certificate](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-v6-revocation-certi).
+
+On the other hand, to verify a data signature over a text document, an implementation needs to verify not only the data signature itself, but also the binding signature (and back-signature) of the signing subkey which qualifies the signing subkey.
+
+```{figure} img/mermaid/09-sigtree.png
+:name: fig-signature-verification-signature-tree
+:alt: Depicts a diagrammatic representation of a certificate and a data signature. Arrows between the primary key and other components of the certificate show, how signatures bind the certificate together. In this example, they form a tree of signatures, which all need to be verified in order for the data signature to be valid.
+
+Tree of signatures that qualify a data signature
+```
+
+## Revocations
+
+A signature can be *disqualified* by the presence of a revocation signature.
+
+Revocations can be limited in scope, e.g., a subkey-revocation signature only revokes a single subkey.
+Moreover, revocations can also be constrained to a certain validity period by including a soft revocation reason and expiration time in the revocation signature.
+
+```{admonition} TODO
+:class: warning
+
+Give guidance which revocations need to be considered for different types of signatures
+```

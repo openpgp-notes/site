@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>29. Zooming in: Packet structure of encrypted data &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="30. Glossary" href="../glossary.html" />
+    <link rel="prev" title="28. Zooming in: Packet structure of data signatures" href="signatures.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signatures.html" title="Previous document"><span class="section-number">28. </span>Zooming in: Packet structure of data signatures</a>
+        </li>
+        <li>
+          <a href="../glossary.html" title="Next document"><span class="section-number">30. </span>Glossary</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="zooming-in-packet-structure-of-encrypted-data">
+<h1><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data<a class="headerlink" href="#zooming-in-packet-structure-of-encrypted-data" title="Link to this heading">¶</a></h1>
+<section id="seipd-v2">
+<h2><span class="section-number">29.1. </span>SEIPD v2<a class="headerlink" href="#seipd-v2" title="Link to this heading">¶</a></h2>
+<section id="encrypt">
+<h3><span class="section-number">29.1.1. </span>Encrypt<a class="headerlink" href="#encrypt" title="Link to this heading">¶</a></h3>
+<p>We encrypt a short message to Alice, using a public certificate version of <a class="reference internal" href="../artifacts.html#alice-priv"><span class="std std-ref">Alice’s OpenPGP key</span></a>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ echo &quot;hello world&quot; | sq encrypt --recipient-file alice.pub
+</pre></div>
+</div>
+<p>This produces an ASCII armored encrypted message:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-----BEGIN PGP MESSAGE-----
+
+wV0GIQbApYOEpDjloU9zcSQmpNRduu70o55rMLCdVRP5eKzKlBkxYaQzuusD78oj
+AdiGwQ8MI8sSAXAV4AEMKIcbINqhIBgSm5EV9h+Yl/XV3fEZ1JOaBnrtso2ZAS7S
+cgIHAQaWc/Ip4Thq0EZDZwlpRUk/TUL+TWEpsGdQs8ifDyFAk7t3+3XvvLr5dUg3
++Ot+sESkCSjhrZk50HIjwjBVZ6Y159yfaOqttMT6cXqWaxIishPaJ+OR1q2bZS1N
+2jFbaROOcbASK6AVzqCWneqkIA==
+=WFpq
+-----END PGP MESSAGE-----
+</pre></div>
+</div>
+</section>
+<section id="inspect-the-packet-dump-of-the-encrypted-message">
+<h3><span class="section-number">29.1.2. </span>Inspect the packet dump of the encrypted message<a class="headerlink" href="#inspect-the-packet-dump-of-the-encrypted-message" title="Link to this heading">¶</a></h3>
+<p>Inspecting the packets of this message, we see:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex enc.pgp
+Public-Key Encrypted Session Key Packet, new CTB, 2 header bytes + 93 bytes
+    Version: 6
+    Recipient: C0A58384A438E5A14F73712426A4D45DBAEEF4A39E6B30B09D5513F978ACCA94
+    Pk algo: X25519
+
+    00000000  c1                                                 CTB
+    00000001     5d                                              length
+    00000002        06                                           version
+    00000003           21                                        recipient_len
+    00000004              06                                     recipient_version
+    00000005                 c0 a5 83  84 a4 38 e5 a1 4f 73 71   recipient
+    00000010  24 26 a4 d4 5d ba ee f4  a3 9e 6b 30 b0 9d 55 13
+    00000020  f9 78 ac ca 94
+    00000025                 19                                  pk_algo
+    00000026                    31 61  a4 33 ba eb 03 ef ca 23   x25519_e
+    00000030  01 d8 86 c1 0f 0c 23 cb  12 01 70 15 e0 01 0c 28
+    00000040  87 1b 20 da a1 20
+    00000046                    18                               x25519_esk_len
+    00000047                       12  9b 91 15 f6 1f 98 97 f5   x25519_esk
+    00000050  d5 dd f1 19 d4 93 9a 06  7a ed b2 8d 99 01 2e
+
+Sym. Encrypted and Integrity Protected Data Packet, new CTB, 2 header bytes + 114 bytes
+    Version: 2
+    Symmetric algo: AES-128
+    AEAD algo: EAX
+    Chunk size: 4096
+    Salt: 9673F229E1386AD0464367096945493F4D42FE4D6129B06750B3C89F0F214093
+    No session key supplied
+
+    00000000  d2                                                 CTB
+    00000001     72                                              length
+    00000002        02                                           version
+    00000003           07                                        sym_algo
+    00000004              01                                     aead_algo
+    00000005                 06                                  chunk_size
+    00000006                    96 73  f2 29 e1 38 6a d0 46 43   salt
+    00000010  67 09 69 45 49 3f 4d 42  fe 4d 61 29 b0 67 50 b3
+    00000020  c8 9f 0f 21 40 93
+    00000026                    bb 77  fb 75 ef bc ba f9 75 48         .w.u....uH
+    00000030  37 f8 eb 7e b0 44 a4 09  28 e1 ad 99 39 d0 72 23   7..~.D..(...9.r#
+    00000040  c2 30 55 67 a6 35 e7 dc  9f 68 ea ad b4 c4 fa 71   .0Ug.5...h.....q
+    00000050  7a 96 6b 12 22 b2 13 da  27 e3 91 d6 ad 9b 65 2d   z.k.&quot;...&#39;.....e-
+    00000060  4d da 31 5b 69 13 8e 71  b0 12 2b a0 15 ce a0 96   M.1[i..q..+.....
+    00000070  9d ea a4 20                                        ...
+</pre></div>
+</div>
+</section>
+<section id="decrypt">
+<h3><span class="section-number">29.1.3. </span>Decrypt<a class="headerlink" href="#decrypt" title="Link to this heading">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq decrypt --dump-session-key --recipient-file alice.sec enc.pgp
+Session key: 8DDA27B9B000BD84D0A39DFF66780111
+Encrypted using AES-128
+Compressed using ZIP
+hello world
+</pre></div>
+</div>
+<p>Inspecting the packets inside the SEIPD container:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq decrypt --dump --recipient-file alice.sec enc.pgp
+Public-Key Encrypted Session Key Packet, new CTB, 93 bytes
+    Version: 6
+    Recipient: C0A58384A438E5A14F73712426A4D45DBAEEF4A39E6B30B09D5513F978ACCA94
+    Pk algo: X25519
+
+Encrypted using AES-128
+Compressed using ZIP
+hello world
+Sym. Encrypted and Integrity Protected Data Packet, new CTB, 114 bytes
+│   Version: 2
+│   Symmetric algo: AES-128
+│   AEAD algo: EAX
+│   Chunk size: 4096
+│   Salt: 9673F229E1386AD0464367096945493F4D42FE4D6129B06750B3C89F0F214093
+│
+└── Compressed Data Packet, new CTB, 44 bytes
+    │   Algorithm: ZIP
+    │
+    ├── Literal Data Packet, new CTB, 18 bytes
+    │       Format: Binary data
+    │
+    └── Padding Packet, new CTB, 14 bytes
+            Unknown variant
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signatures.html" title="Previous document"><span class="section-number">28. </span>Zooming in: Packet structure of data signatures</a>
+        </li>
+        <li>
+          <a href="../glossary.html" title="Next document"><span class="section-number">30. </span>Glossary</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">29. Zooming in: Packet structure of encrypted data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#seipd-v2">29.1. SEIPD v2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="signatures.html" title="previous chapter"><span class="section-number">28. </span>Zooming in: Packet structure of data signatures</a></li>
+      <li>Next: <a href="../glossary.html" title="next chapter"><span class="section-number">30. </span>Glossary</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

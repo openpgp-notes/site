@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>11. Decryption &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="12. Compression" href="compression.html" />
+    <link rel="prev" title="10. Encryption" href="encryption.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="encryption.html" title="Previous document"><span class="section-number">10. </span>Encryption</a>
+        </li>
+        <li>
+          <a href="compression.html" title="Next document"><span class="section-number">12. </span>Compression</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="decryption">
+<h1><span class="section-number">11. </span>Decryption<a class="headerlink" href="#decryption" title="Link to this heading">¶</a></h1>
+<p>Message decryption is the process of taking an encrypted message and recovering its plaintext.
+This involves multiple steps.</p>
+<p>Implementations typically first process the PKESK and SKESK packets leading the SEIPD packet to identify *ESK packets suitable for decryption.
+A PKESK packet is suitable if it contains a recipient-Key ID matching a decryption (sub-) key of the user’s certificate.
+Typically, all *ESK packets leading a SEIPD packet contain the same <em>session key</em> once decrypted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Anonymous-recipient PKESK packets contain a recipient-Key ID of <code class="docutils literal notranslate"><span class="pre">0</span></code>, so if no suitable non-anonymous PKESK was found, any anonymous PKESKs are tried with any available decryption (sub-) keys (see <a class="reference internal" href="adv/decryption.html#decryption-anonymous-recipient"><span class="std std-ref">Anonymous recipients</span></a>).</p>
+</div>
+<p>If no suitable PKESK packets were found, SKESK packets are tried next, meaning the user is typically prompted to enter a decryption passphrase.</p>
+<p>Once any of these methods succeeded, the resulting <em>session key</em> is used to decrypt the SEIPD packet.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<ul class="simple">
+<li><p>using expired certificate?</p></li>
+<li><p>using revoked certificate?</p></li>
+<li><p>using expired subkey?</p></li>
+<li><p>using revoked subkey?</p></li>
+</ul>
+</div>
+<section id="passphrase-protected-session-key-skesk">
+<h2><span class="section-number">11.1. </span>Passphrase-protected session key (SKESK)<a class="headerlink" href="#passphrase-protected-session-key-skesk" title="Link to this heading">¶</a></h2>
+<p>Decrypting a SKESK packet to recover the <em>session key</em> is done by performing the encryption steps in reverse, based on a user-provided passphrase.</p>
+<p>In both version 4 and version 6 of the SKESK packet, the user is prompted to enter a passphrase, which is passed through the S2K function described by the SKESK packet.
+However, the subsequent steps of the procedure are different, as described in the following sections.</p>
+<section id="skesk-v4">
+<h3><span class="section-number">11.1.1. </span>SKESK v4<a class="headerlink" href="#skesk-v4" title="Link to this heading">¶</a></h3>
+<p>Here, the result of the S2K function is a symmetric key, which is either used to decrypt the encrypted session key contained in the SKESK packet, or - less commonly - used as session key directly (see <a class="reference internal" href="#decryption-skesk4-direct-method"><span class="std std-ref">Direct-Method</span></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The “direct method” where the result of the S2K function is directly used as session key is only applicable if only one SKESK packet is present.</p>
+</div>
+<figure class="align-default" id="fig-skeskv4-decryption">
+<img alt="Diagram depicting how the S2K function is used to derive key symmetric key from the user-provided passphrase. This key is then either used directly as session key, or used to decrypt the encrypted session key." src="_images/SKESKv4-decryption.svg" /><figcaption>
+<p><span class="caption-number">Fig. 26 </span><span class="caption-text">Decrypting the session key from a version 4 SKESK packet.</span><a class="headerlink" href="#fig-skeskv4-decryption" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>With version 4 SKESK packets, which are only used with version 1 SEIPD packets, the <em>session key</em> is used as <em>message key</em> without an intermediate derivation.</p>
+<section id="direct-method">
+<span id="decryption-skesk4-direct-method"></span><h4><span class="section-number">11.1.1.1. </span>Direct-Method<a class="headerlink" href="#direct-method" title="Link to this heading">¶</a></h4>
+<p>In version 4 of the SKESK packet, the encrypted session key is optional. A missing encrypted session key signals the use of the “direct-method”, which means, the result of passing the passphrase through the S2K function is directly used as the session key/message key.</p>
+<p>When the direct method is used, the symmetric cipher algorithm ID of the SKESK packet dictates the cipher algorithm used to decrypt the plaintext from the SEIPD packet.</p>
+<p>Otherwise, the cipher algorithm ID to decrypt the SEIPD packet was prefixed to the decrypted session key.</p>
+<p>Sanitizing this algorithm ID of the decrypted session key acts as a very early quick check to verify that the used passphrase was correct. For further validation of the session key, see <a class="reference internal" href="adv/decryption.html#decryption-seipd-quick-check"><span class="std std-ref">Verify successful session key decryption</span></a>.</p>
+</section>
+</section>
+<section id="skesk-v6">
+<h3><span class="section-number">11.1.2. </span>SKESK v6<a class="headerlink" href="#skesk-v6" title="Link to this heading">¶</a></h3>
+<p>With version 6 SKESK packets, the result of the passing the passphrase through the S2K function is used as <em>initial keying material</em> (IKM) to derive a symmetric <em>key encryption key</em> using HKDF as a key derivation function. The HKDF function doesn’t use any salt in this step, and the <em>info</em> parameter is assembled from parameters of the SKESK packet.</p>
+<p>In the next step, this symmetric key is used to decrypt the <em>session key</em> using AEAD.
+The AEAD function uses information from the associated SEIPDv2 packet as <em>additional data</em>.
+The function is also salted using the SEIPDv2’s salt.
+The <em>AEAD Auth Tag</em> of the SKESK packet is used as authentication tag.</p>
+<p>The result is the <em>session key</em>.</p>
+<figure class="align-default" id="fig-skeskv6-decryption">
+<img alt="Diagram depicting the complicated process of deriving the session key from a SKESK version 6 packet." src="_images/SKESKv6-decryption.svg" /><figcaption>
+<p><span class="caption-number">Fig. 27 </span><span class="caption-text">Decrypting the session key from a version 6 SKESK packet.</span><a class="headerlink" href="#fig-skeskv6-decryption" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-protected-session-key-pkesk">
+<h2><span class="section-number">11.2. </span>Key-protected session key (PKESK)<a class="headerlink" href="#key-protected-session-key-pkesk" title="Link to this heading">¶</a></h2>
+<p>More common than SKESK packets are PKESK packets which are used to protect the session key using an encryption key of the recipient.</p>
+<section id="pkesk-v3">
+<h3><span class="section-number">11.2.1. </span>PKESK v3<a class="headerlink" href="#pkesk-v3" title="Link to this heading">¶</a></h3>
+<p>With version 3 PKESKs, the recipient’s secret encryption (sub-) key is directly used to decrypt the encrypted <em>session key</em>.
+The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> indicates an anonymous recipient (see <a class="reference internal" href="adv/decryption.html#decryption-anonymous-recipient"><span class="std std-ref">Anonymous recipients</span></a>).</p>
+<p>To detect, which symmetric cipher is used to decrypt the SEIPDv1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections<a class="footnote-reference brackets" href="#rsa-spec" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#elgamal-spec" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#ecdh-spec" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x25519-spec" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x448-spec" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.</p>
+<figure class="align-default" id="fig-decryption-pkesk3">
+<img alt="Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key." src="_images/PKESKv3-decryption.svg" /><figcaption>
+<p><span class="caption-number">Fig. 28 </span><span class="caption-text">Decrypting the session key from a version 3 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="pkesk-v6">
+<h3><span class="section-number">11.2.2. </span>PKESK v6<a class="headerlink" href="#pkesk-v6" title="Link to this heading">¶</a></h3>
+<p>The decryption of version 6 PKESK packets works quite similarly to version 3.</p>
+<figure class="align-default" id="fig-decryption-pkesk6">
+<img alt="Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key." src="_images/PKESKv6-decryption.svg" /><figcaption>
+<p><span class="caption-number">Fig. 29 </span><span class="caption-text">Decrypting the session key from a version 6 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk6" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Contrary to the version 3 PKESK, the encrypted session key within the version 6 PKESK does not contain the symmetric cipher algorithm used to decrypt the SEIPD packet.
+Instead, this cipher algorithm ID is encoded inside the SEIPDv2 packet directly.</p>
+</section>
+</section>
+<section id="seipd-v1">
+<h2><span class="section-number">11.3. </span>SEIPD (v1)<a class="headerlink" href="#seipd-v1" title="Link to this heading">¶</a></h2>
+<p>Version 1 SEIPD packets MUST only be used with version 3 PKESK packets and/or version 4 SKESK packets.
+Any other combinations are not allowed and MUST result in a broken message.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since SEIPD version 1 is susceptible to downgrade attacks under certain scenarios, it is recommended to use SEIPD version 2 wherever possible.</p>
+</div>
+<p>To decrypt the contents of a version 1 SEIPD packet, the session key obtained in the previous step is used.
+The cipher algorithm is either extracted from the decrypted session key (the algorithm ID is typically prefixed to the decrypted session key), or - in case of a SKESK packet using the direct-method - taken from the SKESKs cipher algorithm field.</p>
+<p>Once the cipher is initialized, the whole encrypted data from the SEIPD packet is decrypted.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>Describe the MDC which is used for modification detection.</p>
+</div>
+<figure class="align-default" id="fig-decryption-seipd1">
+<img alt="Depicts how the session key is used directly to decrypt the contents of the SEIPD packet." src="_images/SEIPDv1-decryption.svg" /><figcaption>
+<p><span class="caption-number">Fig. 30 </span><span class="caption-text">The contents of the SEIPD packet are decrypted using the session key as message key.</span><a class="headerlink" href="#fig-decryption-seipd1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="seipd-w-aead-v2">
+<h2><span class="section-number">11.4. </span>SEIPD w/ AEAD (v2)<a class="headerlink" href="#seipd-w-aead-v2" title="Link to this heading">¶</a></h2>
+<p>Preferred mode.
+Version 2 SEIPD packets MUST only be used with version 6 PKESK packets and/or version 6 SKESK packets.
+Any other combinations are not allowed and MUST result in a broken message.</p>
+<p>Once the session key was obtained from a PKESK or SKESK, it is used to derive a <em>message key</em> and an IV. This is done by passing the session key through a salted HKDF function, where the salt is unique per message and obtained from the SEIPD packet.</p>
+<p>The result is split into the message key and first half of the IV.</p>
+<figure class="align-default" id="fig-decryption-seipd2-mk-derivation">
+<img alt="Depicts how the session key is fed into a salted HKDF to derive both the message key and the first half of an IV." src="_images/SEIPDv2-decryption-mk-derivation.svg" /><figcaption>
+<p><span class="caption-number">Fig. 31 </span><span class="caption-text">In a first step, a message key and half of an IV is derived from the session key.</span><a class="headerlink" href="#fig-decryption-seipd2-mk-derivation" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Then, the contents of the SEIPDs encrypted data are split into chunks, which are processed sequentially. Each chunk is decrypted using AEAD with parameters from the SEIPD packet as <em>additional data</em>.
+For each chunk, the chunk index starting at <code class="docutils literal notranslate"><span class="pre">0</span></code> is passed into the function as second half of the IV.</p>
+<p>All decrypted plaintext blocks are appended to form the result of the decryption process.</p>
+<p>After all blocks have been processed, in a final AEAD step, the total number of plaintext octets gets appended to the <em>additional data</em> and the final AEAD auth tag from the SEIPD packet is processed.</p>
+<figure class="align-default" id="fig-decryption-seipd2-chunks">
+<img alt="Depicts, how the message key and index-postfixed IV are used to decrypt each individual chunk of plaintext." src="_images/SEIPDv2-decryption-chunks.svg" /><figcaption>
+<p><span class="caption-number">Fig. 32 </span><span class="caption-text">Each chunk is decrypted using AEAD using the message key and an IV with appended chunk index.</span><a class="headerlink" href="#fig-decryption-seipd2-chunks" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sed">
+<h2><span class="section-number">11.5. </span>SED<a class="headerlink" href="#sed" title="Link to this heading">¶</a></h2>
+<p>Legacy mode, may be decrypted, but not produced.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="rsa-spec" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-f">Algorithm-Specific Fields for RSA encryption</a></p>
+</aside>
+<aside class="footnote brackets" id="elgamal-spec" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-fo">Algorithm-Specific Fields for Elgamal encryption</a></p>
+</aside>
+<aside class="footnote brackets" id="ecdh-spec" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for">Algorithm-Specific Fields for ECDH encryption</a></p>
+</aside>
+<aside class="footnote brackets" id="x25519-spec" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for-">Algorithm-Specific Fields for X25519 encryption</a></p>
+</aside>
+<aside class="footnote brackets" id="x448-spec" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for-x">Algorithm-Specific Fields for X448 encryption</a></p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="encryption.html" title="Previous document"><span class="section-number">10. </span>Encryption</a>
+        </li>
+        <li>
+          <a href="compression.html" title="Next document"><span class="section-number">12. </span>Compression</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">11. Decryption</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#passphrase-protected-session-key-skesk">11.1. Passphrase-protected session key (SKESK)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-protected-session-key-pkesk">11.2. Key-protected session key (PKESK)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seipd-v1">11.3. SEIPD (v1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seipd-w-aead-v2">11.4. SEIPD w/ AEAD (v2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sed">11.5. SED</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="encryption.html" title="previous chapter"><span class="section-number">10. </span>Encryption</a></li>
+      <li>Next: <a href="compression.html" title="next chapter"><span class="section-number">12. </span>Compression</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

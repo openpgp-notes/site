@@ -1,0 +1,6 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Acknowledgements

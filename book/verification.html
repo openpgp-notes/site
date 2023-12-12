@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>9. Signature verification &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="10. Encryption" href="encryption.html" />
+    <link rel="prev" title="8. Signatures on components" href="signing_components.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signing_components.html" title="Previous document"><span class="section-number">8. </span>Signatures on components</a>
+        </li>
+        <li>
+          <a href="encryption.html" title="Next document"><span class="section-number">10. </span>Encryption</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="signature-verification">
+<h1><span class="section-number">9. </span>Signature verification<a class="headerlink" href="#signature-verification" title="Link to this heading">¶</a></h1>
+<p>Signature verification in the OpenPGP protocol is a complex process.
+Many factors influence the validity of a signature.</p>
+<p>Firstly, its expiration time: A signature can be valid at one point in time and expired a second later.</p>
+<p>Signatures can be invalid due to the absence or presence of other signatures (e.g., revocations).
+Some signatures can be verified standalone, while others require the verification of a chain-like structure of signatures, mostly within the issuer’s certificate.</p>
+<section id="when-are-signatures-valid">
+<h2><span class="section-number">9.1. </span>When are signatures valid?<a class="headerlink" href="#when-are-signatures-valid" title="Link to this heading">¶</a></h2>
+<p>As a necessary condition, a valid signature must be <a class="reference internal" href="signatures.html#sig-verify"><span class="std std-ref">cryptographically correct</span></a>. This means that both the signature and its signed input data must be intact.</p>
+<p>However, there is a difference between signature <em>correctness</em> and <em>validity</em>:</p>
+<p>A signature may be cryptographically correct, but still not qualify as a <em>valid</em> signature.
+Put mathematically, the set of valid signatures is a subset of the set of correct signatures.</p>
+<p>The validity of a correct signature is additionally constrained by a number of conditions:</p>
+<ul class="simple">
+<li><p><strong>Well-formedness</strong>: Signature packets need to be well-formed. This means that they must contain suitable signature metadata (this includes: the required signature subpackets must be present in the proper subpacket area). The signature metadata must not contain unknown critical subpackets or unknown critical notations<a class="footnote-reference brackets" href="#unknown-critical" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Some implementations additionally apply a policy that constrains accepted hash algorithms, cryptographic algorithms, and key strengths.</p></li>
+<li><p><strong>Temporal validity</strong>: Most signatures have a limited validity period, constrained by the signature creation- and expiration time.</p></li>
+<li><p><strong>Qualification</strong>: Furthermore, some signatures need to be <em>qualified</em> by other valid signatures in order to be considered valid. This is especially the case with signatures created by dedicated signing subkeys, where, in addition to the signature itself, the subkeys binding signature(s) must be verified.</p></li>
+<li><p><strong>Revocation</strong>: Lastly, signatures can be invalidated by revocations.</p></li>
+</ul>
+</section>
+<section id="well-formedness-of-signatures">
+<h2><span class="section-number">9.2. </span>Well-formedness of signatures<a class="headerlink" href="#well-formedness-of-signatures" title="Link to this heading">¶</a></h2>
+<p>There are a number of criteria that a signature must fulfill to be considered well-formed:</p>
+<ul class="simple">
+<li><p>Each signature MUST have a signature creation time subpacket in its hashed subpacket area. A signature with only an unhashed creation time - or none at all - is not well-formed.</p></li>
+<li><p>The signature cannot be older than the component key that issued it.</p></li>
+<li><p>Analogously, a signature with a creation time in the future needs to be rejected as well.</p></li>
+<li><p>A well-formed signature needs to carry an Issuer Fingerprint subpacket, or an Issuer KeyID subpacket. It is generally recommended to place Issuer subpackets in the hashed area of the signature, but a receiving implementation may also accept signatures which only contain unhashed copies of these subpackets.</p></li>
+<li><p>A signature disqualifies as well-formed if it contains subpackets which are marked as critical, but unknown to the receiving implementation. Unknown subpackets which are not marked as critical do not have an effect on whether the signature is well-formed.</p></li>
+<li><p>The same applies to notations. Unknown notations that are marked as critical render the signature malformed.</p></li>
+</ul>
+</section>
+<section id="temporal-validity">
+<span id="id2"></span><h2><span class="section-number">9.3. </span>Temporal validity<a class="headerlink" href="#temporal-validity" title="Link to this heading">¶</a></h2>
+<p>A signature is valid only for a constrained period of time:</p>
+<ul class="simple">
+<li><p>The creation time of the signature acts as a lower bound for the validity. A signature only becomes valid at its creation time. Hard revocation signatures are an exception: They are by definition valid at any point in time, and have no lower temporal bound.</p></li>
+<li><p>If present, the signature’s expiration time acts as a natural upper bound for its validity.</p></li>
+</ul>
+<p>When checking a signature for validity, a reference time is used. The validity of the signature is evaluated at that reference time.</p>
+<p>The reference time can be:</p>
+<ul class="simple">
+<li><p>the current time during validation, or</p></li>
+<li><p>another point in time that is significant to the signature that is validated. For example, when checking the signature of an email, the reference time might be the signature creation time, or the time of receipt of the email.</p></li>
+</ul>
+<p>For the signature to qualify as valid, it needs to be in effect. In other words, the reference time must fall into the period between signature creation and signature expiration.</p>
+<p>The same reference time must be used when verifying required qualifying signatures, if any.</p>
+</section>
+<section id="self-qualifying-and-non-self-qualifying-signatures">
+<h2><span class="section-number">9.4. </span>Self-qualifying and non-self-qualifying signatures<a class="headerlink" href="#self-qualifying-and-non-self-qualifying-signatures" title="Link to this heading">¶</a></h2>
+<p>Some signatures can be verified on their own, while others require the verification of additional signatures on the issuer certificate. We will call the former category <em>self-qualifying</em> signatures.</p>
+<p>Typically, self-qualifying signatures are self-signatures, meaning signatures issued by an OpenPGP primary key for the components in its certificate.</p>
+<p>Examples for self-qualifying signatures are:</p>
+<ul class="simple">
+<li><p>direct key self-signatures (<code class="docutils literal notranslate"><span class="pre">0x1F</span></code>),</p></li>
+<li><p>User ID self-certifications (<code class="docutils literal notranslate"><span class="pre">0x10</span></code>-<code class="docutils literal notranslate"><span class="pre">0x13</span></code>),</p></li>
+<li><p>key-revocation self-signatures (<code class="docutils literal notranslate"><span class="pre">0x20</span></code>),</p></li>
+<li><p>certification revocation self-signatures (<code class="docutils literal notranslate"><span class="pre">0x30</span></code>) or</p></li>
+<li><p>self-signatures used to bind or revoke subkeys (<code class="docutils literal notranslate"><span class="pre">0x18</span></code>, <code class="docutils literal notranslate"><span class="pre">0x19</span></code>, <code class="docutils literal notranslate"><span class="pre">0x28</span></code>).</p></li>
+</ul>
+<p>Examples for signatures which are not self-qualifying are:</p>
+<ul class="simple">
+<li><p>data signatures (<code class="docutils literal notranslate"><span class="pre">0x00</span></code>, <code class="docutils literal notranslate"><span class="pre">0x01</span></code>) and</p></li>
+<li><p>signatures issued over third-party certificates, such as:</p>
+<ul>
+<li><p>third-party direct key signatures (<code class="docutils literal notranslate"><span class="pre">0x1F</span></code>),</p></li>
+<li><p>third-party key-revocations (<code class="docutils literal notranslate"><span class="pre">0x20</span></code>),</p></li>
+<li><p>third-party certification (<code class="docutils literal notranslate"><span class="pre">0x10</span></code>-<code class="docutils literal notranslate"><span class="pre">0x13</span></code>), or</p></li>
+<li><p>third-party certification revocation signatures (<code class="docutils literal notranslate"><span class="pre">0x30</span></code>).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="signature-qualification">
+<h2><span class="section-number">9.5. </span>Signature qualification<a class="headerlink" href="#signature-qualification" title="Link to this heading">¶</a></h2>
+<p>To verify non-self-qualifying signatures, it is necessary to look at more than just the signature itself.</p>
+<p>This is required because the issuing component key needs to be qualified to create such a signature (e.g., because a specific capability key flag is required). The qualification typically emerges via a self-signature on the key itself.</p>
+<p>In short, a chain of valid signatures from the signature itself to the primary key of the issuer certificate needs to be established.</p>
+<p>For example, a subkey may issue a data signature over an email body only if that subkey is validly bound to the issuer’s certificate via a subkey binding signature. That binding signature needs to contain a <em>key flags</em> subpacket that marks the subkey as <em>signing</em> capable.
+Similarly, certification signatures over third-party certificates require the issuer key to carry a valid self-signature with the <em>certification</em> key flag.</p>
+<p>Self-qualifying signatures have no such limitations.</p>
+<p>For example, a certificate consisting only of a primary key and a single key-revocation self-signature contains everything needed to verify the revocation, as key-revocation self-signatures are self-qualifying.
+This construct is referred to as a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-v6-revocation-certi">revocation certificate</a>.</p>
+<p>On the other hand, to verify a data signature over a text document, an implementation needs to verify not only the data signature itself, but also the binding signature (and back-signature) of the signing subkey which qualifies the signing subkey.</p>
+<figure class="align-default" id="fig-signature-verification-signature-tree">
+<img alt="Depicts a diagrammatic representation of a certificate and a data signature. Arrows between the primary key and other components of the certificate show, how signatures bind the certificate together. In this example, they form a tree of signatures, which all need to be verified in order for the data signature to be valid." src="_images/09-sigtree.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 23 </span><span class="caption-text">Tree of signatures that qualify a data signature</span><a class="headerlink" href="#fig-signature-verification-signature-tree" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="revocations">
+<h2><span class="section-number">9.6. </span>Revocations<a class="headerlink" href="#revocations" title="Link to this heading">¶</a></h2>
+<p>A signature can be <em>disqualified</em> by the presence of a revocation signature.</p>
+<p>Revocations can be limited in scope, e.g., a subkey-revocation signature only revokes a single subkey.
+Moreover, revocations can also be constrained to a certain validity period by including a soft revocation reason and expiration time in the revocation signature.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>Give guidance which revocations need to be considered for different types of signatures</p>
+</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="unknown-critical" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Note that this implies that a signature might be considered valid by one implementation and be rejected by another, based on the set of subpackets and notations each implementation is aware of.</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signing_components.html" title="Previous document"><span class="section-number">8. </span>Signatures on components</a>
+        </li>
+        <li>
+          <a href="encryption.html" title="Next document"><span class="section-number">10. </span>Encryption</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">9. Signature verification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#when-are-signatures-valid">9.1. When are signatures valid?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#well-formedness-of-signatures">9.2. Well-formedness of signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#temporal-validity">9.3. Temporal validity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#self-qualifying-and-non-self-qualifying-signatures">9.4. Self-qualifying and non-self-qualifying signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#signature-qualification">9.5. Signature qualification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#revocations">9.6. Revocations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="signing_components.html" title="previous chapter"><span class="section-number">8. </span>Signatures on components</a></li>
+      <li>Next: <a href="encryption.html" title="next chapter"><span class="section-number">10. </span>Encryption</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>19. Advanced material: Private keys &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="20. Advanced material: Signatures" href="signatures.html" />
+    <link rel="prev" title="18. Advanced material: Certificates" href="certificates.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="certificates.html" title="Previous document"><span class="section-number">18. </span>Advanced material: Certificates</a>
+        </li>
+        <li>
+          <a href="signatures.html" title="Next document"><span class="section-number">20. </span>Advanced material: Signatures</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="advanced-material-private-keys">
+<h1><span class="section-number">19. </span>Advanced material: Private keys<a class="headerlink" href="#advanced-material-private-keys" title="Link to this heading">¶</a></h1>
+<section id="private-keystores">
+<span id="key-store-design"></span><h2><span class="section-number">19.1. </span>Private keystores<a class="headerlink" href="#private-keystores" title="Link to this heading">¶</a></h2>
+<p>This section examines the diverse architectures and operational mechanics of private keystores in OpenPGP. It focuses on the various design choices, their functional implications, and how they contribute to the secure management of private key material.</p>
+<section id="design-variations">
+<h3><span class="section-number">19.1.1. </span>Design variations<a class="headerlink" href="#design-variations" title="Link to this heading">¶</a></h3>
+<p>The design of private key subsystems within the OpenPGP framework varies, offering different approaches to cryptographic operations:</p>
+<ol class="arabic simple">
+<li><p><strong>Separate backend operations</strong>: Some designs execute the primitive cryptographic operations in a separate backend, using only the cryptographic key material. This approach is particularly compatible with general purpose hardware cryptographic devices, such as <a class="reference external" href="https://en.wikipedia.org/wiki/Trusted_Platform_Module">trusted platform modules (TPMs)</a>.</p></li>
+<li><p><strong>Component key-based systems</strong>: An OpenPGP private key subsystem may be built around component keys, specifically the content of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats">Secret-Key packets</a>. These packets contain metadata that is required for some operations. ECDH operations, in particular, require metadata as KDF parameters.</p></li>
+<li><p><strong>Full transferable secret keys</strong>: Some designs maintain copies of full TSKs in the private key subsystem, leveraging these for private key operations.</p></li>
+</ol>
+<p>While private keystore operations require component keys, they do not require access to the entire OpenPGP certificate.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The third design option, involving the storage of full TSKs in the private key subsystem, can cause “split brain” problems.</p>
+<p>For example, a private keystore might contain a TSK with outdated certificate metadata, marking the certificate as expired, while the updated version in the local public keystore could indicate an extended expiration time.</p>
+<p>This problem was notably present in GnuPG 1.x, which held separate TSK copies in its private store component. Similarly, the current design of Thunderbird’s OpenPGP subsystem can lead to users experiencing such issues.</p>
+</div>
+</section>
+<section id="two-tier-architecture">
+<h3><span class="section-number">19.1.2. </span>Two-tier architecture<a class="headerlink" href="#two-tier-architecture" title="Link to this heading">¶</a></h3>
+<p>At its core, an OpenPGP private key subsystem performs operations requiring only the private cryptographic key material, akin to the “separate backend operations” model described above.</p>
+<p>However, the subsystem also supports operations that require additional access to the metadata of the component key. These operations, supplementary to the core keystore operations, do not involve the private key material.</p>
+<p>When implementing a keystore based on hardware cryptographic devices like <a class="reference internal" href="../private_keys.html#card-priv"><span class="std std-ref">OpenPGP card</span></a>, its design will consist of two layers:</p>
+<ul class="simple">
+<li><p><strong>core layer</strong>: directly handles private key material, and</p></li>
+<li><p><strong>supplementary layer</strong>: performs additional cryptographic operations that don’t directly use the private key material, such as <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc3394.html">AES key wrap</a> for ECDH.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The decryption process using ECC algorithms, especially ECDH, has multiple steps. The initial step, potentially performed by devices such as OpenPGP cards, directly uses private key material to produce a “shared secret.” Following this, operations like <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-ec-dh-algorithm-ecdh">“AES key unwrap”</a> are conducted in software outside the hardware device.</p>
+<p>Further details on this process can be found in the “Advanced Encryption Standard (AES) Key Wrap Algorithm” <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc3394.html">RFC 3394</a>.</p>
+</div>
+</section>
+<section id="addressing-individual-keys">
+<h3><span class="section-number">19.1.3. </span>Addressing individual keys<a class="headerlink" href="#addressing-individual-keys" title="Link to this heading">¶</a></h3>
+<p>A critical aspect of private keystore design involves determining how users address individual keys.</p>
+<p>One common method is using the fingerprint of each component key. The availability of these fingerprints, however, depends on the underlying technology of the keystore. For instance, in software-based private keystores or OpenPGP cards, fingerprints of component keys are usually readily available. Keystores relying on generic cryptographic hardware, like TPMs, need to implement their own mechanisms for tracking and managing the fingerprints of each key.</p>
+</section>
+<section id="additional-keystore-duties">
+<h3><span class="section-number">19.1.4. </span>Additional keystore duties<a class="headerlink" href="#additional-keystore-duties" title="Link to this heading">¶</a></h3>
+<p>In addition to key management, a keystore often involves various supplementary functions:</p>
+<ul class="simple">
+<li><p><strong>Tracking devices</strong>: Keystores may track which devices contain particular component keys.</p></li>
+<li><p><strong>Handling secrets</strong>: This involves the management of sensitive information such as passphrases for software keys or PINs for OpenPGP cards.</p></li>
+<li><p><strong>User interaction alerts</strong>: Keystores might also need to prompt users for necessary interactions during certain operations. For example, OpenPGP cards may require user touch confirmation to authorize each cryptographic action.</p></li>
+</ul>
+</section>
+</section>
+<section id="understanding-key-overwriting-ko-attacks">
+<h2><span class="section-number">19.2. </span>Understanding key overwriting (KO) attacks<a class="headerlink" href="#understanding-key-overwriting-ko-attacks" title="Link to this heading">¶</a></h2>
+<section id="what-they-are">
+<h3><span class="section-number">19.2.1. </span>What they are<a class="headerlink" href="#what-they-are" title="Link to this heading">¶</a></h3>
+<p>OpenPGP is subject to specific vulnerabilities known as key overwriting (KO) attacks. These attacks exploit weaknesses in how encrypted private keys or their metadata are handled, potentially leading to the leakage of secret data when the key is used. The core issue lies in OpenPGP’s handling of Secret-Key packets, where corruption of the non-encrypted fields can cause the unaltered private key material to be used with altered parameters. This mismatch can result in private key leakage.</p>
+<p>Importantly, KO attacks are particularly relevant when an attacker is responsible for storing a user’s encrypted private key. By altering the algorithm field in the Secret-Key packet, the attacker may cause the user to perform a cryptographic operation with a different algorithm. E.g., performing a DSA operation with ECC private key material. By observing the output of that attacker-corrupted operation, the attacker can recover the user’s unencrypted private key material, even though the attacker had no direct access to it.</p>
+</section>
+<section id="mitigation">
+<h3><span class="section-number">19.2.2. </span>Mitigation<a class="headerlink" href="#mitigation" title="Link to this heading">¶</a></h3>
+<p>Understanding KO attacks is crucial due to their potential to compromise the integrity and confidentiality of encrypted communications, and the risk of complete private key material compromise. KO attacks highlight the necessity for robust key validation procedures and the dangers of storing keys in insecure environments. OpenPGP application developers should consider if this attack class is a concern in their applications.</p>
+<p>Private keys that are protected with <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption">S2K usage mode 253 (AEAD)</a>, are not vulnerable to KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields (including the algorithm field) as the <em>authentication tag</em> for integrity verification in the decryption process. When an attacker alters the unencrypted part of the packet, then decryption of the private key material will fail, and the user is prevented from e.g. accidentally using the key material with an altered attacker-controlled algorithm.</p>
+<p>Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (also see <a class="reference internal" href="../migration.html#migration-s2k"><span class="std std-ref">S2K usage mode AEAD</span></a>).</p>
+<section id="resources">
+<h4><span class="section-number">19.2.2.1. </span>Resources<a class="headerlink" href="#resources" title="Link to this heading">¶</a></h4>
+<p>For comprehensive information on KO attacks, including background, attack vectors, countermeasures, and technical analyses, visit <a class="reference external" href="https://www.kopenpgp.com/">KOpenPGP.com</a>. It is based on the paper “Victory by KO: Attacking OpenPGP Using Key Overwriting” written by Lara Bruseghini, Daniel Huigens, and Kenneth G. Paterson for the Proceedings of ACM Conference on Computer and Communications Security, Los Angeles, November 2022.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="certificates.html" title="Previous document"><span class="section-number">18. </span>Advanced material: Certificates</a>
+        </li>
+        <li>
+          <a href="signatures.html" title="Next document"><span class="section-number">20. </span>Advanced material: Signatures</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">19. Advanced material: Private keys</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#private-keystores">19.1. Private keystores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understanding-key-overwriting-ko-attacks">19.2. Understanding key overwriting (KO) attacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="certificates.html" title="previous chapter"><span class="section-number">18. </span>Advanced material: Certificates</a></li>
+      <li>Next: <a href="signatures.html" title="next chapter"><span class="section-number">20. </span>Advanced material: Signatures</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

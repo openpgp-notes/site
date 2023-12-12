@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>21. Advanced material: Signatures over data &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="22. Advanced material: Signatures on components" href="signing_components.html" />
+    <link rel="prev" title="20. Advanced material: Signatures" href="signatures.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signatures.html" title="Previous document"><span class="section-number">20. </span>Advanced material: Signatures</a>
+        </li>
+        <li>
+          <a href="signing_components.html" title="Next document"><span class="section-number">22. </span>Advanced material: Signatures on components</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="advanced-material-signatures-over-data">
+<h1><span class="section-number">21. </span>Advanced material: Signatures over data<a class="headerlink" href="#advanced-material-signatures-over-data" title="Link to this heading">¶</a></h1>
+<section id="nesting-of-one-pass-signatures">
+<h2><span class="section-number">21.1. </span>Nesting of one-pass signatures<a class="headerlink" href="#nesting-of-one-pass-signatures" title="Link to this heading">¶</a></h2>
+<p>Signing a message using the one-pass mechanism involves prepending a <em>One-Pass-Signature</em> (OPS) packet to the message and appending the corresponding signature, sandwiching the signed content.</p>
+<p>An OpenPGP message can contain multiple signatures added that way.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One-Pass-Signatures are nested, meaning the outermost One-Pass-Signature packet corresponds to the outermost signature packet.</p>
+</div>
+<p>When a message is signed, the signature is always calculated over the contents of the literal data packet, not the literal data packet itself.
+This means, that if a message, which is compressed using a compressed data packet is wrapped using a one-pass-signature, the signature is still being calculated over the plaintext inside the literal data packet.</p>
+<p>There is one exception though.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Of course there is.</p>
+</div>
+<p>The OPS packet has a “nested” flag<a class="footnote-reference brackets" href="#nested-flag" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, which can either be <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>.
+If this flag is set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, it indicates that further OPSs will follow this packet, which are calculated over the same plaintext data as this OPS is. A value of <code class="docutils literal notranslate"><span class="pre">1</span></code> indicates, that either no further OPS packets will follow (this OPS is the last), or that this OPS is calculated over the the usual plaintext data, but wrapped inside any OPS+Signature combinations that follow this OPS.</p>
+<p>This mechanism enables attested signatures, where the signer signs an already one-pass-signed message including the already contained signature.</p>
+<p>As a practical example, consider the following notation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span></code> represents a literal data packet with the content <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COMP(XYZ)</span></code> represents a compressed data packet over some other packet <code class="docutils literal notranslate"><span class="pre">XYZ</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OPS₁</span></code> represents a one-pass-signature packet with the nested flag set to <code class="docutils literal notranslate"><span class="pre">1</span></code>. Analogous, <code class="docutils literal notranslate"><span class="pre">OPS₀</span></code> has the nested flag set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SIG</span></code> represents a signature packet.</p></li>
+</ul>
+<p>A normal, one-pass-signed message looks like this:
+<code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span></code></p>
+<p>Here, the signature is calculated over the plaintext <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>, as is it in a message that has the following form: <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">COMP(LIT(&quot;Hello</span> <span class="pre">World&quot;))</span> <span class="pre">SIG</span></code>.</p>
+<p>A message, where multiple one-pass-signatures are calculated over the same plaintext looks the following:
+<code class="docutils literal notranslate"><span class="pre">OPS₀</span> <span class="pre">OPS₀</span> <span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span> <span class="pre">SIG</span> <span class="pre">SIG</span></code></p>
+<p>All three signatures are calculated over the same plaintext <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>.</p>
+<p>Now, a message, where the signer attests an already signed message has the following format:
+<code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span> <span class="pre">SIG</span></code></p>
+<p>While the inner signature is calculated over the usual plaintext <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>, the outer signature is instead calculated over <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">Hello</span> <span class="pre">World</span> <span class="pre">SIG</span></code>.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="nested-flag" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1">description of the nested flag</a>.</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signatures.html" title="Previous document"><span class="section-number">20. </span>Advanced material: Signatures</a>
+        </li>
+        <li>
+          <a href="signing_components.html" title="Next document"><span class="section-number">22. </span>Advanced material: Signatures on components</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">21. Advanced material: Signatures over data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nesting-of-one-pass-signatures">21.1. Nesting of one-pass signatures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="signatures.html" title="previous chapter"><span class="section-number">20. </span>Advanced material: Signatures</a></li>
+      <li>Next: <a href="signing_components.html" title="next chapter"><span class="section-number">22. </span>Advanced material: Signatures on components</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

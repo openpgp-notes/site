@@ -1,0 +1,157 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Advanced material: Signatures on components
+
+## Certification recipes
+
+Different {term}`signatures<OpenPGP Signature Packet>` in OpenPGP serve various specific purposes. This section provides practical guidance on creating these {term}`signatures<OpenPGP Signature Packet>`, illustrating each with concrete examples.
+
+(change_algorithm_preferences)=
+### Change algorithm preferences
+
+To modify the preferred {term}`symmetric<Symmetric Cryptography>`, compression, {term}`hash<Hash Function>`, or {term}`AEAD algorithms<Authenticated Encryption With Associated Data>` for a {term}`key<Transferable Secret Key>`, the {term}`key owner<Certificate Holder>` needs to issue a {term}`direct key signature` ({term}`type ID<Signature Type ID>` `0x1F`) on the {term}`primary key<OpenPGP Primary Key>`.
+
+This {term}`signature<OpenPGP Signature Packet>` should have the following structure:
+
+| {term}`Subpacket<OpenPGP Signature Subpacket>`                                              | Area                        | {term}`Critical<Criticality Flag>`       | Mandatory            | Notes                                                                                  |
+|---------------------------------------------------------------------------------------------|-----------------------------|------------------------------------------|----------------------|----------------------------------------------------------------------------------------|
+| {term}`Signature Creation Time<Signature Creation Time Subpacket>`                          | {term}`Hashed<Hashed Area>` | True                                     | True                 | Current time                                                                           |
+| {term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`                                    | {term}`Hashed<Hashed Area>` | True or False                            | Strongly Recommended | The {term}`primary key` is the {term}`issuer`                                          |
+| {term}`Key Flags<Key Flag>`                                                                 | {term}`Hashed<Hashed Area>` | True                                     | False                | Retain {term}`key flags<Key Flag>` from the previous {term}`self-signature`            |
+| {term}`Features<Features Subpacket>`                                                        | {term}`Hashed<Hashed Area>` | True                                     | False                | Retain {term}`features<Features Subpacket>` from the previous {term}`self-signature`   |
+| {term}`Key Expiration Time<Key Expiration Time Subpacket>`                                  | {term}`Hashed<Hashed Area>` | True                                     | False                | Retain {term}`expiration time` from the previous {term}`self-signature`, if applicable |
+| {term}`Hash Algorithm Preferences<Preferred Hash Algorithms Subpacket>`                     | {term}`Hashed<Hashed Area>` | False                                    | False                | New {term}`preferences<Algorithm Preferences>`                                         |
+| {term}`Compression Algorithm Preferences<Preferred Compression Algorithms Subpacket>`       | {term}`Hashed<Hashed Area>` | False                                    | False                | New {term}`preferences<Algorithm Preferences>`                                         |
+| {term}`Symmetric Algorithm Preferences<Preferred Symmetric Ciphers for v1 SEIPD Subpacket>` | {term}`Hashed<Hashed Area>` | False                                    | False                | New {term}`preferences<Algorithm Preferences>`                                         |
+| {term}`AEAD Algorithm Preferences<Preferred AEAD Ciphersuites Subpacket>`                   | {term}`Hashed<Hashed Area>` | False                                    | False                | New {term}`preferences<Algorithm Preferences>`                                         |
+
+### Change expiration time
+
+To adjust the {term}`expiration time` of an {term}`OpenPGP certificate`, a new *{term}`DirectKey<Direct Key Signature>`* {term}`signature<OpenPGP Signature Packet>` ({term}`type ID<Signature Type ID>` `0x1F`) with a modified {term}`Key Expiration Time subpacket` must be issued. The structure of this {term}`signature<OpenPGP Signature Packet>` is identical to the one outlined in the previous section on changing {term}`algorithm preferences`.
+
+Additionally, the {term}`expiration time` can be altered for individual {term}`User IDs<User ID>` (detailed below) or separate {term}`subkeys<OpenPGP Subkey>` (see {numref}`bind_subkey`).
+
+### Add User ID
+
+To {term}`bind<Binding>` a {term}`User ID` to an {term}`OpenPGP certificate` a {term}`certification signature<Certification>` ({term}`type ID<Signature Type ID>` `0x10`-`0x13`) is used which should have the following structure:
+
+| {term}`Subpacket<OpenPGP Signature Subpacket>`                         | Area                        | {term}`Critical<Criticality Flag>`       | Mandatory            | Notes                                                                               |
+|------------------------------------------------------------------------|-----------------------------|------------------------------------------|----------------------|-------------------------------------------------------------------------------------|
+| {term}`Signature Creation Time<Signature Creation Time Subpacket>`     | {term}`Hashed<Hashed Area>` | True                                     | True                 | Current time                                                                        |
+| {term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`               | {term}`Hashed<Hashed Area>` | True or False                            | Strongly Recommended | The {term}`primary key<OpenPGP Primary Key>` is the {term}`issuer`                  |
+| {term}`Primary User ID<Primary User ID Subpacket>`                     | {term}`Hashed<Hashed Area>` | True                                     | False                | Optional                                                                            |
+| {term}`Signature Expiration Time<Signature Expiration Time Subpacket>` | {term}`Hashed<Hashed Area>` | True                                     | False                | Optional                                                                            |
+
+In addition to these {term}`subpackets<OpenPGP Signature Subpacket>`, {term}`self-certifications<Self-certification>` for {term}`User IDs<User ID>` can include others – such as {term}`key flags<Key Flag>`, {term}`features<Features Subpacket>`, and {term}`algorithm preferences` – as shown in the previous table. This enables the specification of unique capabilities and {term}`preferences<Algorithm Preferences>` for each {term}`identity` associated with the {term}`certificate<OpenPGP Certificate>`.
+
+### Remove or revoke a User ID
+
+Since {term}`OpenPGP certificates<OpenPGP certificate>` are often distributed by the means of {term}`key servers<Key Server>`, new {term}`signatures<OpenPGP Signature Packet>` on a {term}`certificate<OpenPGP Certificate>` are often "merged" into existing copies of the {term}`certificate<OpenPGP Certificate>` locally by the recipient.
+
+```{admonition} TODO
+:class: warning
+
+Link to the "Merging" section in chapter 4, once merged.
+```
+
+This integration process means it is practically impossible to directly remove {term}`signatures<OpenPGP Signature Packet>` or {term}`User IDs<User ID>` from a {term}`certificate<OpenPGP Certificate>`, as there is no way to communicate the intention of {term}`packet<OpenPGP Signature Packet>` deletion to the recipient.
+
+To effectively mark a {term}`User ID` as invalid, the user can publish a copy of their {term}`certificate<OpenPGP Certificate>` with a {term}`Certification Revocation signature<Certification Revocation Signature Packet>` ({term}`type ID<Signature Type ID>` `0x30`) attached to the invalidated {term}`User ID`. This {term}`signature<OpenPGP Signature Packet>` signals that the specified {term}`User ID` is no longer valid or associated with the {term}`certificate holder`.
+
+The structure of a {term}`Certification Revocation signature<Certification Revocation Signature Packet>` is as follows:
+
+| {term}`Subpacket<OpenPGP Signature Subpacket>`                     | Area                        | {term}`Critical<Criticality Flag>`       | Mandatory            | Notes                                                                               |
+|--------------------------------------------------------------------|-----------------------------|------------------------------------------|----------------------|-------------------------------------------------------------------------------------|
+| {term}`Signature Creation Time<Signature Creation Time Subpacket>` | {term}`Hashed<Hashed Area>` | True                                     | True                 | Current time                                                                        |
+| {term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`           | {term}`Hashed<Hashed Area>` | True or False                            | Strongly Recommended | The {term}`primary key<OpenPGP Primary Key>` is the {term}`issuer`                  |
+| {term}`Reason for Revocation<Reason for Revocation Subpacket>`     | {term}`Hashed<Hashed Area>` | True                                     | False                | Determines {term}`soft<Soft Revocation>` or {term}`hard revocation`                 |
+
+For {term}`User ID` {term}`revocations<Revocation>`, the *{term}`Reason for Revocation<Reason for Revocation Subpacket>`* {term}`subpacket<OpenPGP Signature Subpacket>` is crucial. A value of `0` means no specific reason, leading to a {term}`hard revocation`, while `32` indicates the {term}`User ID` is no longer valid, resulting in a {term}`soft revocation`. Omitting the {term}`reason subpacket<Reason For Revocation Subpacket>` is also equivalent to a {term}`hard revocation`.
+
+It is generally advisable to use reason code `32` for revoking {term}`User IDs<User ID>`.
+
+(binding_subkeys)=
+### Add a subkey
+
+As part of {term}`life-cycle management`, users may need to add a new {term}`subkey<OpenPGP Subkey>` to their {term}`OpenPGP certificate`, often for reasons such as upgrading to a {term}`subkey<OpenPGP Subkey>` with more advanced cryptographic algorithms. The process involves creating a specific {term}`signature<OpenPGP Signature Packet>` structure:
+
+| {term}`Subpacket<OpenPGP Signature Subpacket>`                                              | Area                        | {term}`Critical<Criticality Flag>`       | Mandatory                                                               | Notes                                                                                                                                                                     |
+|---------------------------------------------------------------------------------------------|-----------------------------|------------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| {term}`Signature Creation Time<Signature Creation Time Subpacket>`                          | {term}`Hashed<Hashed Area>` | True                                     | True                                                                    | Current time                                                                                                                                                              |
+| {term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`                                    | {term}`Hashed<Hashed Area>` | True or False                            | Strongly Recommended                                                    | The {term}`primary key<OpenPGP Primary Key>` is the {term}`issuer`                                                                                                        |
+| {term}`Key Flags<Key Flag>`                                                                 | {term}`Hashed<Hashed Area>` | True                                     | Strongly Recommended                                                    | Determine the usage of the {term}`key<OpenPGP Subkey>`                                                                                                                    |
+| {term}`Key Expiration Time<Key Expiration Time Subpacket>`                                  | {term}`Hashed<Hashed Area>` | True                                     | False                                                                   | Specifies the {term}`expiration time` of the {term}`subkey<OpenPGP Subkey>`                                                                                               |
+| {term}`Embedded Signature<Embedded Signature Subpacket>`                                    | {term}`Hashed<Hashed Area>` | True                                     | If {term}`Key Flags<Key Flag>` contains **{term}`S<Signing Key Flag>`** | {term}`Signing subkeys<OpenPGP Signing Subkey>` require embedded *{term}`Primary Key Binding<Primary Key Binding Signature>`* {term}`signature<OpenPGP Signature Packet>` |
+| {term}`Hash Algorithm Preferences<Preferred Hash Algorithms Subpacket>`                     | {term}`Hashed<Hashed Area>` | False                                    | False                                                                   | Per {term}`key<Component Key>` {term}`preferences<Algorithm Preferences>`                                                                                                 |
+| {term}`Compression Algorithm Preferences<Preferred Compression Algorithms Subpacket>`       | {term}`Hashed<Hashed Area>` | False                                    | False                                                                   | Per {term}`key<Component Key>` {term}`preferences<Algorithm Preferences>`                                                                                                 |
+| {term}`Symmetric Algorithm Preferences<Preferred Symmetric Ciphers for v1 SEIPD Subpacket>` | {term}`Hashed<Hashed Area>` | False                                    | False                                                                   | Per {term}`key<Component Key>` {term}`preferences<Algorithm Preferences>`                                                                                                 |
+| {term}`AEAD Algorithm Preferences<Preferred AEAD Ciphersuites Subpacket>`                   | {term}`Hashed<Hashed Area>` | False                                    | False                                                                   | Per {term}`key<Component Key>` {term}`preferences<Algorithm Preferences>`                                                                                                 |
+
+In addition to these {term}`subpackets<OpenPGP Signature Subpacket>`, users can specify {term}`algorithm preferences` for each {term}`subkey<OpenPGP Subkey>`, distinct from those set in the {term}`certificate<OpenPGP Certificate>`'s *{term}`Direct Key<Direct Key Signature>`* {term}`signature<OpenPGP Signature Packet>`.
+
+### Revoke a subkey
+
+{term}`Subkeys<OpenPGP subkey>`, like {term}`User IDs<User ID>`, can be individually revoked in OpenPGP.
+This is done by issuing a {term}`Subkey Revocation signature<Subkey Revocation Signature Packet>` ({term}`type ID<Signature Type ID>` `0x28`) using the {term}`primary key<OpenPGP Primary Key>`.
+
+The structure of such a {term}`signature<OpenPGP Signature Packet>` is straightforward:
+
+| {term}`Subpacket<OpenPGP Signature Subpacket>`                     | Area                        | {term}`Critical<Criticality Flag>`       | Mandatory            | Notes                                                                               |
+|--------------------------------------------------------------------|-----------------------------|------------------------------------------|----------------------|-------------------------------------------------------------------------------------|
+| {term}`Signature Creation Time<Signature Creation Time Subpacket>` | {term}`Hashed<Hashed Area>` | True                                     | True                 | Current time                                                                        |
+| {term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`           | {term}`Hashed<Hashed Area>` | True or False                            | Strongly Recommended | The {term}`primary key<OpenPGP Primary Key>` is the {term}`issuer`                  |
+| {term}`Reason for Revocation<Reason For Revocation Subpacket>`     | {term}`Hashed<Hashed Area>` | True                                     | False                | Determines {term}`soft<Soft Revocation>` or {term}`hard revocation`                 |
+
+
+In {term}`Subkey Revocation signatures<Subkey Revocation Signature Packet>`, the [reason for revocation](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation) {term}`subpacket<OpenPGP Signature Subpacket>` can only have values in the range of `0-3`. The values `1` ({term}`key<OpenPGP Subkey>` superseded) and `3` ({term}`key<OpenPGP Subkey>` retired and no longer used) indicate {term}`soft revocations<Soft Revocation>`, whereas values `0` (no reason) and `2` ({term}`key<OpenPGP Subkey>` compromised) indicate {term}`hard revocations<Hard Revocation>`.
+
+Note that a value of `32` is not applicable in these {term}`signatures<OpenPGP Signature Packet>`.
+
+```{admonition} TODO
+:class: warning
+
+Research and explain hardness in the context of subkey revocations. What does a hard subkey revocation express concretely?
+```
+
+### Revoke a certificate
+
+Users may find themselves needing to revoke their entire {term}`OpenPGP certificate`, rendering it unusable. This could be for various reasons, such as migrating to a new {term}`certificate<OpenPGP certificate>` or in response to a compromise of the {term}`certificate<OpenPGP certificate>`'s {term}`secret key material<Private Key Material>`.
+
+While a {term}`soft-revoked<Soft Revocation>` {term}`certificate<OpenPGP Certificate>` can be re-validated at a later time with a new {term}`certification`, a {term}`hard revocation` is permanent.
+
+The recommended way to {term}`revoke<Revocation>` a {term}`certificate<OpenPGP Certificate>` is by issuing a {term}`Key Revocation signature<Key Revocation Signature Packet>` ({term}`type ID<Signature Type ID>` `0x20`). Its structure is similar to that of a {term}`Certification Revocation signature<Certification Revocation Signature Packet>`.
+
+| {term}`Subpacket<OpenPGP Signature Subpacket>`                     | Area                        | {term}`Critical<Criticality Flag>`       | Mandatory            | Notes                                                                               |
+|--------------------------------------------------------------------|-----------------------------|------------------------------------------|----------------------|-------------------------------------------------------------------------------------|
+| {term}`Signature Creation Time<Signature Creation Time Subpacket>` | {term}`Hashed<Hashed Area>` | True                                     | True                 | Current time                                                                        |
+| {term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`           | {term}`Hashed<Hashed Area>` | True or False                            | Strongly Recommended | The {term}`primary key<OpenPGP Primary Key>` is the {term}`issuer`                  |
+| {term}`Reason for Revocation<Reason For Revocation Subpacket>`     | {term}`Hashed<Hashed Area>` | True                                     | False                | Determines {term}`soft<Soft Revocation>` or {term}`hard revocation`                 |
+
+For {term}`Key Revocation signatures<Key Revocation Signature Packet>`, the guidelines regarding the [*Reason for Revocation* subpacket](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation) are the same as those for {term}`Subkey Revocation signatures<Subkey Revocation Signature Packet>`.
+
+### Common subpackets in OpenPGP signatures
+
+In OpenPGP, certain {term}`subpackets<OpenPGP Signature Subpacket>` are universally expected across all types of {term}`signatures<OpenPGP Signature Packet>`, serving fundamental roles in the {term}`signature<OpenPGP Signature Packet>`'s structure, {term}`verification` and {term}`validation`:
+
+* **{term}`Signature Creation Time<Signature Creation Time Subpacket>`**: This is a mandatory {term}`subpacket<OpenPGP Signature Subpacket>` in every {term}`OpenPGP signature<OpenPGP Signature Packet>`. It contains the timestamp of when the {term}`signature<OpenPGP Signature Packet>` was created. For security and integrity, this {term}`subpacket<OpenPGP Signature Subpacket>` must be located in the {term}`hashed area` of the {term}`signature<OpenPGP Signature Packet>` and is recommended to be marked as {term}`critical<Criticality Flag>`.
+
+* **{term}`Issuer Fingerprint<Issuer Fingerprint Subpacket>`**: Essential for {term}`signature<OpenPGP Signature Packet>` {term}`validation`, this {term}`subpacket<OpenPGP Signature Subpacket>` identifies the {term}`key<OpenPGP Primary Key>` (or {term}`subkey<OpenPGP Subkey>`) that was used to create the {term}`signature<OpenPGP Signature Packet>`. OpenPGP v6 {term}`signatures<OpenPGP Signature Packet>` should include the {term}`Issuer Fingerprint subpacket`, containing the 32-byte {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`key<Component Key>`.
+
+```{note}
+The {term}`key<Component Key>` used as the {term}`issuer` in the {term}`signature<OpenPGP Signature Packet>` might be a {term}`subkey<OpenPGP Subkey>` of the {term}`certificate<OpenPGP Certificate>`.
+```
+
+These {term}`subpackets<OpenPGP Signature Subpacket>` can be placed in either the {term}`hashed<Hashed Area>` or {term}`unhashed area` due to its self-{term}`authenticating<Authentication>` nature. However, we recommend including them in the {term}`signature<OpenPGP Signature Packet>`'s {term}`hashed area`.
+
+## Managing subpacket conflicts and duplication
+
+In {term}`OpenPGP signatures<OpenPGP Signature Packet>`, both the {term}`hashed<Hashed Area>` and {term}`unhashed areas<Unhashed Area>` are composed of lists of {term}`subpackets<OpenPGP Signature Subpacket>`. Inherently, this structure permits the duplication of the same {term}`subpacket<OpenPGP Signature Subpacket>`, which could lead to conflicts. To manage these potential conflicts, the following strategies are used:
+
+- **Precedence of {term}`hashed area`**: {term}`Subpackets<OpenPGP Signature Subpacket>` within the {term}`hashed area` of a {term}`signature<OpenPGP Signature Packet>` take precedence over those in the {term}`unhashed area`. This hierarchy helps resolve conflicts when the same {term}`subpacket<OpenPGP Signature Subpacket>` appears in both areas.
+
+- **Handling conflicts within the same area**: Conflicts can still arise within the same area, such as when two {term}`subpackets<OpenPGP Signature Subpacket>` have different {term}`expiration times<Expiration Time>`. In such cases, the [OpenPGP specification](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-notes-on-subpackets) advises that {term}`implementations<OpenPGP Implementation>` should favor the last occurrence of a conflicting {term}`subpacket<OpenPGP Signature Subpacket>` in the {term}`hashed area`.
+
+In certain scenarios, having duplicate {term}`subpackets<OpenPGP Signature Subpacket>` with conflicting content is logical and even necessary. For example, consider a {term}`signature<OpenPGP Signature Packet>` created by a version 4 {term}`issuer` {term}`key<Component Key>`, which was upgraded from an older OpenPGP version (like v3). Since the {term}`key ID` calculation scheme changed from v3 to v4, the identifiers for the same {term}`key<Component Key>` would differ between these versions. Therefore, a v4 signature might contain two {term}`issuer key ID subpackets<Issuer Fingerprint Subpacket>`, each with different, yet correct values for v3 and v4 {term}`keys<Component Key>`, respectively. This allows for backward compatibility and ensures the {term}`signature<OpenPGP Signature Packet>` can be {term}`validated<Validation>` under both {term}`key ID` calculation schemes.

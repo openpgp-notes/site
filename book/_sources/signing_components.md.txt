@@ -1,0 +1,283 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Signatures on components
+
+This chapter examines {term}`OpenPGP signatures<OpenPGP Signature Packet>` associated with {term}`certificate components<Component>`, applying to: 
+
+- {term}`component keys<Component Key>`, encompassing {term}`primary keys<OpenPGP Primary Key>` and {term}`subkeys<OpenPGP Subkey>`
+- {term}`identity components<Identity Component>`, namely {term}`User IDs<User ID>` and {term}`User attributes<User attribute>`
+
+{term}`Signatures on components<Signature On Component>` are used to construct and maintain {term}`certificates<OpenPGP Certificate>`, and to model the {term}`authentication` of {term}`identities<Identity>`.
+
+This chapter expands on topics introduced in the [](certificates) chapter.
+
+## Self-signatures vs third-party signatures
+
+{term}`Component signatures<Signature On Component>` in OpenPGP are categorized into two distinct types:
+
+- **{term}`self-signatures<Self-Signature>`**, which are issued by the {term}`certificate holder`  using the {term}`certificate<OpenPGP Certificate>`'s {term}`primary key<OpenPGP Primary Key>`
+- **{term}`third-party signatures<Third-party Signature>`**, which are issued by an external entity, not the {term}`certificate holder`
+
+(self-signatures)=
+### Self-signatures
+
+{term}`Self-signatures<Self-signature>` are fundamental in creating and managing {term}`OpenPGP certificates<OpenPGP Certificate>`. They bind the various {term}`components<Component>` of a {term}`certificate<OpenPGP Certificate>` into one combined data structure and facilitate the {term}`certificate<OpenPGP Certificate>`'s {term}`life-cycle management`.
+
+{term}`Life-cycle management` operations include:
+
+- {term}`binding<Binding Signature>` additional {term}`components<Component>` to a {term}`certificate<OpenPGP Certificate>`
+- modifying {term}`expiration time` or other {term}`metadata` of `components<Component>`
+- revoking, and thus invalidating, {term}`components<Component>` or existing {term}`self-signatures<Self-signature>`
+
+{term}`Self-signatures<Self-signature>` are issued by the {term}`certificate's owner<Certificate Holder>` using the {term}`certificate<OpenPGP Certificate>`'s {term}`primary key<OpenPGP Primary Key>`.
+ 
+```{note}
+No [key flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags) is required to issue {term}`self-signatures<Self-signature>`. An {term}`OpenPGP primary key` can issue {term}`self-signatures<Self-signature>` by default.
+```
+
+### Third-party signatures
+
+{term}`Third-party signatures<Third-party Signature>` are pivotal in OpenPGP for decentralized {term}`authentication`, forming the basis of the {term}`Web of Trust`. They encode {term}`authentication`-related statements about {term}`certificates<OpenPGP Certificate>` and linked {term}`identities<Identity>`, establishing trustworthiness of {term}`identity claims<Identity Claim>`.
+
+Third-party signatures are used to make specific statements:
+
+- {term}`certifying<Certification>` {term}`identity claims<Identity Claim>`
+- {term}`delegating<Delegation>` {term}`authentication` decisions
+- {term}`revoking<Revocation>`, and thus {term}`invalidating<Validation>`, prior {term}`third-party signature` statements
+
+```{note}
+The **{term}`certify others<Certification Key Flag>`** [key flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags) (`0x01`) is required to issue {term}`third-party signatures<Third-party Signature>`. By convention[^primary-certification], only the {term}`certificate<OpenPGP Certificate>`'s {term}`primary key<OpenPGP Primary Key>` can hold this {term}`key flag`.
+```
+
+[^primary-certification]: Most current {term}`implementations<OpenPGP Implementation>` assume that only the {term}`primary key<OpenPGP Primary Key>` may hold the *{term}`certify others<Certification Key Flag>`* {term}`key flag`, although this is not specified in the {term}`RFC`.
+
+### Distinct functions of self-signatures and third-party signatures
+
+The meaning of an {term}`OpenPGP signature<OpenPGP Signature Packet>` depends significantly on its {term}`issuer`. {term}`Self-signatures<Self-signature>` and {term}`third-party signatures<Third-party Signature>`, even when of the same [signature type](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types), serve distinct functions. For example:
+
+- {term}`Certifying self-signatures<Certifying Self-signature>` ({term}`type IDs<Signature Type ID>` `0x10` - `0x13`) bind a {term}`User ID` to a {term}`certificate<OpenPGP Certificate>`.
+- {term}`Third-party signatures<Third-party Signature>` of the same {term}`type IDs<Signature Type ID>` endorse the {term}`authenticity<Authentication>` of a {term}`User ID` on another user's {term}`certificate<OpenPGP Certificate>`.
+
+In another instance:
+
+- *When issued as a {term}`self-signature`*, a [direct key signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-direct-key-signature-type-i) sets {term}`preferences<Algorithm Preferences>` and advertises {term}`features<Features Subpacket>` applicable to the entire {term}`certificate<OpenPGP Certificate>`.
+- *When issued by a {term}`third party<Third-party Signature>`*, especially when it carries a [trust signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-trust-signature) {term}`subpacket<OpenPGP Signature Subpacket>`, a similar {term}`direct key signature` {term}`delegates<Delegation>` trust to the signed {term}`certificate<OpenPGP Certificate>`. This may designate the signed {term}`certificate<OpenPGP Certificate>` as a {term}`trust anchor` within the {term}`issuer`'s {term}`Web of Trust`.
+
+(binding_sigs)=
+## Self-signatures in certificate formation and management
+
+{term}`Self-signatures<Self-signature>` play a crucial role in forming and managing the structure of {term}`OpenPGP certificates<OpenPGP certificate>`. These act as *{term}`binding signatures<Binding Signature>`*, joining {term}`components<Component>` and embedding {term}`metadata`.
+
+Internally, an {term}`OpenPGP certificate` is essentially a series of {term}`packets<Packet>` strung sequentially. When a {term}`certificate<OpenPGP Certificate>` is stored in a file format known as a [transferable public key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-transferable-public-keys), {term}`packets<Packet>` can be easily added or removed.
+
+To safeguard against unauthorized additions or alterations of {term}`components<Component>`, OpenPGP uses {term}`cryptographic signatures<Cryptographic Signature>`. These validate that all {term}`components<Component>`, such as {term}`subkeys<OpenPGP Subkey>` or [identity components](identity_components), were linked to the {term}`OpenPGP certificate` by its {term}`owner<Certificate Holder>`, using the {term}`primary key<OpenPGP Primary Key>`. While anyone can still store unrelated elements to a {term}`certificate<OpenPGP Certificate>` dataset, {term}`OpenPGP implementations<OpenPGP implementation>` will reject them if they lack a {term}`valid<Validation>` cryptographic connection with the {term}`certificate<OpenPGP Certificate>`.
+
+```{note}
+Conversely, omissions of {term}`packets<Packet>` by third parties can easily occur when handling an {term}`OpenPGP certificate` dataset. This could pose a challenge, for example, when an attacker deliberately omits {term}`revocation` {term}`packets<Packet>`. Without access to an alternative, complete {term}`certificate<OpenPGP Certificate>` source, recipients might not detect these omissions.
+```
+
+However, there are legitimate instances in which third parties add "unbound" {term}`packets<Packet>` (i.e., not signed by the {term}`certificate<OpenPGP Certificate>`'s {term}`owner<Certificate Holder>`) to a {term}`certificate<OpenPGP Certificate>`:
+
+- [Third-party certifications](third_party_cert) are often stored within the {term}`packet` data of the {term}`certificate<OpenPGP Certificate>` to which they are related. This is a standard practice that provides convenience for users by allowing easy access to all relevant {term}`certifications<Certification>`. (See {ref}`cert-flooding` for discussion of a related pitfall.)
+- {term}`OpenPGP software<OpenPGP Implementation>` may locally add [unbound identity data](unbound_user_ids) to a {term}`certificate<OpenPGP Certificate>`.
+
+(bind_subkey)=
+### Binding subkeys to a certificate
+
+{term}`Subkeys<OpenPGP Subkey>` are linked to {term}`OpenPGP certificates<OpenPGP certificate>` via a [subkey binding signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-subkey-binding) ({term}`type ID<Signature Type ID>` `0x18`). This {term}`signature type<OpenPGP Signature Type>` indicates the association of the {term}`primary key<OpenPGP Primary Key>` with the {term}`subkey<OpenPGP Subkey>`.
+
+A {term}`subkey binding signature` binds a {term}`subkey<OpenPGP Subkey>` to a {term}`primary key<OpenPGP Primary Key>`, and it embeds {term}`metadata` into the {term}`signature packet<OpenPGP Signature Packet>`. Once generated, the {term}`subkey binding signature` {term}`packet` is stored in the {term}`certificate<OpenPGP Certificate>` directly after the {term}`subkey<OpenPGP Subkey>` it binds.
+
+{term}`Subkeys<OpenPGP Subkey>` designated for signing purposes, identified by the *{term}`signing<Signing Key Flag>`* [key flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags), represent a unique category and are handled differently. See {numref}`bind_subkey_sign`.
+
+```{figure} plain_svg/subkey_binding_signature.svg
+:name: fig-subkey-binding-signature
+:alt: Depicts a diagram on white background with the title "Subkey binding signature". At the top left the symbol of a primary component key with certification capability is shown. At the bottom left the symbol of a component key with encryption capability is shown. The primary component key points at the lower component key with a full green arrow line. In the middle of the connection the small symbol of a signature packet is shown. On the right side of the diagram a detailed version of the signature packet can be found in a box with the title "Subkey binding signature". The text reads "Signature over Primary key, Subkey" and the box with "Signature metadata" contains the list "signature creation time", "key expiration time", "key flags" and "issuer fingerprint". The primary component key points at the detailed signature packet with a dotted green arrow line and the text "Primary key creates a subkey binding signature to bind the subkey to the primary key".
+
+Linking an {term}`OpenPGP subkey` to the {term}`primary key<OpenPGP Primary Key>` with a {term}`binding signature`
+```
+
+{term}`Metadata` for the {term}`subkey`, such as the [*key expiration time*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-expiration-subpacket) and {term}`capabilities<Capability>` set by [*key flags*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-flags), are included in {term}`subpackets<OpenPGP Signature Subpacket>` within the {term}`subkey binding signature` {term}`packet`.
+
+```{note}
+The {term}`validity<Validation>` of a {term}`subkey<OpenPGP Subkey>` is intrinsically linked to that of the {term}`primary key<OpenPGP Primary Key>`. An {term}`expired<Expiration>` {term}`primary key<OpenPGP Primary Key>` renders any associated {term}`subkey<OpenPGP Subkey>` {term}`invalid<Validation>`, regardless of the {term}`subkey<OpenPGP Subkey>`'s own {term}`expiration` setting.
+
+Legally, a {term}`subkey<OpenPGP Subkey>` may not have a specified {term}`expiration time`. In such cases, its {term}`expiration` aligns implicitly with that of the {term}`primary key<OpenPGP Primary Key>`. Additionally, the {term}`creation time` of a {term}`subkey<OpenPGP Subkey>` must always be more recent than that of the {term}`primary key<OpenPGP Primary Key>`.
+```
+
+(bind_subkey_sign)=
+### Special case: Binding signing subkeys
+
+{term}`Binding` {term}`subkeys<OpenPGP Subkey>` that possess the *{term}`signing<Signing Key Flag>`* {term}`key flag` to a {term}`certificate<OpenPGP Certificate>` represents a unique scenario. While similar to the {term}`binding process<Binding>` of other {term}`subkeys<OpenPGP Subkey>`, there is an additional, critical requirement: mutual association.
+
+That is, to bind a {term}`signing-capable<Signing Key Flag>` {term}`subkey<OpenPGP Subkey>` to a {term}`primary key<OpenPGP Primary Key>`, it is insufficient that the "{term}`primary key<OpenPGP Primary Key>` wants to be associated with the {term}`subkey<OpenPGP Subkey>`." The {term}`subkey<OpenPGP Subkey>` must explicitly signal that it "wants to be associated with the {term}`primary key<OpenPGP Primary Key>`."
+
+This mutual binding is crucial for security. Without it, an individual (e.g., Alice) could falsely claim a connection to another person's (e.g., Bob's) {term}`signing subkey<OpenPGP Signing Subkey>`.
+Alice could thus claim to have issued {term}`signatures<OpenPGP Signature Packet>` which were actually issued by Bob.
+To prevent such scenarios, where an attacker might wrongfully "adopt" a victim's {term}`signing subkey<OpenPGP Signing Subkey>`, a dual-layer of {term}`signatures<OpenPGP Signature Packet>` is used:
+
+- the [subkey binding signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-subkey-binding) ({term}`type ID<Signature Type ID>` `0x18`), which is issued by the {term}`certificate<OpenPGP Certificate>`'s {term}`primary key<OpenPGP Primary Key>`
+- the [primary key binding signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-primary-binding) ({term}`type ID<Signature Type ID>` `0x19`), created by the {term}`subkey<OpenPGP Subkey>` itself. This is informally known as an embedded "{term}`back signature<Primary Key Binding Signature>`," because the {term}`subkey<OpenPGP Subkey>`'s {term}`signature<OpenPGP Signature Packet>` points back to the {term}`primary key<OpenPGP Primary Key>`.
+
+```{figure} plain_svg/subkey_binding_signatur_for_signing_sk.svg
+:name: fig-subkey-binding-signature-for-signing-subkeys
+:alt: Depicts a diagram on white background with the title "Subkey binding signature for signing subkeys". At the top left the symbol of a primary component key with certification capability is shown. At the bottom left the symbol of a component key with signing capability is shown. The primary component key points at the lower component key with a full green arrow line. In the middle of the connection the small symbol of a signature packet is shown. On the right side of the diagram a detailed version of the signature packet can be found in a box with the title "Subkey binding signature". The text reads "Signature over Primary key, Subkey" and the box with "Signature metadata" in it contains the list "signature creation time", "key expiration time", "key flags" and "issuer fingerprint". Within the signature metadata a box with a green dotted frame extends the list with an inlined signature packet with the title "Embedded Signature; Primary key binding". Its inner text reads "Signature over Primary Key, Signing Subkey". The signature metadata area of this embedded signature holds the list "signature creation time" and "issuer fingerprint". The cryptographic signature symbol overlaps both metadata and general section of the embedded signature. From the signing component key a green dotted arrow line points to the embedded signature in the subkey binding signature with the text "Signing key creates a primary binding signature to associate itself with the primary key" ("primary binding signature" in bold). At the top of the diagram, the primary component key points at the detailed signature packet with a dotted green arrow line and the text "Primary key creates a subkey binding signature to bind the subkey to the primary key".
+
+Linking an {term}`OpenPGP signing subkey` to the {term}`primary key<OpenPGP Primary Key>` with a {term}`binding signature`, and an embedded {term}`primary key binding signature`
+```
+
+The {term}`back signature<Primary Key Binding Signature>` signifies the mutuality of the {term}`subkey<OpenPGP Subkey>`'s association with the {term}`primary key<OpenPGP Primary Key>` and is embedded as {term}`subpacket<OpenPGP Signature Subpacket>` data within the {term}`subkey binding signature`, reinforcing the {term}`authenticity<Authentication>` of the {term}`binding`.
+
+(bind_ident)=
+### Binding identities to a certificate
+
+{term}`Self-signatures<Self-signature>` also play a vital role in {term}`binding` {term}`identity components<Identity Component>`, such as {term}`User IDs<User ID>` or {term}`User Attributes<User Attribute>`, to an {term}`OpenPGP certificate`.
+
+To bind the {term}`User ID` `Alice Adams <alice@example.org>` to her {term}`OpenPGP certificate` (`AAA1 8CBB 2546 85C5 8358 3205 63FD 37B6  7F33 00F9 FB0E C457 378C D29F 1026 98B3`), Alice would use a {term}`certification signature<Certifying Self-signature>`.
+
+There are four types of *{term}`certifying self-signature`*. The most commonly used {term}`type<Signature Type ID>` for {term}`binding` {term}`User IDs<User ID>` is the [positive certification](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-positive-cert) ({term}`type ID<Signature Type ID>` `0x13`). Alternatively, {term}`type<Signature Type ID>` `0x10`, `0x11`, or `0x12` might be used. This {term}`binding signature` must be issued by the {term}`primary key<OpenPGP Primary Key>`.
+
+The {term}`certifying self-signature` {term}`packet` – calculated over the {term}`primary key<OpenPGP Primary Key>`, {term}`User ID`, and {term}`metadata` of the {term}`signature packet<OpenPGP Signature Packet>` – is added to the {term}`certificate<OpenPGP Certificate>`, directly following the {term}`User ID` {term}`packet`.
+
+```{figure} plain_svg/user_id_certification.svg
+:name: fig-user-id-certification
+:alt: Depicts a diagram on white background with the title "User ID binding signature". At the top left the symbol of a primary component key with certification capability is shown. At the bottom left the symbol of a User ID reads "Alice Adams <alice@example.org>". The primary component key points at the User ID with a full green arrow line. In the middle of the connection the small symbol of a signature packet is shown. On the right side of the diagram a detailed version of the signature packet can be found in a box with the title "User ID binding signature". The text reads "Signature over Primary key, User ID" and the box with "Signature metadata" in it contains the list "signature creation time", "key expiration time", "primary User ID flag", "algorithm preferences", "key expiration time (primary key)" and "key flags (primary key)". At the top of the diagram, the primary component key points at the detailed signature packet with a dotted green arrow line and the text "Primary key creates a User ID binding signature to associate the User ID with the primary key".
+
+Linking a {term}`User ID` to an {term}`OpenPGP certificate`
+```
+
+(primary-metadata)=
+### Adding global metadata to a certificate
+
+The {term}`signatures<OpenPGP Signature Packet>` that {term}`bind<Binding>` {term}`subkeys<OpenPGP Subkey>` and {term}`identity components<Identity Component>` to a {term}`certificate<OpenPGP Certificate>` serve dual purposes: linking {term}`components<Component>` to the {term}`certificate<OpenPGP Certificate>` and adding {term}`metadata` to {term}`components<Component>`.
+
+While it is essential to add {term}`metadata` that pertains to the entire {term}`certificate<OpenPGP Certificate>`, this does not require {term}`binding` any {term}`component` to the {term}`certificate<OpenPGP Certificate>`. In this case, the {term}`signature<OpenPGP Signature Packet>` mechanism is used just to associate {term}`metadata` with the {term}`certificate<OpenPGP Certificate>` globally.
+
+Two {term}`signature types<OpenPGP Signature Type>` can perform this function:
+
+- {term}`direct key signature` on the {term}`primary key<OpenPGP Primary Key>`
+- {term}`primary User ID binding signature`
+
+The types of {term}`metadata` typically associated with the {term}`certificate<OpenPGP Certificate>` through these methods include:
+
+- {term}`key` {term}`expiration`
+- {term}`key flags<Key Flag>` ({term}`capabilities<Capability>`)
+- {term}`features<Features Subpacket>`
+- {term}`algorithm preferences` signaling
+
+(direct_key_signature)=
+#### Direct key signature
+
+A [*direct key signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-direct-key-signature-type-i) serves as the [preferred mechanism](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.2.3.10-9) in OpenPGP v6 for defining {term}`metadata` for the entire {term}`certificate<OpenPGP Certificate>`, by associating it with the {term}`primary key<OpenPGP Primary Key>`.
+
+(self_signature_binding_to_primary_user_id)=
+#### Self-signature binding to primary User ID
+
+In OpenPGP v4, another mechanism was often used for {term}`metadata` management: integrating global {term}`certificate<OpenPGP Certificate>` {term}`metadata` within a {term}`User ID binding signature`. This is specifically evident in the {term}`binding signature` of the [*primary* User ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-primary-user-id) of the {term}`OpenPGP certificate`.
+
+This method results in the {term}`primary User ID binding signature` containing a mix of {term}`metadata`: some specific to that {term}`User ID` and some applicable to the {term}`certificate` globally.
+
+Given the widespread adoption of this mechanism in existing {term}`OpenPGP certificates<OpenPGP certificate>`, it is crucial that {term}`OpenPGP applications<OpenPGP Implementation>` recognize and manage it.
+
+(self-revocations)=
+### Revocation self-signatures: Invalidating certificate components
+
+{term}`Revocation self-signatures<Revocation Self-signature>` represent an important class of {term}`self-signatures<Self-signature>`, used primarily to invalidate {term}`components<Component>` or retract prior {term}`signature<OpenPGP Signature Packet>` statements.
+
+There are several types of {term}`revocation signatures<Revocation Self-signature>`, each serving a specific purpose:
+
+- A [**key revocation signature**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-revocation-signature-ty) ({term}`type ID<Signature Type ID>` `0x20`) marks a {term}`primary key<OpenPGP Primary Key>` as {term}`revoked<Revocation>`.
+- A [**subkey revocation signature**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-subkey-revocation-signature) ({term}`type ID<Signature Type ID>` `0x28`) {term}`invalidates<Validation>` the {term}`binding of a subkey<Subkey Binding Signature>`.
+- A [**certification revocation**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-certification-revocation-si) ({term}`type ID<Signature Type ID>` `0x30`) {term}`invalidates<Validation>` the {term}`binding` of a {term}`User ID` or {term}`User Attribute`.
+
+Common scenarios for using {term}`revocations<Revocation>` include marking {term}`certificates<OpenPGP Certificate>` or individual {term}`subkeys<OpenPGP Subkey>` as unusable (e.g., when the {term}`private key<Transferable Secret Key>` has been compromised or replaced) or declaring {term}`User IDs<User ID>` as no longer {term}`valid<Validation>`.
+
+```{note}
+{term}`OpenPGP certificates<OpenPGP Certificate>` act as append-only data structures in practice. Once elements of a {term}`certificate<OpenPGP Certificate>` are published, they cannot be removed from {term}`key servers<Key Server>` or third-party OpenPGP systems. {term}`Implementations<OpenPGP Implementation>` usually merge all available {term}`components<Component>` and {term}`signatures<OpenPGP Signature Packet>`.
+
+{term}`Revocations<Revocation>` are used to mark {term}`components<Component>` or {term}`signatures<OpenPGP Signature Packet>` as {term}`invalid<Validation>`.
+```
+
+```{admonition} TODO
+:class: warning
+
+Research, under what circumstances revocations revoke individual signatures, and when they instead "unbind" components.
+```
+
+Note: {term}`certification signatures<Certification>` [can be made irrevocable](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-revocable).
+
+(hard_vs_soft_revocations)=
+#### Hard vs soft revocations
+
+{term}`Revocation signatures<Revocation Self-signature>` often include a [*Reason for Revocation* subpacket](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation), with a code specifying *why* the {term}`revocation<Revocation Self-signature>` was issued. This code determines whether the {term}`revocation` is considered *soft* or *hard*.
+
+- **{term}`Soft revocation`**: This is typically used for graceful or planned {term}`invalidation<Validation>` of {term}`components<Component>`, such as retiring or updating {term}`components<Component>`. It {term}`invalidates<Validation>` the {term}`component` from the {term}`revocation signature<Revocation Self-signature>`'s {term}`creation time`, but earlier uses remain {term}`valid<Validation>`. Soft revocations can be reversed with a new {term}`self-signature`.
+- **{term}`Hard revocation`**: This irrevocably invalidates the {term}`component`, affecting all past and future uses. It is typically used to signal compromise of {term}`secret key material<Private Key Material>`.
+
+```{note}
+A {term}`revocation signature packet` lacking a {term}`Reason for Revocation subpacket` is interpreted as a {term}`hard revocation`.
+```
+
+(third_party_cert)=
+## Authentication and delegation in third-party signatures 
+
+{term}`Third-party signatures<Third-party Signature>` in OpenPGP primarily encode {term}`authentication` statements for {term}`identities<Identity>` and {term}`delegate<Delegation>` trust decisions. These {term}`signatures<OpenPGP Signature Packet>` can be manually inspected or processed as machine-readable artifacts by {term}`OpenPGP software<OpenPGP Implementation>`, which evaluates the {term}`authenticity<Authentication>` of {term}`certificates<OpenPGP Certificate>` based on user-specified {term}`trust anchors<Trust Anchor>`.
+
+### Certifying identity components
+
+When a {term}`signer` issues a {term}`certifying signature<Certification>` on an {term}`identity`, it indicates a verified link between the {term}`identity` and the {term}`certificate<OpenPGP Certificate>`. That is, the {term}`signer` vouches for the {term}`identity claim`.
+
+For example, Alice can vouch that Bob's {term}`User ID` `Bob Baker <bob@example.com>` is legitimately linked with his {term}`certificate<OpenPGP Certificate>` `BB28 9FB7 A68D BFA8 C384 CCCD E205 8E02  D9C6 CD2F 3C7C 56AE 7FB5 3D97 1170 BA83`, by creating a {term}`certification signature<Certification>`. Bob can then distribute Alice's `certifying signature<Certification>` as part of his {term}`certificate<OpenPGP Certificate>`.
+
+Other users may or may not decide to rely on Alice's statement to determine the {term}`authenticity<Authentication>` of Bob's {term}`certificate<OpenPGP Certificate>`.
+
+(delegation)=
+### Trust signatures: delegating authentication
+
+OpenPGP uses [*trust signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#trust-signature-subpacket) {term}`subpackets<OpenPGP Signature Subpacket>` to {term}`delegate<Delegation>` {term}`authentication` decisions, designating the recipient {term}`certificate<OpenPGP Certificate>` as a "{term}`trusted introducer`" (or a {term}`trust anchor`) for the user. This includes specifying {term}`trust depth` (or level) for transitive {term}`delegations<Delegation>` and quantifying trust with numerical values, indicating the extent of reliance on the {term}`introducer<Trusted Introducer>`'s {term}`certifications<Certification>`.
+
+{term}`Trust signature` {term}`subpackets<OpenPGP Signature Subpacket>` are applicable in {term}`third-party signatures<Third-party Signature>`, more specifically:
+
+- {term}`identity certification signatures<Identity Certification>` ({term}`type ID<Signature Type ID>` `0x10` - `0x13`)
+- [direct key signatures](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-direct-key-signature-type-i) ({term}`type ID<Signature Type ID>` `0x1F`)
+
+(trust_depth_level)=
+#### Trust depth/level
+
+The "{term}`trust depth`" (or {term}`level<Trust Depth>`) in OpenPGP signifies the extent of transitive {term}`delegation` within the {term}`authentication` process. It determines how far a {term}`delegation` can be extended from the original {term}`trusted introducer` to subsequent intermediaries. Essentially, a {term}`certificate<OpenPGP Certificate>` with a {term}`trust depth` of more than one acts as a "{term}`meta-introducer`," facilitating {term}`authentication` decisions across multiple levels in the network.
+
+A {term}`trust depth` of 1 means relying on {term}`certifications<Certification>` made directly by the {term}`trusted introducer`. The user's OpenPGP software will accept {term}`certifications<Certification>` made directly by the {term}`introducer<Trusted Introducer>` for {term}`authenticating<Authentication>` identities. 
+
+However, when the {term}`trust depth` is set higher, it implies a chain of {term}`delegation` may extend beyond the {term}`initial introducer`. The user's software will recognize and accept {term}`certifications<Certification>` made not only by the {term}`primary introducer<Initial Introducer>` but also by other intermediaries whom the {term}`primary introducer<Initial Introducer>` designated as {term}`trusted introducers<Trusted Introducer>`. 
+
+This allows for a more extensive network of trusted {term}`certifications<Certification>`, enabling a broader and more interconnected {term}`Web of Trust`.
+
+(trust_amounts)=
+#### Trust amounts
+
+The "{term}`trust amount`," with a numerical value ranging from `0` to `255`, quantifies the degree of reliance on a {term}`delegation`.
+
+A higher value indicates greater degree of reliance. This quantification aids {term}`OpenPGP software<OpenPGP Implementation>` in determining an aggregate amount of reliance, based on combined {term}`certifications<Certification>` from multiple {term}`trusted introducers<Trusted Introducer>`.
+
+(limiting_delegation_scope)=
+#### Limiting delegation scope
+
+When using *{term}`trust signature`* {term}`subpackets<OpenPGP Signature Subpacket>`, a {term}`delegation` can be limited to {term}`identities<Identity>` that match a [*regular expression*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#regex-subpacket). 
+
+With this mechanism, for example, it is possible to {term}`delegate<Delegation>` {term}`authentication` decisions only for {term}`User IDs<User ID>` that match the email domain of an organization.
+
+(wot)=
+### Web of Trust: Decentralized trust decisions
+
+The {term}`Web of Trust` in OpenPGP is a {term}`trust model` that facilitates {term}`authentication` decisions through a network of {term}`certifications<Certification>` and {term}`delegations<Delegation>`. It is characterized by a so-called [strong set](https://en.wikipedia.org/wiki/Web_of_trust#Strong_set), which refers to a group of {term}`certificates<OpenPGP Certificate>` that are robustly interconnected via `third-party certifications<Third-party Identity Certification>`.
+
+In this model, users independently {term}`delegate<Delegation>` {term}`authentication` decisions, choosing whose {term}`certification` to rely on. This {term}`delegation` is based on the {term}`certificates<OpenPGP Certificate>` and {term}`third-party signatures<Third-party Signature>` available to them, with their {term}`OpenPGP software<OpenPGP Implementation>` applying the {term}`Web of Trust` mechanism to discern the reliability of each {term}`certificate<OpenPGP Certificate>` for an {term}`identity`.
+
+The {term}`OpenPGP RFC<RFC>` doesn't specify exactly how {term}`Web of Trust` calculations are performed. It only defines the data formats on which these calculations can be performed.
+
+### Revoking third-party signatures
+
+To reverse a previously issued {term}`third-party signature`, the {term}`issuer` can generate a [*certification revocation signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-certification-revocation-si) ({term}`type ID<Signature Type ID>` `0x30`). The {term}`revocation` must be issued by the same {term}`key<Component Key>` that created the original {term}`signature<OpenPGP Signature Packet>` or, in deprecated practice, by a designated [Revocation Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-revocation-key). 

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>27. Zooming in: Packet structure of private key material &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="28. Zooming in: Packet structure of data signatures" href="signatures.html" />
+    <link rel="prev" title="26. Zooming in: Packet structure of certificates" href="certificates.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="certificates.html" title="Previous document"><span class="section-number">26. </span>Zooming in: Packet structure of certificates</a>
+        </li>
+        <li>
+          <a href="signatures.html" title="Next document"><span class="section-number">28. </span>Zooming in: Packet structure of data signatures</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="zooming-in-packet-structure-of-private-key-material">
+<h1><span class="section-number">27. </span>Zooming in: Packet structure of private key material<a class="headerlink" href="#zooming-in-packet-structure-of-private-key-material" title="Link to this heading">¶</a></h1>
+<section id="a-look-at-alice-s-unencrypted-private-key-packets">
+<h2><span class="section-number">27.1. </span>A look at Alice’s (unencrypted) private key packets<a class="headerlink" href="#a-look-at-alice-s-unencrypted-private-key-packets" title="Link to this heading">¶</a></h2>
+<p>Let’s take a look at the key material packets of <a class="reference internal" href="../artifacts.html#alice-priv"><span class="std std-ref">Alice’s key</span></a>.</p>
+<p>To inspect the internal structure of Alice’s key, we run the Sequoia-PGP tool <code class="docutils literal notranslate"><span class="pre">sq</span></code> (using the <code class="docutils literal notranslate"><span class="pre">packet</span> <span class="pre">dump</span></code> subcommand). The output of <code class="docutils literal notranslate"><span class="pre">sq</span></code> is one big block of text. To discuss the relevant content, we’ll only show the output for the packets that contain key data, here:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex alice.priv
+</pre></div>
+</div>
+<section id="primary-secret-key-packet">
+<h3><span class="section-number">27.1.1. </span>Primary Secret-Key packet<a class="headerlink" href="#primary-secret-key-packet" title="Link to this heading">¶</a></h3>
+<p>The output starts with the (primary) <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats">Secret-Key packet</a>.</p>
+<p>This is the structure of the Secret-Key packet we will now look at.</p>
+<figure class="align-default" id="fig-secret-key-packet">
+<img alt="Depicts a box with white background and title &quot;Secret-Key packet&quot;. In the center a box with white background and red frame is shown. Inside it several items are listed, separated by red dotted horizontal lines. The first three are &quot;Version&quot;, &quot;Creation Time&quot;, &quot;Public-Key Algorithm&quot; written in black. The fourth one is written in green and reads &quot;Public Key Material&quot; and has the green public key symbol at its right side. The fifth one is again written in black and reads &quot;S2K Usage (Secret Key Encryption)&quot;. The sixth item reads &quot;Secret Key Material&quot;, written in red and has the red private key symbol at its right side." src="../_images/secret-key_packet.svg" /><figcaption>
+<p><span class="caption-number">Fig. 41 </span><span class="caption-text">Structure of a Secret-Key packet.</span><a class="headerlink" href="#fig-secret-key-packet" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The output of Sequoia’s <code class="docutils literal notranslate"><span class="pre">sq</span> <span class="pre">packet</span> <span class="pre">dump</span></code> for this packet:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Secret-Key Packet, new CTB, 2 header bytes + 75 bytes
+    Version: 6
+    Creation time: 2023-09-29 15:17:58 UTC
+    Pk algo: Ed25519
+    Pk size: 256 bits
+    Fingerprint: AAA18CBB254685C58358320563FD37B67F3300F9FB0EC457378CD29F102698B3
+    KeyID: AAA18CBB254685C5
+
+    Secret Key:
+
+        Unencrypted
+
+    00000000  c5                                                 CTB
+    00000001     4b                                              length
+    00000002        06                                           version
+    00000003           65 16 ea a6                               creation_time
+    00000007                       1b                            pk_algo
+    00000008                           00 00 00 20               public_len
+    0000000c                                       53 24 e9 43   ed25519_public
+    00000010  af ab 15 f7 6e d5 b5 12  98 79 69 cd 1b 5d 10 65
+    00000020  eb e7 42 e2 ab 47 f4 86  b3 ae 65 3e
+    0000002c                                       00            s2k_usage
+    0000002d                                          ef e1 99   ed25519_secret
+    00000030  b5 5f 11 fb aa 93 e8 26  9d 3b b2 2d 72 20 7d ff
+    00000040  bd 42 dd 4b e9 a3 36 81  3b a5 cc cf fb
+</pre></div>
+</div>
+<p>The Secret-Key packet consists in large part of the actual cryptographic key data. Notice that its content is almost entirely the same as the Public-Key packet <a class="reference internal" href="certificates.html#public-key"><span class="std std-ref">seen in the previous chapter</span></a>. Let’s look at the packet field by field:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CTB:</span> <span class="pre">0xc5</span></code><a class="footnote-reference brackets" href="#ctb" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>: The <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">packet type ID</a> for this packet. The binary representation of the value <code class="docutils literal notranslate"><span class="pre">0xc5</span></code> is <code class="docutils literal notranslate"><span class="pre">11000101</span></code>. Bits 7 and 6 show that the packet is in <em>OpenPGP packet format</em> (as opposed to in <em>Legacy packet format</em>). The remaining 6 bits encode the type ID’s value: “5”. This is the value for a Secret-Key packet, as shown in the list of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-types">packet type IDs</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">length:</span> <span class="pre">0x4b</span></code>: The remaining length of this packet.</p></li>
+</ul>
+<p>The packet type id defines the semantics of the remaining data in the packet. We’re looking at a Secret-Key packet, which is a kind of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-material-packets">Key Material Packet</a>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">0x06</span></code>: The key material is in version 6 format</p></li>
+</ul>
+<p>This means that the next part of the packet follows the structure of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-6-public-keys">Version 6 Public Keys</a></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">creation_time:</span> <span class="pre">0x6516eaa6</span></code>: “The time that the key was created” (also see <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-time-fields">Time Fields</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pk_algo:</span> <span class="pre">0x1b</span></code>: “The public-key algorithm ID of this key” (decimal value 27, see the list of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms">Public-Key Algorithms</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public_len:</span> <span class="pre">0x00000020</span></code>: “Octet count for the following public key material” (in this case, the length of the following <code class="docutils literal notranslate"><span class="pre">ed25519_public</span></code> field)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ed25519_public</span></code>: <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ed2">Algorithm-specific representation</a> of the public key material (the format is based on the value of <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code>), in this case 32 bytes of Ed25519 public key</p></li>
+</ul>
+<p>This concludes the Public Key section of the packet. The remaining data follows the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats">Secret-Key packet format</a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">s2k_usage:</span> <span class="pre">0x00</span></code>: The <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption-s2k-u"><em>S2K usage</em> value</a> of <code class="docutils literal notranslate"><span class="pre">0x00</span></code> specifies that the secret-key data is not encrypted</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ed25519_secret</span></code>: <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ed2">Algorithm-specific representation</a> of the secret key data (the format is based on the value of <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code>). Because the private key material in this packet is not encrypted, this field</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The overall structure of OpenPGP packets is described in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-syntax">Packet Syntax</a> chapter of the RFC.</p>
+</div>
+<p>Note that the <em>Secret-Key packet</em> contains both the private and the public part of the key.</p>
+</section>
+<section id="secret-subkey-packet">
+<h3><span class="section-number">27.1.2. </span>Secret-Subkey packet<a class="headerlink" href="#secret-subkey-packet" title="Link to this heading">¶</a></h3>
+<p>Further down in the “packet dump” of Alice’s key, we see the encryption subkey, which we already inspected in its Public-Subkey packet format, <a class="reference internal" href="certificates.html#zoom-enc-subkey"><span class="std std-ref">above</span></a>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Secret-Subkey Packet, new CTB, 2 header bytes + 75 bytes
+    Version: 6
+    Creation time: 2023-09-29 15:17:58 UTC
+    Pk algo: X25519
+    Pk size: 256 bits
+    Fingerprint: C0A58384A438E5A14F73712426A4D45DBAEEF4A39E6B30B09D5513F978ACCA94
+    KeyID: C0A58384A438E5A1
+
+    Secret Key:
+
+        Unencrypted
+
+  00000000  c7                                                 CTB
+  00000001     4b                                              length
+  00000002        06                                           version
+  00000003           65 16 ea a6                               creation_time
+  00000007                       19                            pk_algo
+  00000008                           00 00 00 20               public_len
+  0000000c                                       d1 ae 87 d7   x25519_public
+  00000010  cc 42 af 99 34 c5 c2 5c  ca fa b7 4a c8 43 fc 86
+  00000020  35 2a 46 01 f3 cc 00 f5  4a 09 3e 3f
+  0000002c                                       00            s2k_usage
+  0000002d                                          28 7d cd   x25519_secret
+  00000030  da 26 16 37 8d ea 24 c7  ce e7 70 c7 9b e5 6f 0a
+  00000040  c9 77 fb bd 23 41 73 c9  57 5a bf 7c 4c
+</pre></div>
+</div>
+<p>Again, this packet consists of the same content as its Public-Subkey equivalent, followed by two additional fields:</p>
+<ul class="simple">
+<li><p>The “S2K usage” field, which indicated whether the private key material is encrypted. Like Alice’s primary key (above), this subkey is not encrypted.</p></li>
+<li><p>The private key material: in this case, the algorithm-specific private key data consists of 32 bytes of <code class="docutils literal notranslate"><span class="pre">x25519_secret</span></code> data.</p></li>
+</ul>
+<p>As with the public key material, the difference between the format of this subkey packet and the private key packet is minimal: Only the packet type ID differs.</p>
+</section>
+</section>
+<section id="bob-s-encrypted-private-key-material">
+<h2><span class="section-number">27.2. </span>Bob’s (encrypted) private key material<a class="headerlink" href="#bob-s-encrypted-private-key-material" title="Link to this heading">¶</a></h2>
+<p>Now we look at the primary key material packet of <a class="reference internal" href="../artifacts.html#bob-priv"><span class="std std-ref">Bob’s key</span></a>, which uses passphrase protection.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Secret-Key Packet, new CTB, 2 header bytes + 134 bytes
+    Version: 6
+    Creation time: 2023-10-13 14:29:00 UTC
+    Pk algo: Ed25519
+    Pk size: 256 bits
+    Fingerprint: BB289FB7A68DBFA8C384CCCDE2058E02D9C6CD2F3C7C56AE7FB53D971170BA83
+    KeyID: BB289FB7A68DBFA8
+
+    Secret Key:
+
+        Encrypted
+        S2K: Argon2id with t: 1, p: 4, m: 2^21, salt: 3B7F4B0EAC8B39625AB4D4BD690413C7        Sym. algo: AES-256
+
+    00000000  c5                                                 CTB
+    00000001     86                                              length
+    00000002        06                                           version
+    00000003           65 29 54 2c                               creation_time
+    00000007                       1b                            pk_algo
+    00000008                           00 00 00 20               public_len
+    0000000c                                       47 e7 c2 dc   ed25519_public
+    00000010  58 8e cb fd f2 49 90 66  ae aa 36 66 ca a9 55 2d
+    00000020  71 88 7c 25 91 c3 75 73  1d 07 60 d6
+    0000002c                                       fe            s2k_usage
+    0000002d                                          16         parameters_len
+    0000002e                                             09      sym_algo
+    0000002f                                                14   s2k_len
+    00000030  04                                                 s2k_type
+    00000031     3b 7f 4b 0e ac 8b 39  62 5a b4 d4 bd 69 04 13   argon2_salt
+    00000040  c7
+    00000041     01                                              argon2_t
+    00000042        04                                           argon2_p
+    00000043           15                                        argon2_m
+    00000044              21 ff be fc  f1 c5 9c 75 9d 1f d1 f8   encrypted_mpis
+    00000050  19 e7 fd 47 55 e3 69 ff  2f e8 52 48 66 03 d3 37
+    00000060  52 7b 05 cb fa b1 f8 13  f7 f6 20 88 d6 f5 8b c4
+    00000070  b4 51 52 ba 6d f9 7c 1a  ee 9f e6 b1 fb 63 d1 ca
+    00000080  4a 3f 33 d9 2c c9 26 46
+</pre></div>
+</div>
+<p>The first portion of Bob’s Secret-Key packet has the same structure as Alice’s, but beginning at the <code class="docutils literal notranslate"><span class="pre">s2k_usage</span></code>, we see different data. The format of this data is described in <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats">Secret-Key Packet Formats</a>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">s2k_usage:</span> <span class="pre">0xfe</span></code>: <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption-s2k-u">S2K usage</a> is set to <code class="docutils literal notranslate"><span class="pre">AEAD</span></code>, here (decimal value 253).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters_len:</span> <span class="pre">0x16</span></code> (decimal value: 22): “Cumulative length of all the following conditionally included string-to-key parameter fields.”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sym_algo:</span> <span class="pre">0x9</span></code>: <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-algorithms">Symmetric-Key Algorithm</a> specifies that AES 256 is used as the AEAD algorithm</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s2k_len:</span> <span class="pre">0x14</span></code> (decimal value 20): “[..] count of the size of the one field following this octet”</p></li>
+</ul>
+<p>The next set of data is the “string-to-key (S2K) specifier.” Its format depends on the type.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">s2k_type:</span> <span class="pre">0x04</span></code> <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-specifier-">String-to-Key (S2K) Specifier Type</a>, set to <em>Argon2</em> here.</p></li>
+</ul>
+<p>The next fields are <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-argon2">specific to Argon2</a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">argon2_salt</span></code>: “16-octet salt value”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">argon2_t</span></code>: “number of passes t”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">argon2_p</span></code>: “degree of parallelism p”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">argon2_m</span></code>: “the exponent of the memory size”</p></li>
+</ul>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>Where is that IV:</p>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.5.3-3.4.2.5">“If string-to-key usage octet was 253 (AEAD), an initialization vector (IV) of size specified by the AEAD algorithm (see Section 5.13.2), which is used as the nonce for the AEAD algorithm”</a></p>
+<p>Is the example key wrong?!</p>
+</div>
+<p>“Plain or encrypted multiprecision integers comprising the secret key data. This is algorithm-specific and described in Section 5.5.5. If the string-to-key usage octet is 253 (AEAD), then an AEAD authentication tag is at the end of that data.”</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="ctb" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Sequoia uses the term CTB (<a class="reference internal" href="../glossary.html#term-Cipher-Type-Byte"><span class="xref std std-term">Cipher Type Byte</span></a>) to refer to the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">packet type ID</a>.</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="certificates.html" title="Previous document"><span class="section-number">26. </span>Zooming in: Packet structure of certificates</a>
+        </li>
+        <li>
+          <a href="signatures.html" title="Next document"><span class="section-number">28. </span>Zooming in: Packet structure of data signatures</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">27. Zooming in: Packet structure of private key material</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-look-at-alice-s-unencrypted-private-key-packets">27.1. A look at Alice’s (unencrypted) private key packets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bob-s-encrypted-private-key-material">27.2. Bob’s (encrypted) private key material</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="certificates.html" title="previous chapter"><span class="section-number">26. </span>Zooming in: Packet structure of certificates</a></li>
+      <li>Next: <a href="signatures.html" title="next chapter"><span class="section-number">28. </span>Zooming in: Packet structure of data signatures</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

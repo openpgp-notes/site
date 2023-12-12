@@ -1,0 +1,52 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Advanced material: Signatures over data
+
+## Nesting of one-pass signatures
+
+Signing a message using the one-pass mechanism involves prepending a *One-Pass-Signature* (OPS) packet to the message and appending the corresponding signature, sandwiching the signed content.
+
+An OpenPGP message can contain multiple signatures added that way.
+
+```{note}
+One-Pass-Signatures are nested, meaning the outermost One-Pass-Signature packet corresponds to the outermost signature packet.
+``` 
+
+When a message is signed, the signature is always calculated over the contents of the literal data packet, not the literal data packet itself.
+This means, that if a message, which is compressed using a compressed data packet is wrapped using a one-pass-signature, the signature is still being calculated over the plaintext inside the literal data packet.
+
+There is one exception though.
+```{note}
+Of course there is.
+```
+
+The OPS packet has a "nested" flag[^nested-flag], which can either be `1` or `0`.
+If this flag is set to `0`, it indicates that further OPSs will follow this packet, which are calculated over the same plaintext data as this OPS is. A value of `1` indicates, that either no further OPS packets will follow (this OPS is the last), or that this OPS is calculated over the the usual plaintext data, but wrapped inside any OPS+Signature combinations that follow this OPS.
+
+[^nested-flag]: See [description of the nested flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1).
+
+This mechanism enables attested signatures, where the signer signs an already one-pass-signed message including the already contained signature.
+
+As a practical example, consider the following notation:
+* `LIT("Hello World")` represents a literal data packet with the content `Hello World`.
+* `COMP(XYZ)` represents a compressed data packet over some other packet `XYZ`.
+* `OPS₁` represents a one-pass-signature packet with the nested flag set to `1`. Analogous, `OPS₀` has the nested flag set to `0`.
+* `SIG` represents a signature packet.
+
+A normal, one-pass-signed message looks like this:
+`OPS₁ LIT("Hello World") SIG`
+
+Here, the signature is calculated over the plaintext `Hello World`, as is it in a message that has the following form: `OPS₁ COMP(LIT("Hello World")) SIG`.
+
+A message, where multiple one-pass-signatures are calculated over the same plaintext looks the following:
+`OPS₀ OPS₀ OPS₁ LIT("Hello World") SIG SIG SIG`
+
+All three signatures are calculated over the same plaintext `Hello World`.
+
+Now, a message, where the signer attests an already signed message has the following format:
+`OPS₁ OPS₁ LIT("Hello World") SIG SIG`
+
+While the inner signature is calculated over the usual plaintext `Hello World`, the outer signature is instead calculated over `OPS₁ Hello World SIG`.

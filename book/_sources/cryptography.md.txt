@@ -1,0 +1,144 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Cryptographic concepts and terms
+
+(crypto-hash)=
+## Cryptographic hash functions
+
+[Cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) take data strings of any length (like a text message or file) and output a fixed-size code, a "hash digest," which is often abbreviated as either "digest" or "hash." A hash digest is also sometimes called a "(cryptographic) checksum." A hash digest acts like a unique identifier for the original data.
+
+Cryptographic hash functions have two important properties:
+
+- [**Pre-image resistance**](https://en.wikipedia.org/wiki/Preimage_attack): Given a hash digest, it should be very difficult to determine any data that matches this hash digest (including, but not limited to, the original data the hash represents). This property embodies the concept of a [one-way function](https://en.wikipedia.org/wiki/One-way_function) – a calculation that is easy to perform, but very hard to reverse.
+- [**Collision resistance**](https://en.wikipedia.org/wiki/Collision_resistance): It should be very difficult to find two distinct pieces of data that map to the same hash digest.
+
+(message_authentication_codes)=
+## Message authentication codes
+
+A [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code) (MAC), also known as an {term}`authentication tag`, is a small piece of information used to verify the integrity and authenticity of a message.
+
+It is derived from the original message using a {term}`(symmetric) secret key<Symmetric Secret Key>`. The recipient of a message containing a MAC, who is also in possession of the secret key, can verify that the message has not been altered.
+
+[HMAC](https://en.wikipedia.org/wiki/HMAC) is a type of MAC that relies on a hash function. It is used in the OpenPGP protocol.
+
+### Key derivation functions
+
+A hash function can also be used to create a [key derivation function](https://en.wikipedia.org/wiki/Key_derivation_function) (KDF).
+One application of KDFs is to generate symmetric key material from a password by iteratively passing it through a hash function.
+
+A notable KDF for the OpenPGP specification is the [HKDF](https://en.wikipedia.org/wiki/HKDF), which is a key derivation function based on the HMAC.
+
+For detailed information on KDFs and their role in the OpenPGP protocol, see the [encrypted secrets](encrypted_secrets) chapter and the [SEIPDv2](SEIPDv2) section of the encryption chapter.
+
+(symmetric_key_cryptography)=
+## Symmetric-key cryptography
+
+[Symmetric-key cryptography](https://en.wikipedia.org/wiki/Symmetric-key_algorithm) uses the same cryptographic key for both encryption and decryption, unlike asymmetric cryptography where a pair of keys is used: a public key for encryption and a corresponding private key for decryption. Symmetric-key cryptographic systems support *encryption/decryption* operations.
+
+Participants in symmetric-key operations need to exchange the shared secret over a secure channel.
+
+```{figure} plain_svg/symmetric_key.svg
+:name: fig-symmetric-key
+:alt: Depicts a box with a white background and the title "Symmetric key". In the box a single key symbol, rendered with full yellow line, is shown pointing to the right hand side.
+
+A symmetric cryptographic key (which acts as a shared secret)
+```
+
+### Benefits and downsides
+
+Symmetric-key cryptography has major benefits: It is much faster than public-key cryptography (see below). Also, most current symmetric-key cryptographic mechanisms are believed to be resilient against possible advances in quantum computing[^postquantum].
+
+[^postquantum]: Daniel J. Bernstein (2009). ["Introduction to post-quantum cryptography" (PDF)](http://www.pqcrypto.org/www.springer.com/cda/content/document/cda_downloaddocument/9783540887010-c1.pdf) states that: "many important classes of cryptographic systems", including secret-key cryptographic mechanisms like AES "[..] are believed to resist classical computers and quantum computers." (pages 1, 2).
+
+However, exchanging the required shared secret is a problem that needs to be solved separately.
+
+[Hybrid cryptosystems](hybrid_cryptosystems) combine the advantages of symmetric-key cryptography with a separate mechanism for managing the shared secret, using public-key cryptography.
+
+### Symmetric-key cryptography in OpenPGP
+
+Symmetric-key cryptography is used in OpenPGP in three contexts:
+
+- most prominently, as part of a hybrid cryptosystem to encrypt and decrypt data,
+- to encrypt [password-protected private key material](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption), and
+- for [password-protected data encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-encrypted-ses), a less commonly used feature of the standard.
+
+Where symmetric keys are used in OpenPGP for data encryption, they are called either "message keys" or "session keys[^sessionkey]."
+
+[^sessionkey]: In OpenPGP version 6, the ["Version 2 Symmetrically Encrypted Integrity Protected Data Packet Format"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-2-symmetrically-enc) requires that a "message key" is derived from a "session key." In contrast, up to OpenPGP version 4, and in version 6 when using ["Version 1 Symmetrically Encrypted Integrity Protected Data Packet Format"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-1-symmetrically-enc), the "session key" was used directly as a symmetric encryption key.
+
+### Authenticated encryption with associated data (AEAD)
+
+[Authenticated encryption](https://en.wikipedia.org/wiki/Authenticated_encryption) offers more than just confidentiality; it ensures data integrity too.
+
+In OpenPGP version 6, AEAD replaced the MDC[^MDC] mechanism to address malleability. In earlier OpenPGP versions, malicious alterations to ciphertext might go unnoticed. AEAD guards against such undetected changes.
+
+[^MDC]: OpenPGP version 4 introduced a mechanism called MDC (Modification Detection Code), which fulfills a comparable purpose as AEAD in safeguarding message integrity. MDC is a non-standard mechanism, but no known attacks have compromised this scheme as of this document's last update.
+
+By addressing the malleability problem, AEAD also counters a variation of the EFAIL[^efail] attack.
+
+[^efail]: A variation of the [EFAIL](https://en.wikipedia.org/wiki/EFAIL) attack can be prevented by both the MDC and AEAD mechanisms. Also see ["No, PGP is not broken, not even with the Efail vulnerabilities,"](https://proton.me/blog/pgp-vulnerability-efail) especially the section "Malleability Gadget Exfiltration Channel Attack."
+
+(public_key_asymmetric_cryptography)=
+## Public-key (asymmetric) cryptography
+
+[Public-key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography) uses asymmetric pairs of related keys. Each pair consists of a public key and a private key. These systems support encryption, decryption, and digital signature operations.
+
+Unlike symmetric cryptography, participants are not required to pre-arrange a shared secret. In public-key cryptography, the public key material is shared openly for certain cryptographic operations, such as encryption and signature verification, while the private key, kept confidential, is used for operations like decryption and signature creation.
+
+(asymmetric_key_pair)=
+### Asymmetric cryptographic key pairs
+
+Throughout this document, we will frequently reference asymmetric cryptographic key pairs:
+
+```{figure} plain_svg/asymmetric_keypair.svg
+:name: fig-asymmetric-keypair
+:alt: Depicts a box with white background and the title "Asymmetric keypair". In the box two key symbols with text next to them are shown. The top key symbol is rendered using full green lines, points to the right hand side and has the accompanying text "Public key". The lower key symbol is rendered using dotted red lines, points to the left hand side and has the accompanying text "Private key".
+
+An asymmetric cryptographic key pair
+```
+
+Each key pair comprises two parts: the {term}`public key<OpenPGP Certificate>` and the {term}`private key<Transferable Secret Key>`. For ease of identification in this documentation, the {term}`public key<OpenPGP Certificate>` will be shown in green and the private key in red. Additionally, {term}`public keys<OpenPGP Certificate>` are depicted with a solid border and pointing to the right, while {term}`private keys<Transferable Secret Key>` are shown with a dotted border and pointing to the left. 
+
+It's important to note that in many scenarios, only the {term}`public key<OpenPGP Certificate>` is exposed or used. These situations will be elaborated upon in subsequent sections of this document.
+
+```{figure} plain_svg/public_key.svg
+:name: fig-public-key
+:alt: Depicts a box with white background and the title "Public part of an asymmetric keypair". In the box one key symbol with text next to it is shown. The key symbol is rendered using full green lines, points to the right hand side and has the accompanying text "Public key".
+
+The public part of an asymmetric key pair
+```
+
+### Usage and terminology in OpenPGP
+
+OpenPGP extensively uses {term}`public-key cryptography<Public Key Algorithm>` for encryption and digital signing operations.
+
+```{admonition} Terminology
+:class: note
+
+OpenPGP documentation, including the foundational RFC, opts for the term "secret key" over the more widely accepted "private key." As a result, in the RFC, you'll encounter the "public/secret key" pairing more frequently than "public/private key." This terminology reflects historical developments in the OpenPGP community, not a difference in technology.
+
+While "secret key" (as used in the OpenPGP RFC) and "private key" serve the same purpose in cryptographic operations, this document will use the more common "public/private" terminology for clarity and consistency with broader cryptographic discussions. 
+```
+
+### Cryptographic digital signatures
+
+[Digital signatures](https://en.wikipedia.org/wiki/Digital_signature) are a fundamental mechanism of {term}`asymmetric cryptography`, providing secure, mathematical means to validate the {term}`authenticity<Authentication>`, integrity, and origin of digital messages and documents. 
+
+In OpenPGP, digital signatures have diverse applications, extending beyond mere validation of a message's origin. They can signify various intents, including {term}`certification`, consent, acknowledgment, or even revocation by the signer. The multifaceted nature of "statements" conveyed through {term}`digital signatures<OpenPGP Signature Packet>` in cryptographic protocols is wide-ranging but crucial, allowing third parties to inspect/evaluate these statements for {term}`authenticity<Authentication>` and intended purpose.
+
+{term}`Digital signatures<OpenPGP Signature Packet>` in OpenPGP are used in two primary contexts:
+
+- [Data signatures](signing_data)
+- [Signatures on components](/signing_components)
+
+(hybrid_cryptosystems)=
+## Hybrid cryptosystems
+
+[Hybrid cryptosystems](https://en.wikipedia.org/wiki/Hybrid_cryptosystem) combine the use of {term}`symmetric<Symmetric Cryptography>` and {term}`asymmetric (public-key)<Asymmetric Cryptography>` cryptography to capitalize on the strengths of each, namely {term}`symmetric cryptography`'s speed and efficiency and {term}`public-key cryptography<Asymmetric Cryptography>`'s mechanism for secure key exchange.
+
+### Usage and terminology in OpenPGP
+
+OpenPGP uses a {term}`hybrid cryptosystem` for encryption.  This approach involves generating unique shared secrets, known as "session keys," for each session. For detailed information on this topic, please refer to the chapters [](encryption) and [](decryption).

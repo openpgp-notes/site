@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>23. Advanced material: Signature verification &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="24. Advanced material: Encryption" href="encryption.html" />
+    <link rel="prev" title="22. Advanced material: Signatures on components" href="signing_components.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signing_components.html" title="Previous document"><span class="section-number">22. </span>Advanced material: Signatures on components</a>
+        </li>
+        <li>
+          <a href="encryption.html" title="Next document"><span class="section-number">24. </span>Advanced material: Encryption</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="advanced-material-signature-verification">
+<h1><span class="section-number">23. </span>Advanced material: Signature verification<a class="headerlink" href="#advanced-material-signature-verification" title="Link to this heading">¶</a></h1>
+<section id="attribute-shadowing">
+<h2><span class="section-number">23.1. </span>Attribute shadowing<a class="headerlink" href="#attribute-shadowing" title="Link to this heading">¶</a></h2>
+<p>When determining the preferences of a key, several signatures may have to be inspected.</p>
+<p>For example, when using a signing subkey to generate a data signature, an implementation might want to check for hash algorithm preferences on the subkey binding signature.
+However, the RFC <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.2.3.10-2">states</a> that signature subpackets in a direct key signature (which may also contain preferences) on the OpenPGP certificate’s primary key apply to the entire OpenPGP key, and therefore also to the signing subkey.</p>
+<p>In this case, the implementation uses the preferences from the subkey binding signature, but if no such subpacket is found on the latest binding signature, it falls back to the preferences from the direct key signature.
+This is called attribute shadowing, since direct key signature subpackets apply to all subkeys, but are shadowed by binding signature subpackets.</p>
+<figure class="align-default" id="fig-signature-verification-attribute-shadowing">
+<img alt="Depicts a certificate with to dedicated signing subkeys and a subkey binding signature each. The primary key carries a direct-key signature, which specifies SHA-512 and SHA-256 as hash algorithm preferences. The binding signature of the first signing subkey does not specify preferences, while the binding signature of the second subkey defines SHA-384. Signatures made using the first subkey source the hash algorithm preferences from the direct-key signature, due to the absence of a preference subpacket on the binding signature, while for signature made using the second subkey the direct-key signature's preferences are shadowed by the subkey signatures preferences subpacket." src="../_images/attribute-shadowing.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 33 </span><span class="caption-text">Inheritance and Shadowing of Attributes</span><a class="headerlink" href="#fig-signature-verification-attribute-shadowing" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>Attribute shadowing is relatively straightforward to reason about when used for algorithm preferences. For other subpacket types, shadowing may be confusing, and/or the semantics underspecified (e.g. for key expiration time subpackets).</p>
+</div>
+</section>
+<section id="signature-shadowing">
+<h2><span class="section-number">23.2. </span>Signature shadowing<a class="headerlink" href="#signature-shadowing" title="Link to this heading">¶</a></h2>
+<p>When inspecting signatures on a component of an OpenPGP certificate, of the signatures that are in effect for each function, only the newest is considered.</p>
+<p>In other words:</p>
+<ul class="simple">
+<li><p>If there are three binding signatures <code class="docutils literal notranslate"><span class="pre">A,</span> <span class="pre">B,</span> <span class="pre">C</span></code> for a subkey,</p></li>
+<li><p>where:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> was created at <code class="docutils literal notranslate"><span class="pre">t0</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code> at <code class="docutils literal notranslate"><span class="pre">t1</span></code>, and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code> at <code class="docutils literal notranslate"><span class="pre">t3</span></code>, with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t0</span> <span class="pre">&lt;</span> <span class="pre">t1</span> <span class="pre">&lt;</span> <span class="pre">t2</span> <span class="pre">&lt;</span> <span class="pre">t3</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Then at <code class="docutils literal notranslate"><span class="pre">t2</span></code>, an implementation only needs to consider signature <code class="docutils literal notranslate"><span class="pre">B</span></code>,</p>
+<ul>
+<li><p>because <code class="docutils literal notranslate"><span class="pre">C</span></code> is not yet in effect, and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> is shadowed, because it is older than <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<figure class="align-default" id="fig-signature-verification-subkey-validity">
+<img alt="Depicts a gantt-style diagram visualizing how the validity of a certificates components changes over time, depending on component signatures." src="../_images/cert-validity-subkey.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 34 </span><span class="caption-text">An example for how certificate validity can change with time.</span><a class="headerlink" href="#fig-signature-verification-subkey-validity" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Signature shadowing should not be confused with attribute shadowing.</p>
+</div>
+<p>As attribute and signature shadowing can occur in combination, it is not always obvious which properties a key has at a given time.</p>
+<figure class="align-default" id="fig-signature-verification-signature-shadowing">
+<img alt="Depicts a certificate with a subkey, whose capabilities change over time, due to signature shadowing another." src="../_images/dk-attributes-and-shadowing.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 35 </span><span class="caption-text">Signatures shadow one another, based on reference time.</span><a class="headerlink" href="#fig-signature-verification-signature-shadowing" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="which-signatures-take-precedence">
+<h2><span class="section-number">23.3. </span>Which signatures take precedence?<a class="headerlink" href="#which-signatures-take-precedence" title="Link to this heading">¶</a></h2>
+<p>Multiple signatures can be attached to an OpenPGP certificate or component. These signatures can contain conflicting information.</p>
+<p>When verifying a signature that is not self-qualifying, an implementation needs to inspect self-qualifying signatures in the issuer’s certificate for qualification. The certificate may contain multiple signatures for one component.</p>
+<p>For example, there could be multiple subkey binding signatures for one subkey. This could be the case because the expiration time in the original binding signature has expired, and the certificate holder has issued a new binding signature with an extended expiration time.</p>
+<p>In general, for each category of signatures (categories such as binding signatures for one particular subkey), the signature with the latest creation time takes precedence, and only that signature is considered.</p>
+<p>Alternatively, there can be competing qualifying signatures of different types, e.g., a direct key signature and a self-certification signature on a primary User ID. Both of these contain metadata associated with the entire certificate. By default, the direct key signature is preferred<a class="footnote-reference brackets" href="#conflicting-prefs" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> in OpenPGP version 6.</p>
+<p>Depending on how a certificate is “located,” different metadata from possible candidate signatures “shadow” one another. The RFC <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-notes-on-self-signatures">states</a> that when a certificate is “located” by the OpenPGP software “via an identity”, then the metadata associated with that identity takes precedence over more global metadata, such as that associated with the certificate’s primary key, with a direct key signature.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>Replace hash algorithm preferences with AEAD preferences for a more realistic example.</p>
+</div>
+<p>For example, the latest direct key signature could list “SHA512, SHA384” as hash algorithm preferences, while the latest self-certification of the User ID “Bob” could list only “SHA256.”
+For yet another User ID “Bobby,” the self-signature could list no hash algorithm preferences at all.
+If the user wants to compose a signed message using the associated OpenPGP key they need to figure out which preferences to use.</p>
+<p>The specification recommends that implementations decide which signature takes precedence by the way the certificate is “addressed.”</p>
+<figure class="align-default" id="id2">
+<img alt="../_images/narrow-interpretation.png" src="../_images/narrow-interpretation.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 36 </span><span class="caption-text">Preferences are sourced from signatures on different components, depending on how the key is addressed.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>If the user wants to write an email as “Bob,” it should consider the signature on “Bob,” so SHA256 should be used as hash algorithm.
+If instead the user wants to write as “Bobby,” the implementation should inspect the self-certification on “Bobby” instead.
+However, since this signature does not carry any hash algorithm preferences subpacket, the implementation must fall back to the direct key signature instead.
+The same is true if the certificate is used without any User ID as sender.</p>
+<p>To complicate things further:
+Algorithm preferences can also be stated on subkey binding signatures, so if the certificate has a dedicated signing subkey, there is yet another signature which could take precedence.
+Preferences from the subkey binding signature take precedence over the direct key signature, but not over self-certifications on the User ID.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>Have a table that lists which signatures take precedence in which cases.</p>
+</div>
+<p>There can be more than one signature on a component. As an example, there are 3 direct key signatures (e.g., because the key’s expiry has been extended two times).
+In general, for each component, only the newest self-signature is “in effect,” and older signatures are “shadowed.”
+For each certificate, there is at most one “active” direct key signature, for each User ID at most one active self-certification and for each subkey exactly one subkey binding.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>direct key signatures can be revoked, <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.2.3.10-4">canceling them</a>, meaning an older direct-key signature might become active again? The text of the spec is confusing here.</p>
+</div>
+</section>
+<section id="complexity-of-the-packet-format">
+<h2><span class="section-number">23.4. </span>Complexity of the packet format<a class="headerlink" href="#complexity-of-the-packet-format" title="Link to this heading">¶</a></h2>
+<p>OpenPGP certificates can contain complex preference settings. Additionally, the OpenPGP packet format allows a lot of flexibility when storing certificates in TPK format.</p>
+<p>User ID packets, for example, do not have a fixed position in a TPK. This means an attacker (or an implementation-internal certificate canonicalization procedure) can change the order in which User IDs appear in the certificate’s packet sequence.</p>
+<p>As a concrete example, consider a certificate with multiple User IDs, all marked as primary. Or similarly, a certificate with multiple User IDs of which none is marked as primary.
+Clients might apply different heuristics to figure out which User ID actually qualifies as the primary User ID here.</p>
+<p>Such subtle changes to the representation of a certificate can lead to different preference settings being deduced, by different OpenPGP implementations.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="conflicting-prefs" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>However, the semantics of these cases are not currently fully specified, see <a class="reference external" href="https://gitlab.com/openpgp-wg/rfc4880bis/-/issues/103">this discussion</a>.</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signing_components.html" title="Previous document"><span class="section-number">22. </span>Advanced material: Signatures on components</a>
+        </li>
+        <li>
+          <a href="encryption.html" title="Next document"><span class="section-number">24. </span>Advanced material: Encryption</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">23. Advanced material: Signature verification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#attribute-shadowing">23.1. Attribute shadowing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#signature-shadowing">23.2. Signature shadowing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#which-signatures-take-precedence">23.3. Which signatures take precedence?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#complexity-of-the-packet-format">23.4. Complexity of the packet format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="signing_components.html" title="previous chapter"><span class="section-number">22. </span>Advanced material: Signatures on components</a></li>
+      <li>Next: <a href="encryption.html" title="next chapter"><span class="section-number">24. </span>Advanced material: Encryption</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

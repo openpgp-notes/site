@@ -1,0 +1,294 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Certificates
+
+OpenPGP fundamentally hinges on the concept of "{term}`OpenPGP certificates<OpenPGP Certificate>`," also known as "{term}`OpenPGP public keys<OpenPGP Public Key>`." These {term}`certificates<OpenPGP Certificate>` are complex data structures essential for {term}`identity verification`, data encryption, and {term}`digital signatures<OpenPGP Signature Packet>`. Understanding their structure and function is pivotal to effectively applying the OpenPGP standard.
+
+An {term}`OpenPGP certificate`, by definition, does not contain {term}`private key material`.
+
+Fundamentally, the effective management of {term}`certificates<OpenPGP Certificate>` and a thorough grasp of their {term}`authentication` and {term}`trust models<Trust Model>` are crucial for proficient OpenPGP usage. Although this document offers just a brief overview of these aspects, they form a fundamental part of the broader OpenPGP framework and warrant further study.
+
+- For an in-depth exploration of OpenPGP's {term}`private key material`, refer to [](/private_keys). This chapter provides essential insights into {term}`private key<Transferable Secret Key>` management and security practices.
+
+- The bindings that link the {term}`components<Component>` of a {term}`certificate<OpenPGP Certificate>` are comprehensively discussed in [](/signing_components), offering a deeper understanding of {term}`certificate<OpenPGP Certificate>` structure and integrity.
+
+- Finally, our chapter [](zoom/certificates) discusses the internal structure of {term}`certificates<OpenPGP Certificate>` in detail.
+
+## Terminology: Understanding "keys"
+
+The term "{term}`(cryptographic) keys<Cryptographic Key>`" is central to grasping the concept of {term}`OpenPGP certificates<OpenPGP certificate>`. However, it can refer to different entities, making it a potentially confusing term. Let's clarify those differences.
+
+### Public vs. private keys
+
+The term "{term}`key`," without additional context, can refer to either public or private {term}`asymmetric<Asymmetric Cryptography>` key material. Additionally, {term}`symmetric<Symmetric Cryptography>` keys may be used in OpenPGP to encrypt {term}`private key material`, adding a layer of security and complexity.
+
+(layers_of_keys_in_openpgp)=
+### Layers of keys in OpenPGP
+
+In OpenPGP, the term "{term}`key`" may refer to three distinct layers, each serving a unique purpose:
+
+1. A (bare) ["cryptographic key"](asymmetric_key_pair) comprises the private and/or public parameters forming a key. For instance, in the case of an RSA {term}`private key<Transferable Secret Key>`, the key consists of the exponent `d` along with the prime numbers `p` and `q`.
+2. An OpenPGP *{term}`component key<OpenPGP Component Key>`* includes either an "{term}`OpenPGP primary key`" or an "{term}`OpenPGP subkey`." It is a building block of an {term}`OpenPGP certificate`, consisting of a cryptographic keypair coupled with some invariant {term}`metadata`, such as key {term}`creation time`.
+3. An "{term}`OpenPGP certificate`" (or "OpenPGP key") consists of several {term}`component keys<OpenPGP Component Key>`, {term}`identity components<Identity Component>`, and other elements. These {term}`certificates<Certificate>` are dynamic, evolving over time as {term}`components<Component>` are added, {term}`expire<Expiration>`, or are marked as {term}`invalid<Validation>`.
+
+The following section will delve into the OpenPGP-specific layers (2 and 3) to provide a clearer understanding of their roles within {term}`OpenPGP certificates<OpenPGP Certificate>`.
+
+## Structure of OpenPGP certificates
+
+An {term}`OpenPGP certificate` (or "{term}`OpenPGP key`") is a collection of an arbitrary number of elements[^packets]:
+
+[^packets]: In technical terms, the elements of an {term}`OpenPGP certificate` are a collection of "{term}`packets<Packet>`." Each {term}`component key<OpenPGP Component Key>` and {term}`identity component` is internally represented as a {term}`packet`. Another common type of {term}`packet` is the "{term}`signature`" {term}`packet`, which connect the {term}`components<Component>` of a {term}`certificate<OpenPGP Certificate>`.
+
+- {term}`Component keys<OpenPGP Component Key>`
+- {term}`Identity components<Identity Component>`
+- Additional {term}`metadata`, including connections between the {term}`certificate<OpenPGP Certificate>`'s {term}`components<Component>`
+
+This documentation collectively refers to {term}`component keys<OpenPGP Component Key>` and {term}`identity components<Identity Component>` as "the {term}`components<Component>` of a {term}`certificate<OpenPGP Certificate>`."
+
+```{figure} plain_svg/Components_of_an_OpenPGP_Certificate.svg
+:name: fig-openpgp-certificate-components
+:alt: Depicts a box with white background and the title "OpenPGP certificate". In the box several other boxes and accompanying texts, representing component keys and User IDs, are shown. There are three component keys boxes with a green frame, each with a dotted lower-left section, that shows the text "key creation time" and the green public key symbol in the lower right area. All three have a title, a unique fingerprint below the box and a unique capability keyword, perpendicular to the box on the right side. The top-most component key box has a light-green background, with the title "Component Key (primary)" and capability keyword "certification". The second-to-top component key box has a white background, with the title "Component Key" and capability keyword "encryption". The lowest component key box has a white background, with the title "Component Key" and capability keyword "signing". There are two User ID boxes, each with a black frame, open to top left and lower right corner. Both boxes have a user icon on the top left side, the title "User ID" on the top right side and a User ID string at the bottom. The top box has "Alice Adams <alice@example.org>" and the lower box has "Alice" as User ID string.
+
+Typical {term}`components<Component>` in an {term}`OpenPGP certificate`
+```
+
+Every element in an {term}`OpenPGP certificate` revolves around a central {term}`component`: the *{term}`OpenPGP primary key`*. The primary key acts as a personal *{term}`certification authority`* ({term}`CA<Certification Authority>`) for the {term}`certificate<OpenPGP Certificate>`'s owner, enabling cryptographic statements regarding {term}`subkeys<OpenPGP Subkey>`, {term}`identities<Identity>`, {term}`expiration`, {term}`revocation`, and more.
+
+```{note}
+{term}`OpenPGP certificates<OpenPGP Certificate>` tend to have a long lifespan, with the potential for modifications (typically by their owner) over time. {term}`Components<Component>` may be added or {term}`invalidated<Validation>` throughout a {term}`certificate<OpenPGP Certificate>`'s lifetime. However, once published, {term}`components<Component>` [cannot be removed](append-only) from {term}`certificates<OpenPGP Certificate>`.
+```
+
+(component_keys)=
+## Component keys
+
+An {term}`OpenPGP certificate` usually contains multiple {term}`component keys<OpenPGP Component Key>`. {term}`Component keys<OpenPGP Component Key>` serve in one of two roles: either as an "{term}`OpenPGP primary key`" or as an "{term}`OpenPGP subkey`."
+
+{term}`OpenPGP component keys<OpenPGP Component Key>` logically consist of an [asymmetric cryptographic keypair](asymmetric_key_pair) and a creation timestamp. Once created, these attributes of a {term}`component key<OpenPGP Component Key>` remain fixed (for ECDH keys, two additional parameters are part of a {term}`component key`'s constitutive data[^ecdh-parameters]).
+
+[^ecdh-parameters]: For [ECDH](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ecd) {term}`component keys<OpenPGP Component Key>`, two additional algorithm parameters are integral to the {term}`component key<OpenPGP Component Key>`'s constitutive and immutable properties. Those parameters specify a hash function and a {term}`symmetric<Symmetric Cryptography>` encryption algorithm.
+
+```{figure} plain_svg/Component_Key.svg
+:name: fig-component-key
+:alt: Depicts a box with white background and no title. In the box one other box is shown. The inner box has a green frame, with a dotted lower-left section, that shows the text "key creation time" and the green public key symbol, as well as the red-dotted private key symbol in the lower right area. In the top left of the inner box the text reads "Component Key."
+
+An {term}`OpenPGP component key`
+```
+
+{term}`Component keys<OpenPGP Component Key>` containing {term}`private key material` also include {term}`metadata` specifying the password protection scheme. This is another facet of {term}`metadata`, akin to the aforementioned creation timestamp and additional parameters for certain algorithms. However, this discussion focuses on {term}`OpenPGP certificates<OpenPGP Certificate>`, in which the {term}`component keys<OpenPGP Component Key>` contain only the public part of its cryptographic key data. For information on {term}`private keys<Transferable Secret Key>` in OpenPGP, see [](private_keys).
+
+(fingerprint)=
+### Fingerprint
+
+Each {term}`OpenPGP component key` possesses an *{term}`OpenPGP fingerprint`*. This {term}`fingerprint<OpenPGP Fingerprint>` is derived from the {term}`public key material<OpenPGP Certificate>`, the {term}`creation timestamp<Creation Time>`, and, when relevant, the ECDH parameters.
+
+```{figure} plain_svg/Fingerprint.svg
+:name: fig-fingerprint
+:alt: Depicts a box with white background and the title "Fingerprint of an OpenPGP component key." Inside, another box with a green frame, the title "Component Key", the text "key creation time" on the lower left and a the green public key symbol on the lower right is shown. Below the component key box a fingerprint in a box with a light-yellow background and a yellow dotted line is depicted. The word "Fingerprint" is shown left of the box with the fingerprint and both are connected with a yellow dotted line.
+
+Every {term}`OpenPGP component key` is identifiable by a {term}`fingerprint<OpenPGP Fingerprint>`.
+```
+
+The {term}`fingerprint<OpenPGP Fingerprint>` of our example {term}`OpenPGP component key` is `C0A5 8384 A438 E5A1 4F73 7124 26A4 D45D  BAEE F4A3 9E6B 30B0 9D55 13F9 78AC CA94`[^keyid].
+
+[^keyid]: In OpenPGP version 4, the rightmost 64 bits were sometimes used as a shorter identifier, called "{term}`Key ID`."
+For example, an OpenPGP version 4 {term}`certificate<OpenPGP Certificate>` with the {term}`fingerprint<OpenPGP Fingerprint>` `B3D2 7B09 FBA4 1235 2B41 8972 C8B8 6AC4 2455 4239` might be referenced by the 64-bit {term}`Key ID` `C8B8 6AC4 2455 4239` or formatted as `0xC8B86AC424554239`.  
+Historically, even shorter 32-bit identifiers were used, like this: `2455 4239`, or `0x24554239`. Such identifiers still appear in very old documents about PGP. However, [32-bit identifiers have been long deemed unfit for purpose](https://evil32.com/). At one point, 32-bit identifiers were called "short {term}`Key ID`," while 64-bit identifiers were referred to as "long Key ID."
+
+```{note}
+In practice, the {term}`fingerprint<OpenPGP Fingerprint>` of a {term}`component key<OpenPGP Component Key>`, while not theoretically unique, functions effectively as a unique identifier. The use of a [cryptographic hash algorithm](crypto-hash) in generating {term}`fingerprints<OpenPGP Fingerprint>` makes the occurrence of two different {term}`component keys<OpenPGP Component Key>` with the same {term}`fingerprint<OpenPGP Fingerprint>` extremely unlikely[^finger-unique].
+ ```
+
+[^finger-unique]: For both {term}`OpenPGP version 6<RFC>` and version 4, the likelihood of accidental occurrence of duplicate {term}`fingerprints<OpenPGP Fingerprint>` is negligible when {term}`key material` is generated based on an acceptable source of entropy. A separate question is if an attacker can purposely craft a second key with the same {term}`fingerprint<OpenPGP Fingerprint>` as a given pre-existing {term}`component key<OpenPGP Component Key>`. With the current state of the art, this is not possible for OpenPGP version 6 and version 4 keys. However, at the time of this writing, the SHA-1-based {term}`fingerprints<OpenPGP Fingerprint>` of OpenPGP version 4 are considered insufficiently strong at protecting against the generation of pairs of {term}`key material` with the same {term}`fingerprint<OpenPGP Fingerprint>`.
+
+(primary_key)=
+### Primary key
+
+The {term}`OpenPGP primary key` is a {term}`component key<OpenPGP Component Key>` that serves a distinct, central role in an {term}`OpenPGP certificate`:
+
+- Its {term}`fingerprint<OpenPGP Fingerprint>` acts as an identifier for the entire {term}`OpenPGP certificate`.
+- It facilitates lifecycle operations, such as adding or {term}`invalidating<Validation>` {term}`subkeys<OpenPGP Subkey>` or {term}`identities<Identity>` within a {term}`certificate<OpenPGP Certificate>`.
+
+```{admonition} Terminology
+:class: note
+
+In the {term}`RFC`, the {term}`OpenPGP primary key` is occasionally referred to as "top-level key." Informally, it has also been termed the "{term}`master key<OpenPGP Primary Key>`."
+```
+
+(subkeys)=
+### Subkeys
+
+Modern {term}`OpenPGP certificates<OpenPGP Certificate>` typically include several {term}`subkeys<OpenPGP Subkey>` in addition to the {term}`primary key<OpenPGP Primary Key>`, although these {term}`subkeys<OpenPGP Subkey>` are optional.
+
+While {term}`subkeys<OpenPGP Subkey>` have the same structural attributes as the {term}`primary key<OpenPGP Primary Key>`, they fulfill  different roles. {term}`Subkeys<OpenPGP Subkey>` are cryptographically linked with the {term}`primary key<OpenPGP Primary Key>`, a relationship further discussed in {numref}`binding_subkeys`.
+
+```{figure} plain_svg/Binding_Subkeys.svg
+:name: fig-subkeys
+:alt: Diagram depicting three component keys. The primary key is positioned at the top, designated for certification. Below it, connected by arrows, are two subkeys labeled as "for encryption" and "for signing," respectively.
+
+{term}`OpenPGP certificates<OpenPGP Certificate>` can contain multiple {term}`subkeys<OpenPGP Subkey>`.
+```
+
+(identity_components)=
+## Identity components
+
+{term}`Identity components<Identity Component>` in an {term}`OpenPGP certificate` are used by the {term}`certificate holder` to state that they are known by a certain identifier (like a name, or an email address).
+
+(user_ids_in_openpgp_certificates)=
+### User IDs in OpenPGP certificates
+
+{term}`OpenPGP certificates<OpenPGP Certificate>` can contain multiple [User IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid). Each {term}`User ID` associates the {term}`certificate<OpenPGP Certificate>` with an {term}`identity`.
+
+```{figure} plain_svg/Binding_a_UserID.svg
+:name: fig-user-ids
+:alt: Depicts a diagram with white background and the title "User IDs". Inside, a public primary component key for certification and a User ID is shown. A green arrow points from component key to User ID and is annotated with a signature.
+
+Relationship of {term}`User ID` to primary {term}`component key` in an {term}`OpenPGP certificate`
+```
+
+A typical {term}`User ID` {term}`identity` is a UTF-8-encoded string composed of a name and an email address. By convention, {term}`User IDs<User ID>` align with the format described in [RFC2822](https://www.rfc-editor.org/rfc/rfc2822) as a *name-addr*.
+
+For further conventions on {term}`User IDs<User ID>`, refer to the document [draft-dkg-openpgp-userid-conventions-00](https://datatracker.ietf.org/doc/draft-dkg-openpgp-userid-conventions/), dated 25 August 2023.
+
+**Split User IDs**
+
+One proposed variant for encoding {term}`identities<Identity>` in {term}`User IDs<User ID>` is to use ["split User IDs"](https://dkg.fifthhorseman.net/blog/2021-dkg-openpgp-transition.html#split-user-ids). Although uncommon, there are currently no significant technical barriers to implementing this format[^dkg-split].
+
+[^dkg-split]: Historically, the OpenPGP ecosystem faced challenges in this context. For further details, refer to Daniel Kahn Gillmor's January 2019 article, ["What were Separated User IDs"](https://dkg.fifthhorseman.net/blog/2019-dkg-openpgp-transition.html#what-were-separated-user-ids).
+
+The rationale for split {term}`User IDs<User ID>` lies in the distinction between a name and an email address, which represent two separate facets of an individual's {term}`identity`. Separating these elements simplifies the process for third parties tasked with certifying that an {term}`identity` is legitimately connected to a {term}`certificate<OpenPGP Certificate>`.
+
+Consider this scenario: A third party is confident about the email-based {term}`identity` of an individual (e.g.,`<alice@example.org>`) and is willing to certify it. However, they might not have sufficient knowledge about the person's name-based {term}`identity` (e.g., `Alice Adams`), so are unwilling to extend the same level of {term}`certification`. Split {term}`User IDs<User ID>` address this dichotomy by allowing distinct {term}`certification` processes for each type of {term}`identity`.
+
+(primary_user_id)=
+### Implications of the Primary User ID
+
+Within a {term}`certificate<OpenPGP Certificate>`, a specific {term}`User ID` is designated as the [Primary User ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-primary-user-id).
+
+Each {term}`User ID` carries associated preference settings, such as preferred encryption algorithms, which is detailed in {numref}`zooming_in_user_id`). When a {term}`certificate<OpenPGP Certificate>` is used in the context of a specific {term}`identity`, then the preferences associated with that {term}`identity component` are used. When a {term}`certificate<OpenPGP Certificate>` is used without reference to a specific {term}`identity`, the preferences associated with the {term}`direct key signature`, or the {term}`primary User ID` take precedence by default.
+
+The {term}`primary User ID` was historically the main store for preferences that apply to the {term}`certificate<OpenPGP Certificate>` as a whole. For more on this, see {ref}`primary-metadata`.
+
+(user_attributes)=
+### User attributes in OpenPGP
+While 
+[user attributes](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#user-attribute-packet) are similar to {term}`User IDs<User ID>`, they are less commonly used.
+
+Currently, the OpenPGP standard prescribes only one format to be stored in user attributes: an [image](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-the-image-attribute-subpack) in JPEG format. Typically, this image represents the key owner, although it is not required.
+
+## Linking the components
+
+To form an {term}`OpenPGP certificate`, individual {term}`components<Component>` are interconnected by the {term}`certificate holder` using their OpenPGP software. Within OpenPGP, this process is termed "binding", as in "a {term}`subkey<OpenPGP Subkey>` is bound to the {term}`primary key<OpenPGP Primary Key>`." These bindings are realized using cryptographic {term}`signatures<OpenPGP Signature Packet>`. An in-depth discussion of this topic can be found in [](signing_components).
+
+In very abstract terms, the {term}`primary key<OpenPGP Primary Key>` of a {term}`certificate<OpenPGP Certificate>` acts as a root of trust or "{term}`certification authority<Certification Authority>`." It is responsible for:
+
+- issuing {term}`signatures<OpenPGP Signature Packet>` that express the {term}`certificate holder`'s intent to use specific {term}`subkeys<OpenPGP Subkey>` or {term}`identity components<Identity Component>`; 
+- conducting other lifecycle operations, including setting {term}`expiration` dates and marking {term}`components<Component>` as {term}`invalidated<Validation>` or "`revoked<Revocation>`."
+
+By binding {term}`components<Component>` using digital {term}`signatures<OpenPGP Signature Packet>`, recipients of an {term}`OpenPGP certificate` need only {term}`validate<Validation>` the {term}`authenticity<Authentication>` of the {term}`primary key` to use for their communication partner. Traditionally, this is done by manually verifying the *{term}`fingerprint<OpenPGP Fingerprint>`* of the {term}`primary key<OpenPGP Primary Key>`. Once the {term}`validity<Validation>` of the {term}`primary key<OpenPGP Primary Key>` is confirmed, the {term}`validity<Validation>` of the remaining {term}`components<Component>` can be automatically assessed by the user's OpenPGP software. Generally, {term}`components<Component>` are {term}`valid<Validation>` parts of a {term}`certificate<OpenPGP Certificate>` if there is a statement signed by the {term}`certificate<OpenPGP Certificate>`'s {term}`primary key<OpenPGP Primary Key>` endorsing this {term}`validity<Validation>`.
+
+(metadata_in_certificates)=
+## Metadata in certificates
+
+{term}`OpenPGP certificates<OpenPGP Certificate>`, their {term}`component keys<Component Key>`, and {term}`identities<Identity>` possess {term}`metadata` that is not stored within the {term}`components<Component>` it pertains to. Instead, this {term}`metadata` is stored within signature packets, which are integral to the structure of an OpenPGP certificate.
+
+Key attributes, such as {term}`capabilities<Capability>` (like *signing* or *encryption*) and {term}`expiration times<Expiration Time>`, are examples of {term}`metadata` not stored in the {term}`component key` data. How this {term}`metadata` is stored depends on the {term}`component`:
+
+- **{term}`Primary key<OpenPGP Primary Key>` {term}`metadata`** is defined either through a {term}`direct key signature` on the {term}`primary key<OpenPGP Primary Key>` (preferred in OpenPGP version 6), or by associating the {term}`metadata` with the [Primary User ID](primary_user_id).
+
+- **{term}`Subkey<OpenPGP Subkey>` {term}`metadata`** is defined within the [subkey binding signature](binding_subkeys) that links the {term}`subkey<OpenPGP Subkey>` to the {term}`certificate<OpenPGP Certificate>`.
+
+- **{term}`Identity component` {term}`metadata`** is associated via the [certifying self-signature](bind_ident) that links the {term}`identity` (usually in the form of a {term}`User ID`) to the {term}`certificate<OpenPGP Certificate>`.
+
+It is crucial to note that the {term}`components<Component>` of an {term}`OpenPGP certificate` remain static after their creation. The use of {term}`signatures<OpenPGP Signature Packet>` to store {term}`metadata` allows for subsequent modifications without altering the original {term}`component<Component>`. For instance, a {term}`certificate holder` can update the {term}`expiration time` of a {term}`component` by issuing a new, superseding {term}`signature<OpenPGP Signature Packet>`.
+
+```{figure} plain_svg/Primary_key_metadata.svg
+:name: fig-primary-metadata
+:alt: Depicts a direct key signature, associated with a primary component key.
+
+{term}`Metadata` can be associated with the {term}`primary key<OpenPGP Primary Key>` using a *{term}`direct key signature`*.
+```
+
+(capabilities_key_flags)=
+### Defining operational capabilities of component keys with key flags
+
+Each {term}`component key` has a set of ["key flags"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-flags) that delineate the operations a key can perform.
+
+Commonly used {term}`key flags<Key Flag>` include:
+
+- **{term}`Certification<Certification Key Flag>`**: enables issuing third-party {term}`certifications<Certification>`
+- **{term}`Signing<Signing Key Flag>`**: allows the key to sign data
+- **{term}`Encryption<Encryption Key Flag>`**: allows the key to encrypt data
+- **{term}`Authentication<Authentication Key Flag>`**: primarily used for SSH authentication[^auth-flag]
+
+[^auth-flag]: It's important to note that the function of the  [authentication](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-authentication-via-digital-) {term}`key flag` is unrelated to the {term}`authentication` process used in certifying OpenPGP {term}`identities<Identity>` and linking them to {term}`certificate<OpenPGP Certificate>`. Rather, this flag indicates a mechanism that uses {term}`cryptographic signatures<OpenPGP Signature Packet>` to confirm control of {term}`private key material` with a remote system.
+
+```{note}
+Distinct {term}`component keys<Component Key>` handle specific operations. Only the {term}`primary key<OpenPGP Primary Key>` can be used for {term}`certification`, although it can have additional {term}`capabilities<Capability>`. {term}`Subkeys<OpenPGP Subkey>` can be used for signing, encryption, and authentication but cannot have the {term}`certification` {term}`capability`. A {term}`component key` can technically have multiple {term}`capabilities<Capability>`. It is considered good practice, however, to [use separate keys for each capability](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.1.5-7). 
+
+Notably, in many algorithms, encryption and signing-related functionalities (i.e., {term}`certification<Certification Key Flag>`, {term}`signing<Signing Key Flag>`, {term}`authentication<Authentication Key Flag>`) are mutually exclusive, because the algorithms only support one of those two families of operations[^key-flag-sharing].
+```
+
+[^key-flag-sharing]: With ECC algorithms, it's impossible to combine {term}`encryption<Encryption Key Flag>` functions with those intended for {term}`signing<Signing Key Flag>`. For example,  ed25519 is specifically used for {term}`signing<Signing Key Flag>`; cv25519 is designated for {term}`encryption<Encryption Key Flag>`.
+
+(algo-pref)=
+### Algorithm preferences and feature signaling
+
+OpenPGP incorporates significant ["cryptographic agility"](https://en.wikipedia.org/wiki/Cryptographic_agility). It doesn't rely on a single fixed set of algorithms. Instead, it defines a suite of cryptographic primitives from which users (or their applications) can choose.
+
+This agility facilitates the easy adoption of new cryptographic primitives into the standard, allowing for a seamless transition. Users can gradually migrate to new cryptographic mechanisms without disruption.
+
+However, this approach requires that OpenPGP software determine the cryptographic mechanisms that a set of communication partners can handle and prefer. OpenPGP employs several mechanisms for this purpose, which allow negotiation between sender and recipient. It's important to note that OpenPGP is not an online scheme; thus, this negotiation is effectively one-way. The active party interprets the preferences expressed in the {term}`certificate<OpenPGP Certificate>` of the passive party.
+
+Negotiation mechanisms in OpenPGP include:
+
+- [Preferred hash algorithms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-hashes-subpacket)
+- [Preferred symmetric ciphers for v1 SEIPD](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-v1-seipd)  
+- [Preferred AEAD ciphersuites](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-v2-seipd)
+- [Features subpacket](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#features-subpacket)
+- [Preferred compression algorithms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-compression-subpacket)
+
+Beyond these explicitly expressed preferences, implementations also deduce {term}`capabilities<Capability>` of communication partners based on the version of the {term}`OpenPGP certificate` they possess.
+
+#### User ID-specific preferences
+
+As a starting point, a {term}`certificate<OpenPGP certificate>` has a set of preferences that apply generally. These are defined either in a {term}`direct key signature`, or via the {term}`primary User ID` of the {term}`certificate<OpenPGP certificate>`.
+
+Additionally, OpenPGP allows modeling {term}`User ID`-specific preferences. The idea is that a user may prefer a different suite of algorithms on their private email account compared to their work email account. Such {term}`identity`-specific preferences can be expressed on the certifying {term}`signatures<OpenPGP Signature Packet>` that bind {term}`User IDs<User ID>` to a {term}`certificate<OpenPGP certificate>`.
+
+## A typical OpenPGP certificate, revisited
+
+Following our review of how {term}`keys<Component Key>` and {term}`identity components<Identity Component>` are linked, let's reexamine the {term}`OpenPGP certificate` from {numref}`fig-openpgp-certificate-components`. Our focus now extends to all of its binding signatures and the {term}`direct key signature` that contains {term}`metadata` for the full {term}`certificate<OpenPGP certificate>`:
+
+```{figure} plain_svg/OpenPGP_Certificate.svg
+:name: fig-openpgp-certificate
+:alt: Depicts an OpenPGP certificate, including a set of components, binding signatures, and a direct key signature on the primary key.
+
+This shows a typical {term}`OpenPGP certificate`, including binding {term}`signatures<OpenPGP Signature Packet>` for all of its {term}`components<Component>`, and a {term}`signature<OpenPGP Signature Packet>` that associates {term}`metadata` with the {term}`primary key<OpenPGP Primary Key>`.
+```
+
+(revocations)=
+## Revocations
+
+When a {term}`certificate holder` needs to {term}`invalidate<Validation>` certain {term}`components<Component>` of their {term}`certificate<OpenPGP Certificate>`, or even the entire {term}`certificate<OpenPGP Certificate>`, they accomplish this through "{term}`revocation`." {term}`Revoking<Revocation>` the {term}`primary key<OpenPGP Primary Key>` renders the entire {term}`certificate<OpenPGP Certificate>` {term}`invalid<Validation>`.
+
+Notably, {term}`revocations<Revocation>` are not the only means by which {term}`components<Component>` can become {term}`invalid<Validation>`. Other factors, such as the passing of a {term}`component`'s {term}`expiration time`, can also render {term}`components<Component>` {term}`invalid<Validation>`.
+
+For more detailed information on {term}`revoking<Revocation>` specific {term}`components<Component>` of a {term}`certificate<OpenPGP Certificate>`, see the section on {ref}`self-revocations`.
+
+(third_party_identity_certifications)=
+## Third-party (identity) certifications
+
+Since its inception, {term}`third-party identity certifications<Third-party Identity Certification>` have been a cornerstone of the OpenPGP ecosystem. The original PGP designers, starting with Phil Zimmermann, advocated for decentralized {term}`trust models<Trust Model>` over reliance on centralized authorities. This decentralized approach in OpenPGP is known as the ["Web of Trust."](wot)
+
+{term}`Third-party certifications<Third-party Identity Certification>` are statements by OpenPGP users confirming that a user with a specific {term}`identity` is the owner of a  particular {term}`OpenPGP certificate`.
+
+For example, Bob's OpenPGP software may issue a {term}`certification` that Bob has checked that the {term}`User ID` `Alice Adams <alice@example.org>` and the {term}`certificate<OpenPGP Certificate>` with the {term}`fingerprint<OpenPGP Fingerprint>` `AAA1 8CBB 2546 85C5 8358 3205 63FD 37B6  7F33 00F9 FB0E C457 378C D29F 1026 98B3` are legitimately linked.
+
+Take, for instance, a scenario where Bob's OpenPGP software issues a {term}`certification` confirming as legitimate the link between the {term}`User ID` `Alice Adams <alice@example.org>` and the {term}`certificate<OpenPGP Certificate>` bearing the {term}`fingerprint<OpenPGP Fingerprint>` `AAA1 8CBB 2546 85C5 8358 3205 63FD 37B6  7F33 00F9 FB0E C457 378C D29F 1026 98B3`.
+
+This process assumes that Bob knows the person known as `Alice Adams` and is confident that `alice@example.org` is indeed Alice's email address. Bob also verifies that the {term}`certificate<OpenPGP Certificate>` his OpenPGP software associates with Alice matches the one Alice uses. In essence, both users must have a {term}`certificate<OpenPGP Certificate>` for Alice with an identical {term}`fingerprint<OpenPGP Fingerprint>`. In OpenPGP version 6, manual {term}`fingerprint<OpenPGP Fingerprint>` comparison by end-users is discouraged, with a replacement {term}`verification` mechanism still under development. The {term}`verification` process must occur over a sufficiently secure channel, such as an end-to-end encrypted video call or a face-to-face meeting.
+
+For more on third-party {term}`certifications<Certification>`, see {ref}`third_party_cert`.

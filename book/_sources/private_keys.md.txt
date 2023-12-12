@@ -1,0 +1,133 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Managing private key material in OpenPGP
+
+## Overview of private keys
+
+This chapter discusses the handling of private key material within OpenPGP.
+
+Private key material is associated with component keys, which are integral parts of [OpenPGP certificates](/certificates). For a discussion of packet structure internals, see the chapter [](zoom/private_keys).
+
+## Terminology: "certificates" and "private keys"
+
+Recall that in this document, the term *OpenPGP certificate* refers to what are commonly known as "OpenPGP public keys." OpenPGP certificates are the combination of component public keys, identity components, binding self-signatures, and third-party certifications,
+as discussed in the previous chapter ([](/certificates)).
+
+This chapter focuses on the corresponding counterpart to the elements of certificates: the *private key material* of component keys.
+
+In this documentation, we treat the private key material as logically separate from the OpenPGP certificate. Operations that use private key material are typically managed by a separate subsystem. It is useful to view OpenPGP certificates and the associated private key material as related but distinct elements[^pkcs11]:
+
+```{figure} plain_svg/OpenPGPCert_with_privatekeystore.svg
+:name: fig-openpgp-certificate-with-private-key-store
+:alt: A diagram on a white background showing an OpenPGP certificate and a private keystore. Gray dotted lines connect the green public key symbols of the OpenPGP certificate to red dotted private key symbols in the private keystore.
+
+An OpenPGP certificate, with the associated private key material handled in a separate subsystem.
+```
+
+[^pkcs11]: The distinction between certificates (which combine public key material and identity information) and private key material is similarly made in the data model of [PKCS #11](https://en.wikipedia.org/wiki/PKCS_11) cryptographic systems.
+
+In certain cases, an exception arises where the cryptographic private key material is integrated into the same OpenPGP framing format as the certificate. This is specifically done in the context of transferable secret keys (TSKs).
+
+## Transferable secret key format
+
+Sometimes it is useful to handle OpenPGP certificates combined with private key material in the form of a [*transferable secret key (TSK)*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-transferable-secret-keys). A TSK is a serialized format that combines OpenPGP certificate data with its connected private key material, stored in a single file.
+
+```{figure} plain_svg/TSK.svg
+:name: fig-transferable-secret-key
+:alt: A box on a white background titled "transferable secret key." It resembles the figure depicting an OpenPGP certificate, except that in each component key box, below the green public key symbol,  the red-dotted private key symbol is also shown.
+
+OpenPGP certificate with integrated private key material, as a TSK
+```
+
+The TSK format is particularly useful for backups of OpenPGP key material or transferring a key to a different computer[^gpg-tsk]. For insights into the packet structure of a TSK, see the chapter [](zoom/private_keys).
+
+[^gpg-tsk]: For example, in GnuPG, an OpenPGP key can be exported in (armored) TSK format using the following command: `gpg --export-secret-key --armor <fingerprint>`.
+
+```{admonition} Terminology
+:class: note
+
+Transferable secret keys are sometimes colloquially referred to as "OpenPGP private keys."
+```
+
+Historically, the concept of TSKs, which combine all elements of an OpenPGP certificate with the associated private key material, has sometimes been conflated with OpenPGP private key operations. However, TSKs are primarily a format for storage and transport; it is generally considered inappropriate as a data structure for use in a private keystore. For further details, see {ref}`key-store-design`.
+
+(encrypted_secrets)=
+## Protecting keys with passphrases
+ 
+In the OpenPGP format, private key material can be optionally protected with a [passphrase](https://en.wikipedia.org/wiki/Passphrase). 
+
+This method proves effective in scenarios where an unauthorized party obtains the OpenPGP key data but does not know the passphrase. Such a safeguard renders the key unusable to the attacker, effectively protecting it against unauthorized access or use.
+
+### Transforming passphrases into symmetric keys
+
+When protecting private key material in OpenPGP, a symmetric key is derived from the user's passphrase. This derived key is then used to protect the OpenPGP private key data.
+
+To facilitate this, the OpenPGP standard defines a set of mechanisms known as [string-to-key (S2K)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-specifier). S2K mechanisms are used to generate high-entropy symmetric encryption keys from lower-entropy passphrases, using a [key derivation function (KDF)](https://en.wikipedia.org/wiki/Key_derivation_function).
+
+```{figure} plain_svg/passphrase_using_S2K.svg
+:name: fig-passphrase-using-s2k
+:alt: A diagram on a white background titled "Converting a passphrase into a symmetric key." On the left is a light-yellow box with dotted-yellow borders framing the phrase "correct horse battery staple." A dotted yellow line falls below the box to the term "passphrase." To the right of the box is a light-green arrow with green-dotted borders and the text "S2K mechanism (string-to-key). The arrow points to its right, where a yellow symmetric key symbol is shown.
+
+Deriving a symmetric key from a passphrase
+```
+
+This symmetric key is used to protect the private key material it is in a passive state, for example, when stored on disk. To use a passphrase-protected OpenPGP private key, it is first decrypted using the symmetric key and then used for private key operations, remaining temporarily unlocked in memory.
+
+#### Mechanisms for symmetric key generation
+
+Over time, OpenPGP has evolved to include various [S2K mechanisms for generating symmetric keys](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-types-reg), in line with advancements in cryptographic practices. Currently, two mechanisms are universally recommended:
+
+- [**Argon2**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-argon2): Introduced in OpenPGP version 6, Argon2 is a memory-hard mechanism designed to reduce the efficiency of brute-force attacks using specialized hardware.
+- [**Iterated and Salted S2K**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-iterated-and-salted-s2k): This mechanism is a staple with OpenPGP version 4 implementations.
+
+A third mechanism is conditionally allowed for key generation. Decryption of private keys that use obsolete mechanisms is also allowed.
+
+The RFC uses the terms "String-to-Key (S2K) specifier" or "String-to-Key (S2K) specifier type" for mechanisms used to *generate* a symmetric key from a passphrase.
+
+### Using symmetric keys for encryption 
+
+The generation of a symmetric key from a passphrase leads to its subsequent use in encrypting or decrypting OpenPGP private key material.
+
+The RFC uses the term "String-to-Key Usage (S2K usage)" for the mechanism used to *apply* the symmetric key.
+
+Different mechanisms are specified [for encryption of OpenPGP private key material](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption).
+
+### Component-based passphrase protection
+
+The OpenPGP mechanism for protecting private key material applies individually to each component key:
+
+- Private key material for individual component keys within a single certificate can be protected with different mechanisms or passphrases.
+- Individual component keys may be stored in unprotected form, while others are secured.
+
+Commonly, when creating a certificate, the user's software will use the same encryption mechanism and passphrase for all component keys. This might give the erroneous impression that all component private key material is encrypted in one, monolithic operation using a single passphrase.
+
+However, variations are possible, such as when adding new subkeys to an existing certificate. In such cases, a user might choose a different passphrase, or the software might select a different encryption mechanism, for instance, for updated best practices.
+
+(card-priv)=
+## OpenPGP cards for private keys
+
+[OpenPGP cards](https://en.wikipedia.org/wiki/OpenPGP_card) represent a category of hardware security devices specifically designed to handle OpenPGP private key material. These cards offer an alternative to directly managing private key material on the user's computer.
+
+Hardware security devices, such as OpenPGP cards, are designed to prevent the user's computer from direct access to the private key material. The goal is to make it impossible to exfiltrate the key material, even when a remote attacker has fully compromised the user's system.
+
+OpenPGP cards adhere to an open specification detailed in the [Functional Specification of the OpenPGP application on ISO Smart Card Operating Systems, Version 3.4.1](https://gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.1.pdf). This specification has been implemented by multiple vendors across various devices, with several Free Software versions available, some of which are compatible with open hardware designs.
+
+Effectively, the OpenPGP card specification outlines one model for a private keystore subsystem. OpenPGP cards do not store a full OpenPGP certificate. Instead, they have three distinct "key slots" designated for *signing*, *decryption*, and *authentication*. Each key slot stores the data of one component key[^missing-ecdh], including its cryptographic private key material. Additionally, OpenPGP cards explicitly store the fingerprint of each component key within the corresponding key slot.
+
+[^missing-ecdh]: In the case of ECDH keys, the KDF parameters (hash function ID and a symmetric encryption algorithm ID) are not stored on the OpenPGP card. This is considered a flaw in the OpenPGP card specification. These missing parameters can be handled in two ways by OpenPGP software on the host computer: either by consulting a copy of the component key (e.g., by inspecting a copy of the certificate) or by deducing the missing KDF parameters from the stored OpenPGP fingerprint on the card.
+
+Notably, the practice of explicitly storing fingerprints on OpenPGP cards contrasts with the general OpenPGP format, where fingerprints of component keys are not stored but are instead dynamically calculated from the key data.
+
+## Private key operations
+
+Although OpenPGP encompasses a broad range of cryptographic mechanisms, the set of operations performed within the core of a private keystore are simple and very limited.
+
+Specifically, an OpenPGP private keystore implements two primitives:
+
+1. Given private key material whose algorithm supports decryption, it can decrypt a *session key*.
+2. Given private key material whose algorithm supports signing, it can calculate a *cryptographic signature* for a hash digest.
+
+These essential operations require access only to the component keys and their associated private key material, specifically [Secret-Key packets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats). Additional packets, such as binding signatures, are not required. 

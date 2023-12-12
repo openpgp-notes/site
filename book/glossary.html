@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>30. Glossary &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="31. Acknowledgements" href="acknowledgements.html" />
+    <link rel="prev" title="29. Zooming in: Packet structure of encrypted data" href="zoom/encryption.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="zoom/encryption.html" title="Previous document"><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data</a>
+        </li>
+        <li>
+          <a href="acknowledgements.html" title="Next document"><span class="section-number">31. </span>Acknowledgements</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="glossary">
+<h1><span class="section-number">30. </span>Glossary<a class="headerlink" href="#glossary" title="Link to this heading">¶</a></h1>
+<dl class="glossary">
+<dt id="term-AEAD">AEAD<a class="headerlink" href="#term-AEAD" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Authenticated-Encryption-With-Associated-Data"><span class="xref std std-term">Authenticated Encryption With Associated Data</span></a>.</p>
+</dd>
+<dt id="term-AEAD-Algorithm">AEAD Algorithm<a class="headerlink" href="#term-AEAD-Algorithm" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Authenticated-Encryption-With-Associated-Data"><span class="xref std std-term">Authenticated Encryption With Associated Data</span></a>.</p>
+</dd>
+<dt id="term-Algorithm-Preferences">Algorithm Preferences<a class="headerlink" href="#term-Algorithm-Preferences" title="Link to this term">¶</a></dt><dd><p>The preferences for <a class="reference internal" href="#term-Hash-Function"><span class="xref std std-term">hash algorithms</span></a>, <a class="reference internal" href="#term-Data-Compression"><span class="xref std std-term">compression algorithms</span></a>, <a class="reference internal" href="#term-Symmetric-Cryptography"><span class="xref std std-term">symmetric algorithms</span></a> and <a class="reference internal" href="#term-Authenticated-Encryption-With-Associated-Data"><span class="xref std std-term">AEAD algorithms</span></a> are set using <a class="reference internal" href="#term-Direct-Key-Signature"><span class="xref std std-term">direct key signatures</span></a> or <a class="reference internal" href="#term-Primary-User-ID"><span class="xref std std-term">primary User ID</span></a> <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">binding signatures</span></a>.</p>
+<p>See <a class="reference internal" href="adv/signing_components.html#change-algorithm-preferences"><span class="std std-ref">Change algorithm preferences</span></a>.</p>
+</dd>
+<dt id="term-Asymmetric-Cryptography">Asymmetric Cryptography<a class="headerlink" href="#term-Asymmetric-Cryptography" title="Link to this term">¶</a></dt><dd><p>Asymmetric cryptography is used in OpenPGP. For a more detailed discussion see <a class="reference internal" href="cryptography.html#public-key-asymmetric-cryptography"><span class="std std-ref">Public-key (asymmetric) cryptography</span></a>.</p>
+</dd>
+<dt id="term-Authenticated-Encryption-With-Associated-Data">Authenticated Encryption With Associated Data<a class="headerlink" href="#term-Authenticated-Encryption-With-Associated-Data" title="Link to this term">¶</a></dt><dd><p>Short AEAD, refers to an encryption scheme that ensures confidentiality of a message. Additionally, additional data, which is not confidential, may be associated with the message.</p>
+<p>See Wikipedia on <a class="reference external" href="https://en.wikipedia.org/wiki/Authenticated_encryption">Authenticated Encryption</a>.</p>
+</dd>
+<dt id="term-Authentication">Authentication<a class="headerlink" href="#term-Authentication" title="Link to this term">¶</a></dt><dd><p>The process of <a class="reference internal" href="#term-Validation"><span class="xref std std-term">validiting</span></a> an <a class="reference internal" href="#term-Identity-Claim"><span class="xref std std-term">identity claim</span></a>.
+The term “authentication” here is semantically different from the one used in <a class="reference internal" href="#term-Authentication-Key-Flag"><span class="xref std std-term">Authentication Key Flag</span></a>.</p>
+</dd>
+<dt id="term-Authentication-Key-Flag">Authentication Key Flag<a class="headerlink" href="#term-Authentication-Key-Flag" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Key-Flag"><span class="xref std std-term">Key Flag</span></a>, which indicates that a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Key</span></a> can be used to confirm control over <a class="reference internal" href="#term-Private-Key-Material"><span class="xref std std-term">private key material</span></a> against a remote system. The term “authentication” here is semantically different from <a class="reference internal" href="#term-Authentication"><span class="xref std std-term">Authentication</span></a>. See <a class="reference internal" href="certificates.html#capabilities-key-flags"><span class="std std-ref">Defining operational capabilities of component keys with key flags</span></a>.</p>
+</dd>
+<dt id="term-Authentication-Tag">Authentication Tag<a class="headerlink" href="#term-Authentication-Tag" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Message-Authentication-Code"><span class="xref std std-term">Message Authentication Code</span></a>.</p>
+</dd>
+<dt id="term-Authenticity">Authenticity<a class="headerlink" href="#term-Authenticity" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Authentication"><span class="xref std std-term">Authentication</span></a>.</p>
+</dd>
+<dt id="term-Back-Signature">Back Signature<a class="headerlink" href="#term-Back-Signature" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Primary-Key-Binding-Signature"><span class="xref std std-term">Primary Key Binding Signature</span></a>.</p>
+</dd>
+<dt id="term-Binary-Signature">Binary Signature<a class="headerlink" href="#term-Binary-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a> with the <a class="reference internal" href="#term-Signature-Type-ID"><span class="xref std std-term">Signature Type ID</span></a> <code class="docutils literal notranslate"><span class="pre">0x00</span></code>, which is used for binary data.</p>
+</dd>
+<dt id="term-Binding">Binding<a class="headerlink" href="#term-Binding" title="Link to this term">¶</a></dt><dd><p>The process of creating a <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a> for a <a class="reference internal" href="#term-Component"><span class="xref std std-term">Component</span></a>, or the resulting <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a>.</p>
+<p>See <a class="reference internal" href="signing_components.html#binding-sigs"><span class="std std-ref">Self-signatures in certificate formation and management</span></a> for more.</p>
+</dd>
+<dt id="term-Binding-Signature">Binding Signature<a class="headerlink" href="#term-Binding-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">self-signature</span></a> on a <a class="reference internal" href="#term-Component"><span class="xref std std-term">component</span></a> which associates that <a class="reference internal" href="#term-Component"><span class="xref std std-term">component</span></a> to the issuing <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">component key</span></a> in a <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a>.</p>
+<p>See <a class="reference internal" href="signing_components.html#binding-sigs"><span class="std std-ref">Self-signatures in certificate formation and management</span></a> for more.</p>
+</dd>
+<dt id="term-CA">CA<a class="headerlink" href="#term-CA" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certification-Authority"><span class="xref std std-term">Certification Authority</span></a>.</p>
+</dd>
+<dt id="term-Capability">Capability<a class="headerlink" href="#term-Capability" title="Link to this term">¶</a></dt><dd><p>The operations an <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a> can perform. See <a class="reference internal" href="certificates.html#capabilities-key-flags"><span class="std std-ref">Defining operational capabilities of component keys with key flags</span></a>.</p>
+</dd>
+<dt id="term-Certificate">Certificate<a class="headerlink" href="#term-Certificate" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a></p>
+</dd>
+<dt id="term-Certificate-Authority">Certificate Authority<a class="headerlink" href="#term-Certificate-Authority" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certification-Authority"><span class="xref std std-term">Certification Authority</span></a></p>
+</dd>
+<dt id="term-Certificate-Holder">Certificate Holder<a class="headerlink" href="#term-Certificate-Holder" title="Link to this term">¶</a></dt><dd><p>A person or other entity, that holds an <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a> and thus is able to modify the accompanying <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+</dd>
+<dt id="term-Certification">Certification<a class="headerlink" href="#term-Certification" title="Link to this term">¶</a></dt><dd><p>A certification, in OpenPGP, is a signature that makes a statement about an <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identity</span></a> in a <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a>, or an entire <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a>.</p>
+<p>Most commonly, the term is applied to “<a class="reference internal" href="signing_components.html#third-party-cert"><span class="std std-ref">third-party certifications</span></a>,” in which an external actor indicates that they have <a class="reference internal" href="#term-Validation"><span class="xref std std-term">validated</span></a> the link between an <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identity</span></a> and a <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a>. However, the term is also used for <a class="reference internal" href="signing_components.html#bind-ident"><span class="std std-ref">self-signatures that bind identity components</span></a> to a <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a>.</p>
+</dd>
+<dt id="term-Certification-Authority">Certification Authority<a class="headerlink" href="#term-Certification-Authority" title="Link to this term">¶</a></dt><dd><p>Also known as <a class="reference external" href="https://en.wikipedia.org/wiki/Certificate_authority">Certificate authority</a>, this is an entity that handles digital certificates, especially by signing or issuing them.</p>
+</dd>
+<dt id="term-Certification-Key-Flag">Certification Key Flag<a class="headerlink" href="#term-Certification-Key-Flag" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Key-Flag"><span class="xref std std-term">Key Flag</span></a>, indicating that a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Key</span></a> can be used for issuing third-party <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifications</span></a>. See <a class="reference internal" href="certificates.html#capabilities-key-flags"><span class="std std-ref">Defining operational capabilities of component keys with key flags</span></a>.</p>
+</dd>
+<dt id="term-Certification-Revocation-Signature-Packet">Certification Revocation Signature Packet<a class="headerlink" href="#term-Certification-Revocation-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> to <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">revoke</span></a> an earlier <a class="reference internal" href="#term-Self-certification"><span class="xref std std-term">self-certification</span></a> of a <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a>.</p>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-certification-revocation-si">RFC 5.2.1.13</a></p>
+</dd>
+<dt id="term-Certification-Signature">Certification Signature<a class="headerlink" href="#term-Certification-Signature" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certification"><span class="xref std std-term">Certification</span></a>.</p>
+</dd>
+<dt id="term-Certifying-Self-signature">Certifying Self-signature<a class="headerlink" href="#term-Certifying-Self-signature" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> by the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a> on an <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Component</span></a> of their own <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">Certificate</span></a>.</p>
+</dd>
+<dt id="term-Certifying-Signature">Certifying Signature<a class="headerlink" href="#term-Certifying-Signature" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certification"><span class="xref std std-term">Certification</span></a>.</p>
+</dd>
+<dt id="term-Cipher-Type-Byte">Cipher Type Byte<a class="headerlink" href="#term-Cipher-Type-Byte" title="Link to this term">¶</a></dt><dd><p>This historical term was defined in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc1991#section-4.1">RFC 1991</a> and was subsequently superseded by <a class="reference internal" href="#term-Packet-Tag"><span class="xref std std-term">Packet Tag</span></a> in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc2440#section-4.2">RFC 2440</a>, which is in turn superseded by <a class="reference internal" href="#term-Packet-Type-ID"><span class="xref std std-term">Packet Type ID</span></a> in the new <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">RFC</a>.</p>
+</dd>
+<dt id="term-Cleartext-Signature">Cleartext Signature<a class="headerlink" href="#term-Cleartext-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a> which exists in a combined text format, encapsulating the (readable) text input it was created for. See <a class="reference internal" href="signing_data.html#cleartext-sig"><span class="std std-ref">Cleartext signatures</span></a>.</p>
+</dd>
+<dt id="term-Cleartext-Signature-Framework">Cleartext Signature Framework<a class="headerlink" href="#term-Cleartext-Signature-Framework" title="Link to this term">¶</a></dt><dd><p>A framework for creating <a class="reference internal" href="#term-Cleartext-Signature"><span class="xref std std-term">cleartext signatures</span></a>.
+See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#cleartext-signature">RFC 7</a>.</p>
+</dd>
+<dt id="term-Component">Component<a class="headerlink" href="#term-Component" title="Link to this term">¶</a></dt><dd><p>An element in an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>, that represents a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">component key</span></a> or <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">identity component</span></a>.</p>
+</dd>
+<dt id="term-Component-Key">Component Key<a class="headerlink" href="#term-Component-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a>.</p>
+</dd>
+<dt id="term-Compression">Compression<a class="headerlink" href="#term-Compression" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Data-Compression"><span class="xref std std-term">Data Compression</span></a>.</p>
+</dd>
+<dt id="term-Creation-Time">Creation Time<a class="headerlink" href="#term-Creation-Time" title="Link to this term">¶</a></dt><dd><p>The point in time at which e.g. an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>, or one of its <a class="reference internal" href="#term-Component"><span class="xref std std-term">component</span></a> is created.</p>
+</dd>
+<dt id="term-Creator">Creator<a class="headerlink" href="#term-Creator" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Issuer"><span class="xref std std-term">Issuer</span></a>.</p>
+</dd>
+<dt id="term-Criticality-Flag">Criticality Flag<a class="headerlink" href="#term-Criticality-Flag" title="Link to this term">¶</a></dt><dd><p>A flag on <a class="reference internal" href="#term-Subpacket"><span class="xref std std-term">Subpacket</span></a>s, that defines their criticality, which is used for validation. See <a class="reference internal" href="signatures.html#criticality-of-subpackets"><span class="std std-ref">Criticality of subpackets</span></a>.</p>
+</dd>
+<dt id="term-Cryptographic-Key">Cryptographic Key<a class="headerlink" href="#term-Cryptographic-Key" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Symmetric-Cryptography"><span class="xref std std-term">symmetric</span></a> or <a class="reference internal" href="#term-Asymmetric-Cryptography"><span class="xref std std-term">asymmetric</span></a> cryptographic key is used for signing and encryption operations. See <a class="reference internal" href="cryptography.html"><span class="doc std std-doc">Cryptographic concepts and terms</span></a>.</p>
+</dd>
+<dt id="term-Cryptographic-Signature">Cryptographic Signature<a class="headerlink" href="#term-Cryptographic-Signature" title="Link to this term">¶</a></dt><dd><p>A raw cryptographic signature is a sequence of bytes created by a <a class="reference internal" href="#term-Cryptographic-Key"><span class="xref std std-term">Cryptographic Key</span></a>.</p>
+</dd>
+<dt id="term-CTB">CTB<a class="headerlink" href="#term-CTB" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Cipher-Type-Byte"><span class="xref std std-term">Cipher Type Byte</span></a>.</p>
+</dd>
+<dt id="term-Data-Compression">Data Compression<a class="headerlink" href="#term-Data-Compression" title="Link to this term">¶</a></dt><dd><p>The process of encoding information using fewer bits than the original representation.
+In OpenPGP data compression is used to reduce the size required for encrypted messages.</p>
+<p>See Wikipedia on <a class="reference external" href="https://en.wikipedia.org/wiki/Data_compression">Data Compression</a>.</p>
+</dd>
+<dt id="term-Data-Signature">Data Signature<a class="headerlink" href="#term-Data-Signature" title="Link to this term">¶</a></dt><dd><p><a class="reference internal" href="#term-Cryptographic-Signature"><span class="xref std std-term">Cryptographic signature</span></a> over binary documents or canonical text documents. See <a class="reference internal" href="signing_data.html"><span class="doc std std-doc">Signatures over data</span></a>.</p>
+</dd>
+<dt id="term-Data-Signature-Packet">Data Signature Packet<a class="headerlink" href="#term-Data-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> which describes a <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a>. See <a class="reference internal" href="signing_data.html"><span class="doc std std-doc">Signatures over data</span></a>.</p>
+</dd>
+<dt id="term-Delegation">Delegation<a class="headerlink" href="#term-Delegation" title="Link to this term">¶</a></dt><dd><p>OpenPGP users can <a class="reference internal" href="signing_components.html#delegation"><span class="std std-ref">delegate authentication decisions</span></a> to third parties, and thus rely on <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifications</span></a> they issue. The remote party is then called a “<a class="reference internal" href="#term-Trusted-introducer"><span class="xref std std-term">trusted introducer</span></a>”.</p>
+<p>This kind of delegation involves <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifications</span></a> that include the <a class="reference internal" href="#term-Trust-Signature"><span class="xref std std-term">trust signature</span></a> subpacket.</p>
+</dd>
+<dt id="term-Detached-Signature">Detached Signature<a class="headerlink" href="#term-Detached-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a> which exists as a separate file to the file it was created for. See <a class="reference internal" href="signing_data.html#forms-of-openpgp-data-signatures"><span class="std std-ref">Forms of OpenPGP data signatures</span></a>.</p>
+</dd>
+<dt id="term-Direct-Key-Signature">Direct Key Signature<a class="headerlink" href="#term-Direct-Key-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Signature"><span class="xref std std-term">Signature</span></a> that sets preferences and advertises <a class="reference internal" href="#term-Features-Subpacket"><span class="xref std std-term">features</span></a> applicable to an entire <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">Certificate</span></a>. See <a class="reference internal" href="signing_components.html#direct-key-signature"><span class="std std-ref">Direct key signature</span></a>.</p>
+</dd>
+<dt id="term-Embedded-Signature-Subpacket">Embedded Signature Subpacket<a class="headerlink" href="#term-Embedded-Signature-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a> which contains a complete <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-embedded-signature">RFC 5.2.3.34</a></p>
+</dd>
+<dt id="term-Encryption-Key-Flag">Encryption Key Flag<a class="headerlink" href="#term-Encryption-Key-Flag" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Key-Flag"><span class="xref std std-term">Key Flag</span></a>, indicating that a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Key</span></a> can be used for encrypting data. See <a class="reference internal" href="certificates.html#capabilities-key-flags"><span class="std std-ref">Defining operational capabilities of component keys with key flags</span></a>.</p>
+</dd>
+<dt id="term-Expiration">Expiration<a class="headerlink" href="#term-Expiration" title="Link to this term">¶</a></dt><dd><p>A mechanism by which a <a class="reference internal" href="#term-Component"><span class="xref std std-term">Component</span></a> is invalidated due to the <a class="reference internal" href="#term-Expiration-Time"><span class="xref std std-term">Expiration Time</span></a> of its <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">binding signature</span></a> being older than the <a class="reference internal" href="#term-Reference-Time"><span class="xref std std-term">Reference Time</span></a> by which it is validated.</p>
+</dd>
+<dt id="term-Expiration-Time">Expiration Time<a class="headerlink" href="#term-Expiration-Time" title="Link to this term">¶</a></dt><dd><p>The time of expiry of an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-Features-Subpacket">Features Subpacket<a class="headerlink" href="#term-Features-Subpacket" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a>, which denotes advanced OpenPGP features an <a class="reference internal" href="#term-OpenPGP-Implementation"><span class="xref std std-term">implementation</span></a> supports.</p>
+<p>For an in-depth view on these <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">subpackets</span></a> see <a class="reference internal" href="zoom/certificates.html#zooming-in-dks"><span class="std std-ref">Direct Key Signature</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-features">RFC 5.2.3.32</a></p>
+</dd>
+<dt id="term-Fingerprint">Fingerprint<a class="headerlink" href="#term-Fingerprint" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Fingerprint"><span class="xref std std-term">OpenPGP Fingerprint</span></a>.</p>
+</dd>
+<dt id="term-Hard-Revocation">Hard Revocation<a class="headerlink" href="#term-Hard-Revocation" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Revocation-Signature-Packet"><span class="xref std std-term">Revocation Signature Packet</span></a> for a <a class="reference internal" href="#term-Certification"><span class="xref std std-term">Certification</span></a> or a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Key</span></a>, which either includes a <a class="reference internal" href="#term-Reason-For-Revocation-Subpacket"><span class="xref std std-term">Reason For Revocation Subpacket</span></a> with a <a class="reference internal" href="#term-Revocation-Code"><span class="xref std std-term">Revocation Code</span></a>, that signifies the target being compromised (e.g., <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span></code>), or has no <a class="reference internal" href="#term-Reason-For-Revocation-Subpacket"><span class="xref std std-term">Reason For Revocation Subpacket</span></a> at all.</p>
+<p>See <a class="reference internal" href="signing_components.html#hard-vs-soft-revocations"><span class="std std-ref">Hard vs soft revocations</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation">RFC 5.2.3.31</a>.</p>
+</dd>
+<dt id="term-Hash-Algorithm">Hash Algorithm<a class="headerlink" href="#term-Hash-Algorithm" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Hash-Function"><span class="xref std std-term">Hash Function</span></a>.</p>
+</dd>
+<dt id="term-Hash-Digest">Hash Digest<a class="headerlink" href="#term-Hash-Digest" title="Link to this term">¶</a></dt><dd><p>Output of a cryptographic hash function for a string of data of any length. See <a class="reference internal" href="cryptography.html#crypto-hash"><span class="std std-ref">Cryptographic hash functions</span></a>.</p>
+</dd>
+<dt id="term-Hash-Function">Hash Function<a class="headerlink" href="#term-Hash-Function" title="Link to this term">¶</a></dt><dd><p>A function used to map data of arbitrary size to fixed-size values (see <a class="reference internal" href="#term-Hash-Digest"><span class="xref std std-term">Hash Digest</span></a>).</p>
+</dd>
+<dt id="term-Hashed-Area">Hashed Area<a class="headerlink" href="#term-Hashed-Area" title="Link to this term">¶</a></dt><dd><p>An area in an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> containing <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a>s, that is covered by the <a class="reference internal" href="#term-Hash-Digest"><span class="xref std std-term">Hash Digest</span></a> a <a class="reference internal" href="#term-Cryptographic-Signature"><span class="xref std std-term">Cryptographic Signature</span></a> is created for. See <a class="reference internal" href="signatures.html#hashed-and-unhashed-signature-subpackets"><span class="std std-ref">Hashed and unhashed signature subpackets</span></a>.</p>
+</dd>
+<dt id="term-Hashed-Subpacket">Hashed Subpacket<a class="headerlink" href="#term-Hashed-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a> residing in the <a class="reference internal" href="#term-Hashed-Area"><span class="xref std std-term">Hashed Area</span></a> of an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-Hybrid-Cryptosystem">Hybrid Cryptosystem<a class="headerlink" href="#term-Hybrid-Cryptosystem" title="Link to this term">¶</a></dt><dd><p>A cryptographic system that employs both <a class="reference internal" href="#term-Asymmetric-Cryptography"><span class="xref std std-term">Asymmetric Cryptography</span></a> and <a class="reference internal" href="#term-Symmetric-Cryptography"><span class="xref std std-term">Symmetric Cryptography</span></a>. See <a class="reference internal" href="cryptography.html#hybrid-cryptosystems"><span class="std std-ref">Hybrid cryptosystems</span></a>.</p>
+</dd>
+<dt id="term-Identity">Identity<a class="headerlink" href="#term-Identity" title="Link to this term">¶</a></dt><dd><p>An identity of a <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>. It is represented by an <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Component</span></a>, which may be certified using <a class="reference internal" href="#term-Third-party-Identity-Certification"><span class="xref std std-term">third-party identity certifications</span></a>, or by a <a class="reference internal" href="#term-Notation"><span class="xref std std-term">Notation</span></a>.</p>
+</dd>
+<dt id="term-Identity-Certification">Identity Certification<a class="headerlink" href="#term-Identity-Certification" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> on an <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Component</span></a> which <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifies</span></a> its <a class="reference internal" href="#term-Authentication"><span class="xref std std-term">authenticity</span></a>.</p>
+</dd>
+<dt id="term-Identity-Claim">Identity Claim<a class="headerlink" href="#term-Identity-Claim" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a> may use <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Components</span></a> or <a class="reference internal" href="#term-Notation"><span class="xref std std-term">Notations</span></a> to state a claim about their <a class="reference internal" href="#term-Identity"><span class="xref std std-term">Identity</span></a>.</p>
+</dd>
+<dt id="term-Identity-Component">Identity Component<a class="headerlink" href="#term-Identity-Component" title="Link to this term">¶</a></dt><dd><p>Part of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>, that is used to associate data about the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a> with it. See <a class="reference internal" href="certificates.html#identity-components"><span class="std std-ref">Identity components</span></a> for further details.</p>
+</dd>
+<dt id="term-Identity-Verification">Identity Verification<a class="headerlink" href="#term-Identity-Verification" title="Link to this term">¶</a></dt><dd><p>A process by which the <a class="reference internal" href="#term-Identity-Claim"><span class="xref std std-term">Identity Claim</span></a> of a <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a> is verified. See also <a class="reference internal" href="#term-Signature-Verification"><span class="xref std std-term">Signature Verification</span></a>.</p>
+</dd>
+<dt id="term-Initial-Introducer">Initial Introducer<a class="headerlink" href="#term-Initial-Introducer" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> explicitly <a class="reference internal" href="#term-Delegation"><span class="xref std std-term">delegated</span></a> to from a <a class="reference internal" href="#term-Trust-Anchor"><span class="xref std std-term">Trust Anchor</span></a>.</p>
+</dd>
+<dt id="term-Inline-Signature">Inline Signature<a class="headerlink" href="#term-Inline-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a> which exists encapsulated alongside the data it was created for in an OpenPGP container. See <a class="reference internal" href="signing_data.html#forms-of-openpgp-data-signatures"><span class="std std-ref">Forms of OpenPGP data signatures</span></a>.</p>
+</dd>
+<dt id="term-Issuer">Issuer<a class="headerlink" href="#term-Issuer" title="Link to this term">¶</a></dt><dd><p>An entity, that created an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> using an <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a>.</p>
+</dd>
+<dt id="term-Issuer-Fingerprint-Subpacket">Issuer Fingerprint Subpacket<a class="headerlink" href="#term-Issuer-Fingerprint-Subpacket" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Subpacket"><span class="xref std std-term">Subpacket</span></a> specifying the <a class="reference internal" href="#term-Fingerprint"><span class="xref std std-term">Fingerprint</span></a> of an <a class="reference internal" href="#term-Issuer-Key"><span class="xref std std-term">Issuer Key</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-issuer-fingerprint">RFC 5.2.3.35</a></p>
+</dd>
+<dt id="term-Issuer-Key">Issuer Key<a class="headerlink" href="#term-Issuer-Key" title="Link to this term">¶</a></dt><dd><p>The <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a> of an <a class="reference internal" href="#term-Issuer"><span class="xref std std-term">Issuer</span></a>, used to create an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-Key">Key<a class="headerlink" href="#term-Key" title="Link to this term">¶</a></dt><dd><p>In OpenPGP, and cryptography more generally, the term “key” holds different meanings.</p>
+<p>First, it can apply to different <a class="reference internal" href="cryptography.html"><span class="doc std std-doc">cryptographic primitives</span></a>:</p>
+<ul class="simple">
+<li><p>asymmetric public key</p></li>
+<li><p>asymmetric private key</p></li>
+<li><p><a class="reference internal" href="#term-Symmetric-Secret-Key"><span class="xref std std-term">Symmetric Secret Key</span></a></p></li>
+</ul>
+<p>Additionally, in OpenPGP, asymmetric cryptographic keys are used on <a class="reference internal" href="certificates.html#layers-of-keys-in-openpgp"><span class="std std-ref">three different layers</span></a> of abstraction:</p>
+<ul class="simple">
+<li><p>cryptographic key</p></li>
+<li><p>OpenPGP component key</p></li>
+<li><p><a class="reference internal" href="#term-OpenPGP-Key"><span class="xref std std-term">OpenPGP key</span></a> (which in turn refers to either an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> or a <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a></p></li>
+</ul>
+</dd>
+<dt id="term-Key-Expiration-Time-Subpacket">Key Expiration Time Subpacket<a class="headerlink" href="#term-Key-Expiration-Time-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the <a class="reference internal" href="#term-Expiration-Time"><span class="xref std std-term">Expiration Time</span></a> for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> on a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">key</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-expiration-time">RFC 5.2.3.13</a></p>
+</dd>
+<dt id="term-Key-Flag">Key Flag<a class="headerlink" href="#term-Key-Flag" title="Link to this term">¶</a></dt><dd><p>A preference encoded in an <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a>, that defines the <a class="reference internal" href="#term-Capability"><span class="xref std std-term">Capability</span></a> a <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a> has. See <a class="reference internal" href="signatures.html#signature-subpackets"><span class="std std-ref">Signature subpackets</span></a>.</p>
+</dd>
+<dt id="term-Key-Holder">Key Holder<a class="headerlink" href="#term-Key-Holder" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>.</p>
+</dd>
+<dt id="term-Key-ID">Key ID<a class="headerlink" href="#term-Key-ID" title="Link to this term">¶</a></dt><dd><p>The high-order (leftmost) 64 bits of an <a class="reference internal" href="#term-OpenPGP-Fingerprint"><span class="xref std std-term">OpenPGP Fingerprint</span></a>.
+Historically, this term refers to the low-order (rightmost) 64 bits of an <a class="reference internal" href="#term-OpenPGP-Fingerprint"><span class="xref std std-term">OpenPGP Fingerprint</span></a>.</p>
+</dd>
+<dt id="term-Key-Material">Key Material<a class="headerlink" href="#term-Key-Material" title="Link to this term">¶</a></dt><dd><p>May refer to <a class="reference internal" href="#term-Public-Key-Material"><span class="xref std std-term">Public Key Material</span></a> or <a class="reference internal" href="#term-Private-Key-Material"><span class="xref std std-term">Private Key Material</span></a>.</p>
+</dd>
+<dt id="term-Key-Owner">Key Owner<a class="headerlink" href="#term-Key-Owner" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>.</p>
+</dd>
+<dt id="term-Key-Revocation-Signature-Packet">Key Revocation Signature Packet<a class="headerlink" href="#term-Key-Revocation-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Revocation-Self-signature"><span class="xref std std-term">Revocation Self-signature</span></a> for an entire <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+</dd>
+<dt id="term-Key-Server">Key Server<a class="headerlink" href="#term-Key-Server" title="Link to this term">¶</a></dt><dd><p>A piece of software available over the network, which provides access to <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificates</span></a> e.g., by searching for an <a class="reference internal" href="#term-OpenPGP-Fingerprint"><span class="xref std std-term">OpenPGP Fingerprint</span></a> or <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a>, via the <code class="docutils literal notranslate"><span class="pre">HKP</span></code> and/ or <code class="docutils literal notranslate"><span class="pre">HKPS</span></code> protocols.
+Several implementations such as <a class="reference external" href="https://gitlab.com/keys.openpgp.org/hagrid/">hagrid</a>, or <a class="reference external" href="https://github.com/hockeypuck/hockeypuck">hockeypuck</a> exist.</p>
+</dd>
+<dt id="term-Life-cycle-Management">Life-cycle Management<a class="headerlink" href="#term-Life-cycle-Management" title="Link to this term">¶</a></dt><dd><p>In OpenPGP several actions are necessary for the prolonged use of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> or adapting its <a class="reference internal" href="#term-Component"><span class="xref std std-term">components</span></a> to the requirements of the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>.
+These are for example changes to <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">binding signatures</span></a> (adding or <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">revocation</span></a> of <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">component keys</span></a> or <a class="reference internal" href="#term-Direct-Key-Signature"><span class="xref std std-term">direct key signature</span></a>), modification of <a class="reference internal" href="#term-Expiration-Time"><span class="xref std std-term">expiration time</span></a> or other <a class="reference internal" href="#term-Metadata"><span class="xref std std-term">metadata</span></a> for <a class="reference internal" href="#term-Component"><span class="xref std std-term">components</span></a>.
+See <a class="reference internal" href="signing_components.html#self-signatures"><span class="std std-ref">Self-signatures</span></a>.</p>
+</dd>
+<dt id="term-Literal-Data-Packet">Literal Data Packet<a class="headerlink" href="#term-Literal-Data-Packet" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">packet</span></a> in a <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a> which contains data, that has been signed using a <a class="reference internal" href="#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a>. See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit">RFC 5.9</a> for more details.</p>
+</dd>
+<dt id="term-MAC">MAC<a class="headerlink" href="#term-MAC" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Message-Authentication-Code"><span class="xref std std-term">Message Authentication Code</span></a>.</p>
+</dd>
+<dt id="term-Master-Key">Master Key<a class="headerlink" href="#term-Master-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a>.</p>
+</dd>
+<dt id="term-Message-Authentication-Code">Message Authentication Code<a class="headerlink" href="#term-Message-Authentication-Code" title="Link to this term">¶</a></dt><dd><p>A piece of information used for integrity and <a class="reference internal" href="#term-Authentication"><span class="xref std std-term">authenticity</span></a> verification of a message. See <a class="reference internal" href="cryptography.html#message-authentication-codes"><span class="std std-ref">Message authentication codes</span></a>.</p>
+</dd>
+<dt id="term-Meta-Introducer">Meta-Introducer<a class="headerlink" href="#term-Meta-Introducer" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> with a <a class="reference internal" href="#term-Trust-Depth"><span class="xref std std-term">Trust Depth</span></a> greater than one.</p>
+</dd>
+<dt id="term-Metadata">Metadata<a class="headerlink" href="#term-Metadata" title="Link to this term">¶</a></dt><dd><p>Data related to preferences of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> or its <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>, that can be found in <a class="reference internal" href="#term-Signature"><span class="xref std std-term">signature</span></a> <a class="reference internal" href="#term-Packet"><span class="xref std std-term">packets</span></a>. See <a class="reference internal" href="certificates.html#metadata-in-certificates"><span class="std std-ref">Metadata in certificates</span></a>.</p>
+</dd>
+<dt id="term-Notation">Notation<a class="headerlink" href="#term-Notation" title="Link to this term">¶</a></dt><dd><p>A mechanism for a <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a> to provide user-defined data using a <a class="reference internal" href="#term-Notation-Signature-Subpacket"><span class="xref std std-term">Notation Signature Subpacket</span></a>.</p>
+</dd>
+<dt id="term-Notation-Signature-Subpacket">Notation Signature Subpacket<a class="headerlink" href="#term-Notation-Signature-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a> which is used to add user-defined data to a <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">Certificate</span></a>. See <a class="reference internal" href="adv/signatures.html#notation-signature-subpackets"><span class="std std-ref">Notation signature subpackets</span></a>.</p>
+</dd>
+<dt id="term-Notation-Tag">Notation Tag<a class="headerlink" href="#term-Notation-Tag" title="Link to this term">¶</a></dt><dd><p>Part of a <a class="reference internal" href="#term-Notation"><span class="xref std std-term">Notation</span></a> name.</p>
+</dd>
+<dt id="term-One-pass-Signature-Packet">One-pass Signature Packet<a class="headerlink" href="#term-One-pass-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>One or more <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">packets</span></a> before the actual data in a <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a> which contain information to allow a receiving <a class="reference internal" href="#term-OpenPGP-Implementation"><span class="xref std std-term">implementation</span></a> to create <a class="reference internal" href="#term-Hash-Digest"><span class="xref std std-term">hashes</span></a> required for signature verification. See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#one-pass-sig">RFC 5.4</a> for more details.</p>
+</dd>
+<dt id="term-OpenPGP-Certificate">OpenPGP Certificate<a class="headerlink" href="#term-OpenPGP-Certificate" title="Link to this term">¶</a></dt><dd><p>An OpenPGP certificate contains public key material, identity claims and third party certifications (but no private key material)</p>
+</dd>
+<dt id="term-OpenPGP-Component-Key">OpenPGP Component Key<a class="headerlink" href="#term-OpenPGP-Component-Key" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a> or <a class="reference internal" href="#term-OpenPGP-Subkey"><span class="xref std std-term">OpenPGP Subkey</span></a>. For an in-depth discussion see <a class="reference internal" href="certificates.html#component-keys"><span class="std std-ref">Component keys</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Fingerprint">OpenPGP Fingerprint<a class="headerlink" href="#term-OpenPGP-Fingerprint" title="Link to this term">¶</a></dt><dd><p>An OpenPGP Fingerprint is a shorthand representation of an <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a>. Fingerprints effectively act as unique identifiers. See <a class="reference internal" href="certificates.html#fingerprint"><span class="std std-ref">Fingerprint</span></a>.</p>
+<p>The Fingerprint of the <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">primary component key</span></a> is used as an identifier for the full <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Implementation">OpenPGP Implementation<a class="headerlink" href="#term-OpenPGP-Implementation" title="Link to this term">¶</a></dt><dd><p>A piece of software implementing the OpenPGP protocol (to some extend).</p>
+</dd>
+<dt id="term-OpenPGP-Key">OpenPGP Key<a class="headerlink" href="#term-OpenPGP-Key" title="Link to this term">¶</a></dt><dd><p>Used either for an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> (containing public key material and metadata), or for an <a class="reference internal" href="#term-OpenPGP-Private-Key"><span class="xref std std-term">OpenPGP Private Key</span></a>. See <a class="reference internal" href="certificates.html"><span class="doc std std-doc">Certificates</span></a> for an in-depth discussion.</p>
+</dd>
+<dt id="term-OpenPGP-Message">OpenPGP Message<a class="headerlink" href="#term-OpenPGP-Message" title="Link to this term">¶</a></dt><dd><p>A data structure, which contains OpenPGP components such as <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> or <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> and plaintext or encrypted data.</p>
+</dd>
+<dt id="term-OpenPGP-Primary-Key">OpenPGP Primary Key<a class="headerlink" href="#term-OpenPGP-Primary-Key" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a> that is used in the primary key role of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>. For a more detailed discussion, see <a class="reference internal" href="certificates.html#primary-key"><span class="std std-ref">Primary key</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Private-Key">OpenPGP Private Key<a class="headerlink" href="#term-OpenPGP-Private-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Public-Key">OpenPGP Public Key<a class="headerlink" href="#term-OpenPGP-Public-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Signature">OpenPGP Signature<a class="headerlink" href="#term-OpenPGP-Signature" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Signature-Packet">OpenPGP Signature Packet<a class="headerlink" href="#term-OpenPGP-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Packet"><span class="xref std std-term">packet</span></a> that contains a raw <a class="reference internal" href="#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a>, a <a class="reference internal" href="#term-Signature-Type-ID"><span class="xref std std-term">Signature Type ID</span></a> and additional <a class="reference internal" href="#term-Metadata"><span class="xref std std-term">metadata</span></a>. See <a class="reference internal" href="signatures.html"><span class="doc std std-doc">OpenPGP Signatures</span></a>. Basic concepts are introduced in <a class="reference internal" href="signatures.html"><span class="doc std std-doc">OpenPGP Signatures</span></a> and more detailed use-cases are explained in <a class="reference internal" href="signing_data.html"><span class="doc std std-doc">Signatures over data</span></a> and <a class="reference internal" href="signing_components.html"><span class="doc std std-doc">Signatures on components</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Signature-Subpacket">OpenPGP Signature Subpacket<a class="headerlink" href="#term-OpenPGP-Signature-Subpacket" title="Link to this term">¶</a></dt><dd><p>A data structure in a <a class="reference internal" href="#term-Signature-Packet"><span class="xref std std-term">Signature Packet</span></a>, that describes <a class="reference internal" href="#term-Metadata"><span class="xref std std-term">metadata</span></a> and preferences. See <a class="reference internal" href="signatures.html#signature-subpackets"><span class="std std-ref">Signature subpackets</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Signature-Subpacket-Type">OpenPGP Signature Subpacket Type<a class="headerlink" href="#term-OpenPGP-Signature-Subpacket-Type" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a> type.</p>
+</dd>
+<dt id="term-OpenPGP-Signature-Type">OpenPGP Signature Type<a class="headerlink" href="#term-OpenPGP-Signature-Type" title="Link to this term">¶</a></dt><dd><p>The type of an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> is defined by its <a class="reference internal" href="#term-Signature-Type-ID"><span class="xref std std-term">Signature Type ID</span></a>. See <a class="reference internal" href="signatures.html#signature-types"><span class="std std-ref">Signature types in OpenPGP</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Signing-Subkey">OpenPGP Signing Subkey<a class="headerlink" href="#term-OpenPGP-Signing-Subkey" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Subkey"><span class="xref std std-term">OpenPGP Subkey</span></a> with the <a class="reference internal" href="#term-Signing-Key-Flag"><span class="xref std std-term">Signing Key Flag</span></a>.</p>
+</dd>
+<dt id="term-OpenPGP-Subkey">OpenPGP Subkey<a class="headerlink" href="#term-OpenPGP-Subkey" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Component-Key"><span class="xref std std-term">OpenPGP Component Key</span></a> that is used in the subkey role, in an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>. For a more detailed discussion, see <a class="reference internal" href="certificates.html#subkeys"><span class="std std-ref">Subkeys</span></a>.</p>
+</dd>
+<dt id="term-Owner">Owner<a class="headerlink" href="#term-Owner" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>.</p>
+</dd>
+<dt id="term-Packet">Packet<a class="headerlink" href="#term-Packet" title="Link to this term">¶</a></dt><dd><p>An element in an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>, which represents <a class="reference internal" href="#term-Component"><span class="xref std std-term">components</span></a> or <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signatures</span></a>.</p>
+</dd>
+<dt id="term-Packet-Header">Packet Header<a class="headerlink" href="#term-Packet-Header" title="Link to this term">¶</a></dt><dd><p>A section of variable length at the beginning of a <a class="reference internal" href="#term-Packet"><span class="xref std std-term">Packet</span></a>, which encodes for example the <a class="reference internal" href="#term-Packet-Type-ID"><span class="xref std std-term">Packet Type ID</span></a>. See the relevant <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">section in the RFC</a>, which explains this section in more detail.</p>
+</dd>
+<dt id="term-Packet-Tag">Packet Tag<a class="headerlink" href="#term-Packet-Tag" title="Link to this term">¶</a></dt><dd><p>This historical term was defined in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc2440#section-4.2">RFC 2440</a> and is superseded by <a class="reference internal" href="#term-Packet-Type-ID"><span class="xref std std-term">Packet Type ID</span></a> in the new <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">RFC</a>.</p>
+</dd>
+<dt id="term-Packet-Type-ID">Packet Type ID<a class="headerlink" href="#term-Packet-Type-ID" title="Link to this term">¶</a></dt><dd><p>A numerical value encoded in the first octet of a <a class="reference internal" href="#term-Packet-Header"><span class="xref std std-term">Packet Header</span></a>, defining a <a class="reference internal" href="#term-Packet"><span class="xref std std-term">Packet</span></a>’s type.</p>
+</dd>
+<dt id="term-Positive-Certification">Positive Certification<a class="headerlink" href="#term-Positive-Certification" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Type"><span class="xref std std-term">OpenPGP Signature Type</span></a> with the <a class="reference internal" href="#term-Signature-Type-ID"><span class="xref std std-term">Signature Type ID</span></a> <code class="docutils literal notranslate"><span class="pre">0x13</span></code>, which is used in <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">binding signatures</span></a> for <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User IDs</span></a>. This <a class="reference internal" href="#term-OpenPGP-Signature-Type"><span class="xref std std-term">OpenPGP Signature Type</span></a> implies that the <a class="reference internal" href="#term-Issuer"><span class="xref std std-term">issuer</span></a> has done substantial <a class="reference internal" href="#term-Verification"><span class="xref std std-term">verification</span></a> of the <a class="reference internal" href="#term-Identity-Claim"><span class="xref std std-term">Identity Claim</span></a>.</p>
+<p>See <a class="reference internal" href="signing_components.html#bind-ident"><span class="std std-ref">Binding identities to a certificate</span></a>.</p>
+</dd>
+<dt id="term-Preferred-AEAD-Ciphersuites-Subpacket">Preferred AEAD Ciphersuites Subpacket<a class="headerlink" href="#term-Preferred-AEAD-Ciphersuites-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the preferred version 2 <a class="reference internal" href="#term-Symmetrically-Encrypted-Integrity-Protected-Data"><span class="xref std std-term">SEIPD</span></a> algorithms for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>. This defines which algorithms the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">key holder</span></a> prefers to receive and implicitly signifies the supported algorithms of the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">key holder</span></a>’s <a class="reference internal" href="#term-OpenPGP-Implementation"><span class="xref std std-term">implementation</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-aead-ciphersuites">RFC 5.2.3.15</a></p>
+</dd>
+<dt id="term-Preferred-Compression-Algorithms-Subpacket">Preferred Compression Algorithms Subpacket<a class="headerlink" href="#term-Preferred-Compression-Algorithms-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the preferred <a class="reference internal" href="#term-Data-Compression"><span class="xref std std-term">compression algorithms</span></a> for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>. This defines which <a class="reference internal" href="#term-Data-Compression"><span class="xref std std-term">algorithms</span></a> the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">key holder</span></a> prefers to use.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-compression-algor">RFC 5.2.3.17</a>.</p>
+</dd>
+<dt id="term-Preferred-Hash-Algorithms-Subpacket">Preferred Hash Algorithms Subpacket<a class="headerlink" href="#term-Preferred-Hash-Algorithms-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the preferred <a class="reference internal" href="#term-Hash-Function"><span class="xref std std-term">hash algorithm</span></a> for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>. This defines which algorithms the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">key holder</span></a> prefers to receive.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-hash-algorithms">RFC 5.2.3.16</a>.</p>
+</dd>
+<dt id="term-Preferred-Symmetric-Ciphers-for-v1-SEIPD-Subpacket">Preferred Symmetric Ciphers for v1 SEIPD Subpacket<a class="headerlink" href="#term-Preferred-Symmetric-Ciphers-for-v1-SEIPD-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the preferred version 1 <a class="reference internal" href="#term-Symmetrically-Encrypted-Integrity-Protected-Data"><span class="xref std std-term">SEIPD</span></a> algorithms for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>. This defines which algorithms the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">key holder</span></a> prefers to receive and implicitly signifies the supported algorithms of the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">key holder</span></a>’s <a class="reference internal" href="#term-OpenPGP-Implementation"><span class="xref std std-term">implementation</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-symmetric-ciphers">RFC 5.2.3.14</a>.</p>
+</dd>
+<dt id="term-Primary-Component-Key">Primary Component Key<a class="headerlink" href="#term-Primary-Component-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a>.</p>
+</dd>
+<dt id="term-Primary-Introducer">Primary Introducer<a class="headerlink" href="#term-Primary-Introducer" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Initial-Introducer"><span class="xref std std-term">Initial Introducer</span></a>.</p>
+</dd>
+<dt id="term-Primary-Key">Primary Key<a class="headerlink" href="#term-Primary-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a>.</p>
+</dd>
+<dt id="term-Primary-Key-Binding-Signature">Primary Key Binding Signature<a class="headerlink" href="#term-Primary-Key-Binding-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a>, which is created by a <a class="reference internal" href="#term-OpenPGP-Signing-Subkey"><span class="xref std std-term">OpenPGP Signing Subkey</span></a> on the <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a> of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> and stored in an <a class="reference internal" href="#term-Embedded-Signature-Subpacket"><span class="xref std std-term">Embedded Signature Subpacket</span></a> in the <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a> for the <a class="reference internal" href="#term-OpenPGP-Signing-Subkey"><span class="xref std std-term">OpenPGP Signing Subkey</span></a>.</p>
+<p>This special case is explained in more detail in <a class="reference internal" href="signing_components.html#bind-subkey-sign"><span class="std std-ref">Special case: Binding signing subkeys</span></a>.</p>
+</dd>
+<dt id="term-Primary-User-ID">Primary User ID<a class="headerlink" href="#term-Primary-User-ID" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a> which carries the default preferences for <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">identity components</span></a> without preferences.</p>
+<p>See <a class="reference internal" href="certificates.html#primary-user-id"><span class="std std-ref">Implications of the Primary User ID</span></a>.</p>
+</dd>
+<dt id="term-Primary-User-ID-Binding-Signature">Primary User ID Binding Signature<a class="headerlink" href="#term-Primary-User-ID-Binding-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a>, which is created by an <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a> to bind a <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a> to its <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> and marking it as the <a class="reference internal" href="#term-Primary-User-ID"><span class="xref std std-term">Primary User ID</span></a>.</p>
+<p>This <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a> may carry <a class="reference internal" href="#term-Metadata"><span class="xref std std-term">metadata</span></a> specific to the <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a> at hand as well as some applicable to the entire <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+<p>See <a class="reference internal" href="signing_components.html#self-signature-binding-to-primary-user-id"><span class="std std-ref">Self-signature binding to primary User ID</span></a>.</p>
+</dd>
+<dt id="term-Primary-User-ID-Subpacket">Primary User ID Subpacket<a class="headerlink" href="#term-Primary-User-ID-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a> used in <a class="reference internal" href="#term-User-ID-Binding-Signature"><span class="xref std std-term">User ID self-signatures</span></a> which allows to signify whether the <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a> in question is considered a <a class="reference internal" href="#term-Primary-User-ID"><span class="xref std std-term">Primary User ID</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#primary-user-id-subpacket">RFC 5.2.3.27</a></p>
+</dd>
+<dt id="term-Private-Key">Private Key<a class="headerlink" href="#term-Private-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a>.</p>
+</dd>
+<dt id="term-Private-Key-Material">Private Key Material<a class="headerlink" href="#term-Private-Key-Material" title="Link to this term">¶</a></dt><dd><p>A raw cryptographic private key.</p>
+</dd>
+<dt id="term-Public-Key">Public Key<a class="headerlink" href="#term-Public-Key" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Public-Key"><span class="xref std std-term">OpenPGP Public Key</span></a>.</p>
+</dd>
+<dt id="term-Public-Key-Algorithm">Public Key Algorithm<a class="headerlink" href="#term-Public-Key-Algorithm" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-Asymmetric-Cryptography"><span class="xref std std-term">asymmetric cryptographic</span></a> algorithm. See <a class="reference internal" href="cryptography.html#public-key-asymmetric-cryptography"><span class="std std-ref">Public-key (asymmetric) cryptography</span></a>.</p>
+</dd>
+<dt id="term-Public-Key-Cryptography">Public Key Cryptography<a class="headerlink" href="#term-Public-Key-Cryptography" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Asymmetric-Cryptography"><span class="xref std std-term">Asymmetric Cryptography</span></a>.</p>
+</dd>
+<dt id="term-Public-Key-Material">Public Key Material<a class="headerlink" href="#term-Public-Key-Material" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+</dd>
+<dt id="term-Reason-For-Revocation-Subpacket">Reason For Revocation Subpacket<a class="headerlink" href="#term-Reason-For-Revocation-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a>, which is used in <a class="reference internal" href="#term-Certification-Revocation-Signature-Packet"><span class="xref std std-term">Certification Revocation Signature Packet</span></a> and <a class="reference internal" href="#term-Key-Revocation-Signature-Packet"><span class="xref std std-term">key revocation signature packets</span></a> to describe a reason for the <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">revocation</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation">RFC 5.2.3.31</a></p>
+</dd>
+<dt id="term-Reference-Time">Reference Time<a class="headerlink" href="#term-Reference-Time" title="Link to this term">¶</a></dt><dd><p>A point in time at which an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> is evaluated.</p>
+</dd>
+<dt id="term-Regular-Expression-Subpacket">Regular Expression Subpacket<a class="headerlink" href="#term-Regular-Expression-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a> which allows for limiting <a class="reference internal" href="#term-Delegation"><span class="xref std std-term">delegations</span></a> to <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identities</span></a> matching a regular expression.</p>
+</dd>
+<dt id="term-Revocation">Revocation<a class="headerlink" href="#term-Revocation" title="Link to this term">¶</a></dt><dd><p>Mechanism to invalidate a <a class="reference internal" href="#term-Component"><span class="xref std std-term">component</span></a> or an entire <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> using a <a class="reference internal" href="#term-Revocation-Self-signature"><span class="xref std std-term">Revocation Self-signature</span></a>. See <a class="reference internal" href="certificates.html#revocations"><span class="std std-ref">Revocations</span></a>.</p>
+</dd>
+<dt id="term-Revocation-Certificate">Revocation Certificate<a class="headerlink" href="#term-Revocation-Certificate" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Revocation-Self-signature"><span class="xref std std-term">Revocation Self-signature</span></a> for an <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a> distributed alongside the plain <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-v6-revocation-certi">RFC 10.1.2</a></p>
+<p>Note that in <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.1.3-6">OpenPGP v4 this term is typically used</a> for a bare <a class="reference internal" href="#term-Revocation-Self-signature"><span class="xref std std-term">Revocation Self-signature</span></a> <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">packet</span></a>.</p>
+</dd>
+<dt id="term-Revocation-Code">Revocation Code<a class="headerlink" href="#term-Revocation-Code" title="Link to this term">¶</a></dt><dd><p>A number in a <a class="reference internal" href="#term-Reason-For-Revocation-Subpacket"><span class="xref std std-term">Reason For Revocation Subpacket</span></a> which represents the reason for a <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">Revocation</span></a>.</p>
+</dd>
+<dt id="term-Revocation-Self-signature">Revocation Self-signature<a class="headerlink" href="#term-Revocation-Self-signature" title="Link to this term">¶</a></dt><dd><p>A class of <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">self-signatures</span></a> to <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">revoke</span></a> <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">primary keys</span></a>, <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User IDs</span></a> or <a class="reference internal" href="#term-User-Attribute"><span class="xref std std-term">User Attributes</span></a> and invalidate <a class="reference internal" href="#term-Subkey-Binding-Signature"><span class="xref std std-term">subkey binding signatures</span></a>.</p>
+<p>See <a class="reference internal" href="signing_components.html#self-revocations"><span class="std std-ref">Revocation self-signatures: Invalidating certificate components</span></a>.</p>
+</dd>
+<dt id="term-Revocation-Signature">Revocation Signature<a class="headerlink" href="#term-Revocation-Signature" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Revocation-Signature-Packet"><span class="xref std std-term">Revocation Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-Revocation-Signature-Packet">Revocation Signature Packet<a class="headerlink" href="#term-Revocation-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> used for the <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">revocation</span></a> of a <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certification</span></a> or <a class="reference internal" href="#term-Binding"><span class="xref std std-term">binding</span></a>.</p>
+<p>Revocation signatures are often <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">self-signatures</span></a>, more specifically <a class="reference internal" href="#term-Revocation-Self-signature"><span class="xref std std-term">revocation self-signatures</span></a>.
+However, <em><a class="reference internal" href="#term-Certification-Revocation-Signature-Packet"><span class="xref std std-term">certification revocations</span></a></em> can be both <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">self-signatures</span></a> or <a class="reference internal" href="#term-Third-party-Signature"><span class="xref std std-term">third-party signatures</span></a>.
+Additionally, with the deprecated <em>Revocation Key</em> mechanism, <a class="reference internal" href="#term-Third-party-Signature"><span class="xref std std-term">third-party</span></a> <em>Key-</em> and <em>Subkey revocations</em> also exist.</p>
+</dd>
+<dt id="term-RFC">RFC<a class="headerlink" href="#term-RFC" title="Link to this term">¶</a></dt><dd><p>This document, unless noted otherwise, refers to the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/">OpenPGP version 6 specification</a> when referring to <em>RFC</em>.</p>
+</dd>
+<dt id="term-Secret-Key-Material">Secret Key Material<a class="headerlink" href="#term-Secret-Key-Material" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Private-Key-Material"><span class="xref std std-term">Private Key Material</span></a>.</p>
+</dd>
+<dt id="term-SEIPD">SEIPD<a class="headerlink" href="#term-SEIPD" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Symmetrically-Encrypted-Integrity-Protected-Data"><span class="xref std std-term">Symmetrically Encrypted Integrity Protected Data</span></a>.</p>
+</dd>
+<dt id="term-Self-certification">Self-certification<a class="headerlink" href="#term-Self-certification" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certification</span></a> on a <a class="reference internal" href="#term-Component"><span class="xref std std-term">component</span></a> of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> issued by a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">component key</span></a> of the same <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP certificate</span></a>.</p>
+</dd>
+<dt id="term-Self-signature">Self-signature<a class="headerlink" href="#term-Self-signature" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> by the <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a> on a <a class="reference internal" href="#term-Component"><span class="xref std std-term">Component</span></a> of their own <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">Certificate</span></a>.</p>
+</dd>
+<dt id="term-Session-Key">Session Key<a class="headerlink" href="#term-Session-Key" title="Link to this term">¶</a></dt><dd><p>A unique shared secret used in encryption in a <a class="reference internal" href="#term-Hybrid-Cryptosystem"><span class="xref std std-term">Hybrid Cryptosystem</span></a>. See <a class="reference internal" href="encryption.html"><span class="doc std std-doc">Encryption</span></a> and <a class="reference internal" href="decryption.html"><span class="doc std std-doc">Decryption</span></a>.</p>
+</dd>
+<dt id="term-Signature">Signature<a class="headerlink" href="#term-Signature" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-Signature-Creation-Time-Subpacket">Signature Creation Time Subpacket<a class="headerlink" href="#term-Signature-Creation-Time-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the <a class="reference internal" href="#term-Creation-Time"><span class="xref std std-term">Creation Time</span></a> for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-creation-time">RFC 5.2.3.11</a></p>
+</dd>
+<dt id="term-Signature-Expiration-Time-Subpacket">Signature Expiration Time Subpacket<a class="headerlink" href="#term-Signature-Expiration-Time-Subpacket" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a> which defines the <a class="reference internal" href="#term-Expiration-Time"><span class="xref std std-term">Expiration Time</span></a> for an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-expiration-time">RFC 5.2.3.18</a></p>
+</dd>
+<dt id="term-Signature-On-Component">Signature On Component<a class="headerlink" href="#term-Signature-On-Component" title="Link to this term">¶</a></dt><dd><p><a class="reference internal" href="#term-Cryptographic-Signature"><span class="xref std std-term">Cryptographic signature</span></a> associated with <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Keys</span></a> or <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Components</span></a>. See <a class="reference internal" href="signing_components.html"><span class="doc std std-doc">Signatures on components</span></a>.</p>
+</dd>
+<dt id="term-Signature-Over-Data">Signature Over Data<a class="headerlink" href="#term-Signature-Over-Data" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Data-Signature"><span class="xref std std-term">Data Signature</span></a>.</p>
+</dd>
+<dt id="term-Signature-Packet">Signature Packet<a class="headerlink" href="#term-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-Signature-Subpacket">Signature Subpacket<a class="headerlink" href="#term-Signature-Subpacket" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a>.</p>
+</dd>
+<dt id="term-Signature-Subpacket-Type">Signature Subpacket Type<a class="headerlink" href="#term-Signature-Subpacket-Type" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a>.</p>
+</dd>
+<dt id="term-Signature-Type">Signature Type<a class="headerlink" href="#term-Signature-Type" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Type"><span class="xref std std-term">OpenPGP Signature Type</span></a>.</p>
+</dd>
+<dt id="term-Signature-Type-ID">Signature Type ID<a class="headerlink" href="#term-Signature-Type-ID" title="Link to this term">¶</a></dt><dd><p>A numerical identifier for a <a class="reference internal" href="#term-Signature-Type"><span class="xref std std-term">Signature Type</span></a>.</p>
+</dd>
+<dt id="term-Signature-Verification">Signature Verification<a class="headerlink" href="#term-Signature-Verification" title="Link to this term">¶</a></dt><dd><p>In cryptography the mechanism of verification relates to a process in which a claim (i.e., a <a class="reference internal" href="#term-Signature"><span class="xref std std-term">signature</span></a>) is tested (i.e., using the relevant <a class="reference internal" href="#term-Component"><span class="xref std std-term">components</span></a> of a <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">certificate</span></a>).</p>
+</dd>
+<dt id="term-Signer">Signer<a class="headerlink" href="#term-Signer" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>, that is able to create <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">self-signatures</span></a> and <a class="reference internal" href="#term-Third-party-Signature"><span class="xref std std-term">third-party signatures</span></a>.</p>
+</dd>
+<dt id="term-Signing-Key-Flag">Signing Key Flag<a class="headerlink" href="#term-Signing-Key-Flag" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Key-Flag"><span class="xref std std-term">Key Flag</span></a>, indicating that a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Key</span></a> can be used for signing data. See <a class="reference internal" href="certificates.html#capabilities-key-flags"><span class="std std-ref">Defining operational capabilities of component keys with key flags</span></a>.</p>
+</dd>
+<dt id="term-Signing-Subkey">Signing Subkey<a class="headerlink" href="#term-Signing-Subkey" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signing-Subkey"><span class="xref std std-term">OpenPGP Signing Subkey</span></a>.</p>
+</dd>
+<dt id="term-Signing-capable">Signing-capable<a class="headerlink" href="#term-Signing-capable" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Signing-Key-Flag"><span class="xref std std-term">Signing Key Flag</span></a>.</p>
+</dd>
+<dt id="term-Soft-Revocation">Soft Revocation<a class="headerlink" href="#term-Soft-Revocation" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Revocation-Signature-Packet"><span class="xref std std-term">Revocation Signature Packet</span></a> for a <a class="reference internal" href="#term-Certification"><span class="xref std std-term">Certification</span></a> or a <a class="reference internal" href="#term-Component-Key"><span class="xref std std-term">Component Key</span></a>, which includes a <a class="reference internal" href="#term-Reason-For-Revocation-Subpacket"><span class="xref std std-term">Reason For Revocation Subpacket</span></a> with a <a class="reference internal" href="#term-Revocation-Code"><span class="xref std std-term">Revocation Code</span></a>, that does not signify the target being compromised (e.g., <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span></code>).</p>
+<p>See <a class="reference internal" href="signing_components.html#hard-vs-soft-revocations"><span class="std std-ref">Hard vs soft revocations</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation">RFC 5.2.3.31</a>.</p>
+</dd>
+<dt id="term-Strong-Authentication">Strong Authentication<a class="headerlink" href="#term-Strong-Authentication" title="Link to this term">¶</a></dt><dd><p>“Strong Authentication” in this text refers to having ascertained that a <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a> and an <a class="reference internal" href="#term-Identity-Claim"><span class="xref std std-term">identity claim</span></a> on it are legitimately linked. That is, that the person who controls the <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a> is correctly represented by the <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">identity component</span></a>.</p>
+<p>Strong authentication in OpenPGP is typically encoded with a <a class="reference internal" href="#term-Certification-Signature"><span class="xref std std-term">certification signature</span></a>.</p>
+<p>Ascertaining strong authentication requires an out-of-band check: Either via a manual <a class="reference internal" href="#term-Verification"><span class="xref std std-term">verification</span></a> process, or an automated system that can <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certify</span></a> that a user has identified to the system that issues the <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identity</span></a> in question (e.g. an email provider can <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certify</span></a> email-based <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identities</span></a> that it issues to the user).</p>
+<p>Also see <a class="reference internal" href="#term-Authentication"><span class="xref std std-term">Authentication</span></a>.</p>
+</dd>
+<dt id="term-Subkey">Subkey<a class="headerlink" href="#term-Subkey" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Subkey"><span class="xref std std-term">OpenPGP Subkey</span></a>.</p>
+</dd>
+<dt id="term-Subkey-Binding-Signature">Subkey Binding Signature<a class="headerlink" href="#term-Subkey-Binding-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">Self-signature</span></a> to associate an <a class="reference internal" href="#term-OpenPGP-Subkey"><span class="xref std std-term">OpenPGP Subkey</span></a> with an <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a>. See <a class="reference internal" href="signing_components.html#bind-subkey"><span class="std std-ref">Binding subkeys to a certificate</span></a>.</p>
+</dd>
+<dt id="term-Subkey-Revocation-Signature-Packet">Subkey Revocation Signature Packet<a class="headerlink" href="#term-Subkey-Revocation-Signature-Packet" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Self-signature"><span class="xref std std-term">Self-signature</span></a> to <a class="reference internal" href="#term-Revocation"><span class="xref std std-term">revoke</span></a> an <a class="reference internal" href="#term-OpenPGP-Subkey"><span class="xref std std-term">OpenPGP Subkey</span></a> in an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-subkey-revocation-signature">RFC 5.2.1.12</a></p>
+</dd>
+<dt id="term-Subpacket">Subpacket<a class="headerlink" href="#term-Subpacket" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">OpenPGP Signature Subpacket</span></a>.</p>
+</dd>
+<dt id="term-Subpacket-Type">Subpacket Type<a class="headerlink" href="#term-Subpacket-Type" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP Signature Subpacket Type</span></a>.</p>
+</dd>
+<dt id="term-Symmetric-Cryptography">Symmetric Cryptography<a class="headerlink" href="#term-Symmetric-Cryptography" title="Link to this term">¶</a></dt><dd><p>Symmetric cryptography is used in OpenPGP. For a more detailed discussion see <a class="reference internal" href="cryptography.html#symmetric-key-cryptography"><span class="std std-ref">Symmetric-key cryptography</span></a>.</p>
+</dd>
+<dt id="term-Symmetric-Secret-Key">Symmetric Secret Key<a class="headerlink" href="#term-Symmetric-Secret-Key" title="Link to this term">¶</a></dt><dd><p>The <a class="reference internal" href="#term-Private-Key-Material"><span class="xref std std-term">Private Key Material</span></a> used in <a class="reference internal" href="#term-Symmetric-Cryptography"><span class="xref std std-term">Symmetric Cryptography</span></a>.</p>
+</dd>
+<dt id="term-Symmetrically-Encrypted-Integrity-Protected-Data">Symmetrically Encrypted Integrity Protected Data<a class="headerlink" href="#term-Symmetrically-Encrypted-Integrity-Protected-Data" title="Link to this term">¶</a></dt><dd><p>Short <em>SEIPD</em>, this refers to <a class="reference internal" href="#term-Symmetric-Cryptography"><span class="xref std std-term">Symmetric Cryptography</span></a> based encrypted data, which is used in a Symmetrically Encrypted Integrity Protected Data Packet.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-int">RFC 5.13</a>.</p>
+</dd>
+<dt id="term-Text-Signature">Text Signature<a class="headerlink" href="#term-Text-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packet</span></a> with the <a class="reference internal" href="#term-Signature-Type-ID"><span class="xref std std-term">Signature Type ID</span></a> <code class="docutils literal notranslate"><span class="pre">0x01</span></code>, which is used for textual data.</p>
+</dd>
+<dt id="term-Third-party-Identity-Certification">Third-party Identity Certification<a class="headerlink" href="#term-Third-party-Identity-Certification" title="Link to this term">¶</a></dt><dd><p><a class="reference internal" href="#term-Certification"><span class="xref std std-term">Certification</span></a> by third-parties to confirm ownership of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> by a <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>. See <a class="reference internal" href="certificates.html#third-party-identity-certifications"><span class="std std-ref">Third-party (identity) certifications</span></a>.</p>
+</dd>
+<dt id="term-Third-party-Signature">Third-party Signature<a class="headerlink" href="#term-Third-party-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Signature"><span class="xref std std-term">Signature</span></a> by a third-party on a <a class="reference internal" href="#term-Component"><span class="xref std std-term">Component</span></a> of a <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">Certificate</span></a>.</p>
+</dd>
+<dt id="term-Transferable-Secret-Key">Transferable Secret Key<a class="headerlink" href="#term-Transferable-Secret-Key" title="Link to this term">¶</a></dt><dd><p>A Transferable Secret Key (TSK) is the combination of an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a> and the associated <a class="reference internal" href="#term-Private-Key-Material"><span class="xref std std-term">private key material</span></a>. Also often referred to as an “OpenPGP private key”. It is discussed in detail in <a class="reference internal" href="private_keys.html"><span class="doc std std-doc">Managing private key material in OpenPGP</span></a>.</p>
+</dd>
+<dt id="term-Trust-Amount">Trust Amount<a class="headerlink" href="#term-Trust-Amount" title="Link to this term">¶</a></dt><dd><p>A numerical value between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">255</span></code>, stored in <a class="reference internal" href="#term-Trust-Signature"><span class="xref std std-term">trust signatures</span></a> used for indicating the degree of reliance on the <a class="reference internal" href="#term-Delegation"><span class="xref std std-term">delegation</span></a>.
+Values less than <code class="docutils literal notranslate"><span class="pre">120</span></code> indicate partial trust, values equal to or greater than <code class="docutils literal notranslate"><span class="pre">120</span></code> indicate complete trust.</p>
+<p>See <a class="reference internal" href="signing_components.html#trust-amounts"><span class="std std-ref">Trust amounts</span></a>.
+See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-trust-signature">RFC 5.2.3.21</a></p>
+</dd>
+<dt id="term-Trust-Anchor">Trust Anchor<a class="headerlink" href="#term-Trust-Anchor" title="Link to this term">¶</a></dt><dd><p>An entity in a <a class="reference internal" href="#term-Trust-Model"><span class="xref std std-term">Trust Model</span></a> for which trust is assumed and not derived.</p>
+</dd>
+<dt id="term-Trust-Depth">Trust Depth<a class="headerlink" href="#term-Trust-Depth" title="Link to this term">¶</a></dt><dd><p>This numerical value is part of a <a class="reference internal" href="#term-Trust-Signature"><span class="xref std std-term">Trust Signature</span></a> and describes the extent of trustworthiness of a <a class="reference internal" href="#term-Certification"><span class="xref std std-term">Certification</span></a>, that the <a class="reference internal" href="#term-Signer"><span class="xref std std-term">signer</span></a> assigns to it.</p>
+<p>See <a class="reference internal" href="signing_components.html#trust-depth-level"><span class="std std-ref">Trust depth/level</span></a>.</p>
+</dd>
+<dt id="term-Trust-Level">Trust Level<a class="headerlink" href="#term-Trust-Level" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Trust-Depth"><span class="xref std std-term">Trust Depth</span></a>.</p>
+</dd>
+<dt id="term-Trust-Model">Trust Model<a class="headerlink" href="#term-Trust-Model" title="Link to this term">¶</a></dt><dd><p>A model by which trust between <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identities</span></a> associated with different <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificates</span></a> is created. See <a class="reference internal" href="certificates.html#third-party-identity-certifications"><span class="std std-ref">Third-party (identity) certifications</span></a>.</p>
+</dd>
+<dt id="term-Trust-Root">Trust Root<a class="headerlink" href="#term-Trust-Root" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Trust-Anchor"><span class="xref std std-term">Trust Anchor</span></a>.</p>
+</dd>
+<dt id="term-Trust-Signature">Trust Signature<a class="headerlink" href="#term-Trust-Signature" title="Link to this term">¶</a></dt><dd><p>The <em>trust signature</em> <a class="reference internal" href="#term-OpenPGP-Signature-Subpacket"><span class="xref std std-term">subpacket</span></a> on a <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifying signature</span></a> is used for <a class="reference internal" href="#term-Delegation"><span class="xref std std-term">delegation</span></a> of <a class="reference internal" href="#term-Authentication"><span class="xref std std-term">authentication</span></a> decisions. With this feature, an OpenPGP user can designate a <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a> as a “<a class="reference internal" href="#term-Trusted-introducer"><span class="xref std std-term">trusted introducer</span></a>” and opt to rely on <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifications</span></a> they issue.</p>
+<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-trust-signature">RFC 5.2.3.21</a></p>
+</dd>
+<dt id="term-Trusted-introducer">Trusted introducer<a class="headerlink" href="#term-Trusted-introducer" title="Link to this term">¶</a></dt><dd><p>OpenPGP users can choose to rely on <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifications</span></a> issued by a third party. The remote party of such a <a class="reference internal" href="#term-Delegation"><span class="xref std std-term">delegation</span></a> is called a “trusted introducer”.</p>
+<p>See <a class="reference internal" href="signing_components.html#delegation"><span class="std std-ref">Trust signatures: delegating authentication</span></a> for more details.</p>
+</dd>
+<dt id="term-tsig">tsig<a class="headerlink" href="#term-tsig" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Trust-Signature"><span class="xref std std-term">Trust signature</span></a></p>
+</dd>
+<dt id="term-TSK">TSK<a class="headerlink" href="#term-TSK" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a>.</p>
+</dd>
+<dt id="term-Type-ID">Type ID<a class="headerlink" href="#term-Type-ID" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Signature-Type-ID"><span class="xref std std-term">Signature Type ID</span></a>.</p>
+</dd>
+<dt id="term-Unhashed-Area">Unhashed Area<a class="headerlink" href="#term-Unhashed-Area" title="Link to this term">¶</a></dt><dd><p>An area in a <a class="reference internal" href="#term-Signature-Packet"><span class="xref std std-term">Signature Packet</span></a> containing <a class="reference internal" href="#term-Signature-Subpacket"><span class="xref std std-term">Signature Subpacket</span></a>s, that is <em>not</em> covered by the <a class="reference internal" href="#term-Hash-Digest"><span class="xref std std-term">Hash Digest</span></a> a <a class="reference internal" href="#term-Cryptographic-Signature"><span class="xref std std-term">Cryptographic Signature</span></a> is created for. See <a class="reference internal" href="signatures.html#hashed-and-unhashed-signature-subpackets"><span class="std std-ref">Hashed and unhashed signature subpackets</span></a>.</p>
+</dd>
+<dt id="term-Unhashed-Subpacket">Unhashed Subpacket<a class="headerlink" href="#term-Unhashed-Subpacket" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Signature-Subpacket"><span class="xref std std-term">Signature Subpacket</span></a> residing in the <a class="reference internal" href="#term-Unhashed-Area"><span class="xref std std-term">Unhashed Area</span></a> of a <a class="reference internal" href="#term-Signature-Packet"><span class="xref std std-term">Signature Packet</span></a>.</p>
+</dd>
+<dt id="term-User-Attribute">User Attribute<a class="headerlink" href="#term-User-Attribute" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Component</span></a>, which may hold a single JPEG image. See <a class="reference internal" href="certificates.html#user-attributes"><span class="std std-ref">User attributes in OpenPGP</span></a>.</p>
+</dd>
+<dt id="term-User-ID">User ID<a class="headerlink" href="#term-User-ID" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-Identity-Component"><span class="xref std std-term">Identity Component</span></a>, which describes an <a class="reference internal" href="#term-Identity"><span class="xref std std-term">Identity</span></a> of a <a class="reference internal" href="#term-Certificate-Holder"><span class="xref std std-term">Certificate Holder</span></a>. See <a class="reference internal" href="certificates.html#user-ids-in-openpgp-certificates"><span class="std std-ref">User IDs in OpenPGP certificates</span></a>.</p>
+</dd>
+<dt id="term-User-ID-Binding-Signature">User ID Binding Signature<a class="headerlink" href="#term-User-ID-Binding-Signature" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Binding-Signature"><span class="xref std std-term">Binding Signature</span></a>, which is created by an <a class="reference internal" href="#term-OpenPGP-Primary-Key"><span class="xref std std-term">OpenPGP Primary Key</span></a> to bind a <a class="reference internal" href="#term-User-ID"><span class="xref std std-term">User ID</span></a> to an <a class="reference internal" href="#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP Certificate</span></a>.</p>
+</dd>
+<dt id="term-Validation">Validation<a class="headerlink" href="#term-Validation" title="Link to this term">¶</a></dt><dd><p>A mechanism by which the <a class="reference external" href="https://en.wikipedia.org/wiki/Verification_and_validation#Validation">operational needs of a use-case are met</a>.
+In OpenPGP terminology this may refer to processes such as ensuring, that an <a class="reference internal" href="#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a> has been created after a <a class="reference internal" href="#term-Transferable-Secret-Key"><span class="xref std std-term">Transferable Secret Key</span></a>’s <a class="reference internal" href="#term-Creation-Time"><span class="xref std std-term">Creation Time</span></a>, but before its <a class="reference internal" href="#term-Expiration-Time"><span class="xref std std-term">Expiration Time</span></a>.</p>
+</dd>
+<dt id="term-Validity">Validity<a class="headerlink" href="#term-Validity" title="Link to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-Validation"><span class="xref std std-term">Validation</span></a>.</p>
+</dd>
+<dt id="term-Verification">Verification<a class="headerlink" href="#term-Verification" title="Link to this term">¶</a></dt><dd><p>A mechanism by which the <a class="reference external" href="https://en.wikipedia.org/wiki/Verification_and_validation#Verification">compliance with design specifications are met</a>.
+In OpenPGP terminology this may refer to e.g. <a class="reference internal" href="#term-Signature-Verification"><span class="xref std std-term">Signature Verification</span></a> or <a class="reference internal" href="#term-Identity-Verification"><span class="xref std std-term">Identity Verification</span></a>.</p>
+</dd>
+<dt id="term-Web-Of-Trust">Web Of Trust<a class="headerlink" href="#term-Web-Of-Trust" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-Trust-Model"><span class="xref std std-term">trust model</span></a> which is based on a network of <a class="reference internal" href="#term-Certification"><span class="xref std std-term">certifications</span></a> and <a class="reference internal" href="#term-Delegation"><span class="xref std std-term">delegations</span></a>, that can be used to discern the reliability of <a class="reference internal" href="#term-Certificate"><span class="xref std std-term">certificates</span></a> and their associated <a class="reference internal" href="#term-Identity"><span class="xref std std-term">identities</span></a>. See <a class="reference internal" href="signing_components.html#wot"><span class="std std-ref">Web of Trust: Decentralized trust decisions</span></a>.</p>
+</dd>
+</dl>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="zoom/encryption.html" title="Previous document"><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data</a>
+        </li>
+        <li>
+          <a href="acknowledgements.html" title="Next document"><span class="section-number">31. </span>Acknowledgements</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="zoom/encryption.html" title="previous chapter"><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data</a></li>
+      <li>Next: <a href="acknowledgements.html" title="next chapter"><span class="section-number">31. </span>Acknowledgements</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# OpenPGP Signatures
+
+{term}`Signatures<OpenPGP Signature Packet>` are a fundamental mechanism within OpenPGP. They provide the syntax for forming and interpreting comprehensive statements about {term}`certificates<OpenPGP Certificate>` and their {term}`components<Component>`, as well as for ensuring the integrity and {term}`authenticity<Authentication>` of data.
+
+Without {term}`signatures<OpenPGP Signature Packet>`, {term}`keys<Transferable Secret Key>` would remain unassociated with any {term}`certificate<OpenPGP Certificate>` or {term}`owner<Certificate Holder>`. {term}`Signatures<OpenPGP Signature Packet>` are crucial for binding {term}`component keys<Component Key>` and {term}`identity components<Identity Component>` into hierarchical {term}`certificates<OpenPGP Certificate>` and for establishing the {term}`authenticity<Authentication>` of messages.
+
+## Terminology: "cryptographic signatures" and "signature packets"
+
+Within OpenPGP, the term *{term}`signature<OpenPGP Signature Packet>`* can have two different meanings:
+
+- **{term}`Cryptographic signature`**: a sequence of bytes created by {term}`cryptographic keys<Cryptographic Key>`, calculated according to a {term}`signature` scheme.
+
+```{figure} plain_svg/cryptographic_signature.svg
+:name: fig-cryptographic-signature
+:alt: Depicts a box on white background. In the box, a green seal symbol with the word "sig" is shown on the left side, connected to the text "Cryptographic signature" by a black dotted line.
+
+A {term}`cryptographic signature`
+```
+
+- **{term}`OpenPGP signature packets<OpenPGP signature packet>`**: Defined in the [OpenPGP standard](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-packet-type-id-2), these {term}`packets<Packet>` combine a raw {term}`cryptographic signature` along with a *{term}`type<OpenPGP Signature Type>`* designation and additional {term}`metadata`.
+
+```{figure} plain_svg/OpenPGP_Signature_packet.svg
+:name: fig-signature-packet-0
+:alt: Depicts a box on white background. In the top, the text OpenPGP signature packet is connected to a dotted box. Inside a yellow box is shown. It has the title "signature metadata" and two lines of content, reading "signature type" and "additional metadata". The yellow box is labeled with the green cryptographic signature symbol. The green symbol is labeled with a dotted line and the text "Cyptographic signature" to its right. On the left side of the box, connected with a dotted line, a small cion-sized representation of the yellow signature packet and its green cryptographic signature are shown. This introducedthe equivalence of the two representations.
+
+An "{term}`OpenPGP Signature Packet`"
+```
+
+In this document, "{term}`signature<OpenPGP Signature Packet>`" will refer to {term}`OpenPGP signature packets<OpenPGP signature packet>`.
+
+(signature_types)=
+## Signature types in OpenPGP
+
+The OpenPGP standard defines a set of [Signature types](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types), each identified by a numerical *{term}`signature type ID`*. {term}`Signature types<OpenPGP Signature Type>` define the purpose of a {term}`signature packet<OpenPGP Signature Packet>` and how it should be interpreted.
+
+{term}`Signature types<OpenPGP Signature Type>` can be predominantly classified in two ways:
+
+- **{term}`Signatures over data<Data Signature>`**: These signatures are denoted by {term}`type IDs<Type ID>` `0x00` for binary documents and `0x01` for canonical text documents. The {term}`signer` uses these {term}`signatures<OpenPGP Signature Packet>` to claim ownership, assert creation, or certify the immutability of the document. 
+- **{term}`Signatures on components<Signature On Component>`**: These are {term}`signatures<OpenPGP Signature Packet>` that are associated with {term}`component keys<Component Key>` or {term}`identity components<Identity Component>` of a {term}`certificate<OpenPGP Certificate>`.
+
+{term}`Signatures on components<Signature On Component>` are a complex topic, and we discuss them in depth in [](/signing_components). They are grouped based on two criteria:
+
+- the origin of the {term}`signature<OpenPGP Signature Packet>`, distinguishing between a {term}`self-signature` and a {term}`third-party signature`
+- the nature of the statement made by the {term}`signature<OpenPGP Signature Packet>`, such as certifying an {term}`identity` or binding {term}`component keys<Component Key>` into a {term}`certificate<OpenPGP Certificate>`
+
+```{figure} img/mermaid/sig-types.png
+:name: fig-signature-types
+:alt: Depicts a diagram, describing different types of OpenPGP signatures. On the right hand side a long yellow box with the title "Signature Types and Targets" is shown, which contains signature type IDs and their names (in gray boxes) and further yellow boxes, grouping other types of signature type IDs. At the top the signature type ID "0x02 Standalone" is shown. Below, another yellow box groups the "Signature Packet"s "0x50 Third-Party Confirmation" and "0x40 Timestamp". Another box groups types of signatures, that apply to "Data" packets "0x00 Binary Data" and "0x01 Canonical Text". Below, a box groups types of signatures, that apply to "Primary Key + User ID/ Attr. Packet"s. The type IDs "0x10 Generic Certification", "0x11 Persona Certification", "0x12 Casual Certification" and "0x13 Positive Certification" are shown together in one gray box and "0x30 Certification Revocation" in another. Another yellow box groups types of signatures, that apply to "Primary Key" packets "0x1F Direct-Key Signature" and "0x20 Key Revocation". The last box groups types of signatures, that apply to "Primary + Subkey" packets. "0x18 Subkey Binding" and "0x19 Primary Key Binding" are shown together in one gray box, "0x28 Subkey Revocation" in another. On the left hand side of the diagram shows gray boxes identifying different types of signatures, with the most basic being "OpenPGP Signature" on the far left. With arrows it points to further signature types ("Signature on Data", "Signature on Component") and several signature type IDs ("0x02", "0x50" and "0x40"). The signature type "Signature on Data" points to "0x00" and "0x01". The signature type "Signature on Component" points to two more specific signature types, namely "Third-Party" and "Self-Signature". "Third-Party" points at the group of "0x10", "0x11", "0x12" and "0x13", as well as "0x30" and "0x1F". "Self-Signature" points at the group of "0x10", "0x11", "0x12" and "0x13", as well as "0x30", "0x1F", the group of "0x18" and "0x19" and finally "0x28".
+
+An overview of {term}`signature types<OpenPGP Signature Type>` in OpenPGP
+```
+
+This chapter will cover the overarching principles applicable to all {term}`OpenPGP signature types<OpenPGP Signature Type>`.
+
+For more detail about specific {term}`types of signatures<OpenPGP Signature Type>`, see the chapters on [](/signing_data) and [](/signing_components), respectively.
+
+## Structure of an OpenPGP signature packet
+
+As outlined above, an {term}`OpenPGP signature<OpenPGP Signature Packet>` is a composite data structure, which combines:
+
+- **{term}`Signature type ID`**: specifies the {term}`signature<OpenPGP Signature Packet>`'s intended meaning, as detailed above
+- **{term}`Metadata`**: varies based, in part, on the {term}`signature type ID`; mostly encoded as "{term}`subpackets<OpenPGP Signature Subpacket>`" (see {ref}`signature_subpackets`)
+- **Raw {term}`cryptographic signature`**
+
+```{figure} plain_svg/OpenPGP_Signature_packet_2.svg
+:name: fig-signature-packet
+:alt: Depicts a diagram with the title "OpenPGP signature packet". A box with green dotted frame and white background provides the title "Signature", while inside the box the text reads "Signature over; Input data, Signature metadata". The words "Signature metadata" serve as title for a yellow box at the lower half of the signature type box. The yellow box also bears the green cryptographic signature symbol.
+
+Structure and context of an {term}`OpenPGP signature packet`
+```
+
+The input data packets differ between specific signature types. Also see {numref}`fig-signature-types`. For example:
+
+- for a [*binary data signature*](data_signature_types), the input data packet is a *literal data packet*, while
+- for a [*subkey binding signature*](bind_subkey), the input data packets consist of a primary and a subkey packet.
+
+### Creating an OpenPGP signature packet
+
+Creating an {term}`OpenPGP signature packet` involves encoding a statement about a specific set of data within the {term}`packet`. 
+
+The input data of a {term}`signature packet<OpenPGP Signature Packet>` includes:
+
+- **{term}`Packets<Packet>` being signed**: Typically one or more {term}`packets<Packet>`, though sometimes none, depending on the context. These are the {term}`packets<Packet>` to which the signature statement pertains.
+- **Data within the {term}`signature packet`**: This includes information that specifies the intent of the {term}`signature<OpenPGP Signature Packet>`.
+
+The input data is determined by the {term}`signature type<OpenPGP Signature Type>` and consists of the exact content that the signature statement addresses.
+
+The {term}`signature packet<OpenPGP Signature Packet>` consists of two parts:
+
+1. **Statement definition**: This part of the {term}`packet` defines the meaning or intent of the {term}`signature<OpenPGP Signature Packet>`.
+2. **{term}`Cryptographic signature`**: This is the formal endorsement by the {term}`signer`, created as follows:
+   - A {term}`hash digest` is calculated from the input data.
+   - The {term}`cryptographic signature` is then calculated for this {term}`hash digest`.
+
+```{figure} plain_svg/Signature_Creation.svg
+:name: fig-signature-creation
+:alt: Depicts a complex diagram with white background and the title "Signature creation". On the top left side a box with black frame and white background reads "Input Data packets, One or more packets". Below it the symbol of a signature packet is shown (however, instead of the green signature symbol, only a circle with white background and dotted frame is shown). Both are connected (via green dotted arrows) to a green, right pointing arrow symbol with green dotted frame and the title "Hash mechanism". Text above the green arrow symbol reads "A hash digest is calculated from the input data packets and the signature metadata". The "Hash mechanism" arrow points at a box with white background and green frame, which reads "hash digest". At the top right corner of the diagram the symbol for a component key with both public and private key and the title "Signer private key" is shown. Both hash digest and component key symbol point to a large green arrow symbol, with green dotted frame, at the lower right corner of the diagram, using green dotted arrow lines. The large arrow symbol has the title "Signing mechanism" and text overlaid across it reads "A cryptographic signature is calculated over the hash digest, using the private key material of the signer.". It points at a cryptographic signature symbol at the bottom of the diagram. The cryptographic signature symbol is connected (via a green dotted arrow line) to the circle with white background and dotted green frame in the signature packet symbol.
+
+Creating a {term}`signature<OpenPGP Signature Packet>` in OpenPGP
+```
+
+(sig-verify)=
+### Verifying an OpenPGP signature packet
+
+Verifying an {term}`OpenPGP signature packet` is similar to its creation, with some crucial differences that facilitate the {term}`verification` by entities other than the {term}`signer`.
+
+The main differences:
+
+- **Access to {term}`public key<OpenPGP Certificate>`**: Unlike the creation process, which is exclusive to the {term}`signer`, {term}`verification` can be performed by anyone who has access to the {term}`public key<OpenPGP Certificate>` of the {term}`signer`.
+- **Use of {term}`signature verification` mechanism**: 
+After calculating the {term}`hash digest` from the input data, a {term}`signature verification` mechanism is employed. This mechanism uses the {term}`hash digest`, the {term}`cryptographic signature` from the {term}`signature packet<OpenPGP Signature Packet>`, and the {term}`public key<OpenPGP Certificate>` of the {term}`signer`. Its purpose is to ascertain the cryptographic {term}`validity<Validation>` of the {term}`signature<OpenPGP Signature Packet>`.
+
+```{figure} plain_svg/Signature_Verification.svg
+:name: fig-signature-verification
+:alt: Depicts a complex diagram with white background and the title "Signature verification". On the top left side a box with black frame and white background reads "Input Data packets, One or more packets". Below it the symbol of a signature packet is shown. Both are connected (via green dotted arrows) to a green, right pointing arrow symbol with green dotted frame and the title "Hash mechanism". Text above the green arrow symbol reads "A hash digest is calculated from the input data packates and the signature metadata". The "Hash mechanism" arrow points at a box with white background and green frame, which reads "hash digest". At the top right corner of the diagram the symbol for a component key with only public key and the title "Signer public key" is shown. Hash digest, component key symbol and the cryptographic signature symbol in the signature packet point to a large green arrow symbol, with green dotted frame, at the lower right corner of the diagram, using green dotted arrow lines. The large arrow symbol has the title "Signature verification mechanism" and text overlaid across it reads "A cryptographic signature is verified against the hash digest, using the public key of the signer.". It points at a success and fail symbol at the bottom of the diagram.
+
+Verifying a {term}`signature<OpenPGP Signature Packet>` in OpenPGP
+```
+
+(signature_subpackets)=
+## Signature subpackets
+
+In the OpenPGP protocol, {term}`signature subpackets<OpenPGP Signature Subpacket>` enhance the expressiveness of a {term}`signature<OpenPGP Signature Packet>` beyond what is conveyed by just the bare {term}`cryptographic signature` and the {term}`signature type ID`. These {term}`subpackets<OpenPGP Signature Subpacket>`, introduced in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440), are essential for embedding additional {term}`metadata` within {term}`signature packets<OpenPGP Signature Packet>`.
+
+{term}`Signature subpackets<OpenPGP Signature subpacket>` serve as sub-elements within {term}`signature packets<OpenPGP Signature Packet>`, providing extra context and meaning to a {term}`signature<OpenPGP Signature Packet>`. 
+They are formatted as key-value pairs, where the keys are defined as [subpacket type IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-subpacket-types-r) by the {term}`RFC`. The {term}`RFC` also provides the format and interpretation of the values.
+
+### Examples of signature subpackets
+- The [*issuer fingerprint*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-fingerprint-subpacket) {term}`subpacket<OpenPGP Signature Subpacket>` encodes the {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`component key` that issued the {term}`signature<OpenPGP Signature Packet>`.
+- The [*key flags*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags) {term}`subpacket<OpenPGP Signature Subpacket>` defines the {term}`capabilities<capability>` that are assigned to a {term}`component key` within a {term}`certificate<OpenPGP Certificate>`.
+
+(hashed_and_unhashed_signature_subpackets)=
+### Hashed and unhashed signature subpackets
+
+{term}`Signature subpackets<OpenPGP Signature Subpacket>` within OpenPGP can reside in one of two distinct areas of a {term}`signature packet<OpenPGP Signature Packet>`, each serving a different purpose.
+
+- **{term}`Hashed area`**: {term}`Hashed subpackets<Hashed Subpacket>` are included in the {term}`hash digest` of the {term}`signature<OpenPGP Signature Packet>` and are thus covered by its {term}`cryptographic signature`. They reliably express the {term}`signer`'s intent.
+- **{term}`Unhashed area`**: {term}`Unhashed subpackets<Unhashed Subpacket>`, conversely, are not included in the {term}`hash digest` for the {term}`signature<OpenPGP Signature Packet>`. They are thus not protected against tampering and can be used to retroactively add, change, or remove metadata in a {term}`signature packet<OpenPGP Signature Packet>` without affecting its {term}`validity<Validation>`. They are primarily used for advisory purposes or in scenarios where the integrity of the {term}`subpacket` content can be self-authenticated. An example is the {term}`issuer fingerprint subpacket`, which can be {term}`validated<Validation>` through successful {term}`signature verification` using the referenced {term}`issuer key`.
+
+The majority of {term}`signature subpackets<OpenPGP Signature Subpacket>` are stored in the {term}`hashed area`.
+
+For detailed information and specifications, refer to [Hashed vs. Unhashed Subpackets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hashed-vs-unhashed-subpacke) in the OpenPGP {term}`RFC`.
+
+(criticality_of_subpackets)=
+### Criticality of subpackets
+
+In the OpenPGP protocol, each {term}`signature subpacket<OpenPGP Signature Subpacket>` can be marked with a *{term}`criticality flag`*. This flag plays a pivotal role in the interpretation and {term}`validation` of the {term}`signature<OpenPGP Signature Packet>`. When set, it instructs any receiving {term}`implementation<OpenPGP Implementation>` encountering an unrecognized {term}`subpacket type<OpenPGP Signature Subpacket Type>` to treat this as a significant error and to {term}`invalidate<Validation>` the {term}`signature<OpenPGP Signature Packet>`. 
+
+This mechanism accounts for different {term}`OpenPGP implementations<OpenPGP Implementation>` that may support only certain subsets of the standard. Moreover, it anticipates the evolution of the standard, including the addition of new {term}`subpacket types<OpenPGP Signature Subpacket Type>`.
+
+Consider a scenario where an {term}`implementation<OpenPGP Implementation>` does not recognize a {term}`subpacket<OpenPGP Signature Subpacket>` indicating {term}`signature<OpenPGP Signature Packet>` {term}`expiration`. Without understanding this concept, the {term}`implementation<OpenPGP Implementation>` might erroneously accept an already {term}`expired<Expiration>` {term}`signature<OpenPGP Signature Packet>`. By marking the {term}`signature expiration time subpacket` as {term}`critical<Criticality Flag>`, the creator of the {term}`signature<OpenPGP Signature Packet>` ensures that any recipient who cannot process this {term}`subpacket<OpenPGP Signature Subpacket>` will reject the {term}`signature<OpenPGP Signature Packet>` as {term}`invalid<Validation>`.
+
+For specific guidelines on which {term}`subpackets<OpenPGP Signature Subpacket>` should be marked as {term}`critical<Criticality Flag>`, refer to the {term}`RFC` sections [5.2.3.11](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-creation-time) to [5.2.3.36](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-intended-recipient-fingerpr).

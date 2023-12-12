@@ -1,0 +1,188 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Decryption
+
+Message decryption is the process of taking an encrypted message and recovering its plaintext.
+This involves multiple steps.
+
+Implementations typically first process the PKESK and SKESK packets leading the SEIPD packet to identify \*ESK packets suitable for decryption.
+A PKESK packet is suitable if it contains a recipient-Key ID matching a decryption (sub-) key of the user's certificate.
+Typically, all \*ESK packets leading a SEIPD packet contain the same *session key* once decrypted.
+
+```{note}
+
+Anonymous-recipient PKESK packets contain a recipient-Key ID of `0`, so if no suitable non-anonymous PKESK was found, any anonymous PKESKs are tried with any available decryption (sub-) keys (see [](decryption_anonymous_recipient)).
+```
+
+If no suitable PKESK packets were found, SKESK packets are tried next, meaning the user is typically prompted to enter a decryption passphrase.
+
+Once any of these methods succeeded, the resulting *session key* is used to decrypt the SEIPD packet.
+
+```{admonition} TODO
+:class: warning
+
+  - using expired certificate?
+  - using revoked certificate?
+  - using expired subkey?
+  - using revoked subkey?
+```
+
+## Passphrase-protected session key (SKESK)
+
+Decrypting a SKESK packet to recover the *session key* is done by performing the encryption steps in reverse, based on a user-provided passphrase.
+
+In both version 4 and version 6 of the SKESK packet, the user is prompted to enter a passphrase, which is passed through the S2K function described by the SKESK packet.
+However, the subsequent steps of the procedure are different, as described in the following sections.
+
+### SKESK v4
+
+Here, the result of the S2K function is a symmetric key, which is either used to decrypt the encrypted session key contained in the SKESK packet, or - less commonly - used as session key directly (see [](decryption-skesk4-direct-method)).
+
+```{note}
+
+The "direct method" where the result of the S2K function is directly used as session key is only applicable if only one SKESK packet is present.
+```
+
+```{figure} plain_svg/SKESKv4-decryption.svg
+:name: fig-skeskv4-decryption
+:alt: Diagram depicting how the S2K function is used to derive key symmetric key from the user-provided passphrase. This key is then either used directly as session key, or used to decrypt the encrypted session key.
+
+Decrypting the session key from a version 4 SKESK packet.
+```
+
+With version 4 SKESK packets, which are only used with version 1 SEIPD packets, the *session key* is used as *message key* without an intermediate derivation.
+
+(decryption-skesk4-direct-method)=
+#### Direct-Method
+
+In version 4 of the SKESK packet, the encrypted session key is optional. A missing encrypted session key signals the use of the "direct-method", which means, the result of passing the passphrase through the S2K function is directly used as the session key/message key.
+
+When the direct method is used, the symmetric cipher algorithm ID of the SKESK packet dictates the cipher algorithm used to decrypt the plaintext from the SEIPD packet.
+
+Otherwise, the cipher algorithm ID to decrypt the SEIPD packet was prefixed to the decrypted session key.
+
+Sanitizing this algorithm ID of the decrypted session key acts as a very early quick check to verify that the used passphrase was correct. For further validation of the session key, see [](decryption_seipd_quick_check).
+
+
+### SKESK v6
+
+With version 6 SKESK packets, the result of the passing the passphrase through the S2K function is used as *initial keying material* (IKM) to derive a symmetric *key encryption key* using HKDF as a key derivation function. The HKDF function doesn't use any salt in this step, and the *info* parameter is assembled from parameters of the SKESK packet.
+
+In the next step, this symmetric key is used to decrypt the *session key* using AEAD.
+The AEAD function uses information from the associated SEIPDv2 packet as *additional data*.
+The function is also salted using the SEIPDv2's salt.
+The *AEAD Auth Tag* of the SKESK packet is used as authentication tag.
+
+The result is the *session key*.
+
+```{figure} plain_svg/SKESKv6-decryption.svg
+:name: fig-skeskv6-decryption
+:alt: Diagram depicting the complicated process of deriving the session key from a SKESK version 6 packet.
+
+Decrypting the session key from a version 6 SKESK packet.
+```
+
+## Key-protected session key (PKESK)
+
+More common than SKESK packets are PKESK packets which are used to protect the session key using an encryption key of the recipient.
+
+### PKESK v3
+
+With version 3 PKESKs, the recipient's secret encryption (sub-) key is directly used to decrypt the encrypted *session key*.
+The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A value of `0` indicates an anonymous recipient (see [](decryption_anonymous_recipient)).
+
+To detect, which symmetric cipher is used to decrypt the SEIPDv1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections[^rsa-spec] [^elgamal-spec] [^ecdh-spec] [^x25519-spec] [^x448-spec] of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.
+
+[^rsa-spec]: [Algorithm-Specific Fields for RSA encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-f)
+[^elgamal-spec]: [Algorithm-Specific Fields for Elgamal encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-fo)
+[^ecdh-spec]: [Algorithm-Specific Fields for ECDH encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for)
+[^x25519-spec]: [Algorithm-Specific Fields for X25519 encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for-)
+[^x448-spec]: [Algorithm-Specific Fields for X448 encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for-x)
+
+```{figure} plain_svg/PKESKv3-decryption.svg
+:name: fig-decryption-pkesk3
+:alt: Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key.
+
+Decrypting the session key from a version 3 PKESK packet.
+```
+
+### PKESK v6
+
+The decryption of version 6 PKESK packets works quite similarly to version 3.
+
+```{figure} plain_svg/PKESKv6-decryption.svg
+:name: fig-decryption-pkesk6
+:alt: Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key.
+
+Decrypting the session key from a version 6 PKESK packet.
+```
+
+Contrary to the version 3 PKESK, the encrypted session key within the version 6 PKESK does not contain the symmetric cipher algorithm used to decrypt the SEIPD packet.
+Instead, this cipher algorithm ID is encoded inside the SEIPDv2 packet directly.
+
+## SEIPD (v1)
+
+Version 1 SEIPD packets MUST only be used with version 3 PKESK packets and/or version 4 SKESK packets.
+Any other combinations are not allowed and MUST result in a broken message.
+
+```{note}
+Since SEIPD version 1 is susceptible to downgrade attacks under certain scenarios, it is recommended to use SEIPD version 2 wherever possible.
+```
+
+To decrypt the contents of a version 1 SEIPD packet, the session key obtained in the previous step is used.
+The cipher algorithm is either extracted from the decrypted session key (the algorithm ID is typically prefixed to the decrypted session key), or - in case of a SKESK packet using the direct-method - taken from the SKESKs cipher algorithm field. 
+
+Once the cipher is initialized, the whole encrypted data from the SEIPD packet is decrypted.
+
+```{admonition} TODO
+:class: warning
+
+Describe the MDC which is used for modification detection.
+```
+
+```{figure} plain_svg/SEIPDv1-decryption.svg
+:name: fig-decryption-seipd1
+:alt: Depicts how the session key is used directly to decrypt the contents of the SEIPD packet.
+
+The contents of the SEIPD packet are decrypted using the session key as message key.
+```
+
+
+## SEIPD w/ AEAD (v2)
+
+Preferred mode.
+Version 2 SEIPD packets MUST only be used with version 6 PKESK packets and/or version 6 SKESK packets.
+Any other combinations are not allowed and MUST result in a broken message.
+
+Once the session key was obtained from a PKESK or SKESK, it is used to derive a *message key* and an IV. This is done by passing the session key through a salted HKDF function, where the salt is unique per message and obtained from the SEIPD packet.
+
+The result is split into the message key and first half of the IV.
+
+```{figure} plain_svg/SEIPDv2-decryption-mk-derivation.svg
+:name: fig-decryption-seipd2-mk-derivation
+:alt: Depicts how the session key is fed into a salted HKDF to derive both the message key and the first half of an IV.
+
+In a first step, a message key and half of an IV is derived from the session key.
+```
+
+Then, the contents of the SEIPDs encrypted data are split into chunks, which are processed sequentially. Each chunk is decrypted using AEAD with parameters from the SEIPD packet as *additional data*.
+For each chunk, the chunk index starting at `0` is passed into the function as second half of the IV.
+
+All decrypted plaintext blocks are appended to form the result of the decryption process.
+
+After all blocks have been processed, in a final AEAD step, the total number of plaintext octets gets appended to the *additional data* and the final AEAD auth tag from the SEIPD packet is processed.
+
+```{figure} plain_svg/SEIPDv2-decryption-chunks.svg
+:name: fig-decryption-seipd2-chunks
+:alt: Depicts, how the message key and index-postfixed IV are used to decrypt each individual chunk of plaintext.
+
+Each chunk is decrypted using AEAD using the message key and an IV with appended chunk index.
+```
+
+
+## SED
+
+Legacy mode, may be decrypted, but not produced.

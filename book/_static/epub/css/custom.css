@@ -1,0 +1,62 @@
+/*
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC0-1.0
+*/
+
+/*
+Admonitions
+*/
+div.admonition {
+  background-color: lightgray;
+}
+
+div.warning,
+div.admonition-warning {
+  background-color: palevioletred;
+}
+
+/*
+External links
+*/
+a.external.reference {
+  border-bottom: 1px solid darkgreen;
+  color: darkgreen;
+  text-decoration: none;
+}
+
+/*
+Internal links
+*/
+a.internal {
+  text-decoration: none;
+  border-bottom-style: none;
+}
+
+/*
+Text in section and reference links and footnote links
+*/
+span.std-doc,
+span.std-numref,
+span.std-ref,
+a.footnote-reference {
+  border-bottom: 1px dashed #3333ff;
+  color: #3333ff;
+  text-decoration: none;
+}
+
+/*
+Text in glossary links
+*/
+span.std-term {
+  color: black;
+  border-bottom: 1px dotted black;
+}
+
+/*
+Footnote list
+*/
+aside.footnote-list {
+  border-top: 1px solid black;
+  margin-top: 2em;
+  padding-top: 2em;
+}

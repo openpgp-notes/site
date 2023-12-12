@@ -1,0 +1,33 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Advanced material: Encryption
+
+## Encrypt to multiple/single subkey per certificate?
+
+A recipient's certificate can contain more than one usable encryption subkey.
+This raises the question, should the message be encrypted for all of them?
+
+There is the argument that a powerful attacker might have managed to add an attacker-controlled encryption subkey to the victim's certificate.
+In this case, only encrypting to the "newest" encryption key would help uncover such an attack. However, a powerful attacker could just MitM any sent messages and just add a PKESK for the victim-controlled encryption keys to hide the fact that the sender used a different key.
+
+On the other hand, a user might have multiple encryption subkeys on purpose.
+Picture, for example, a scenario where the same certificate is used on multiple devices, but each device has dedicated encryption subkeys to allow for smoother revocation in case of a lost device.
+In this scenario, it is important that the sender encrypts the message to all available encryption subkeys.
+
+## "Negotiating" algorithms based on recipients preference subpackets
+
+### Prevent "downgrade" -> Policy
+
+Each implementation should define a "minimum" level of security when it comes to algorithms and key lengths.
+If the lowest common denominator of symmetric encryption algorithms preferred by a set of recipients provides too little security, the implementation should either use a configured fallback algorithm instead, or fail to produce a message at all.
+
+## AEAD modes in v2 SEIPD: GCM
+
+```{admonition} TODO
+:class: warning
+
+Produce text around discussion: https://mailarchive.ietf.org/arch/msg/openpgp/ZTYD5VJsG1k2jJBbn5zIAf5o7d4/
+```

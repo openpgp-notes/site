@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>20. Advanced material: Signatures &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="21. Advanced material: Signatures over data" href="signing_data.html" />
+    <link rel="prev" title="19. Advanced material: Private keys" href="private_keys.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="private_keys.html" title="Previous document"><span class="section-number">19. </span>Advanced material: Private keys</a>
+        </li>
+        <li>
+          <a href="signing_data.html" title="Next document"><span class="section-number">21. </span>Advanced material: Signatures over data</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="advanced-material-signatures">
+<h1><span class="section-number">20. </span>Advanced material: Signatures<a class="headerlink" href="#advanced-material-signatures" title="Link to this heading">¶</a></h1>
+<section id="notation-signature-subpackets">
+<span id="id1"></span><h2><span class="section-number">20.1. </span>Notation signature subpackets<a class="headerlink" href="#notation-signature-subpackets" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#notation-data">Notation signature subpackets</a> can be used to effectively extend the otherwise limited set of <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">signature subpacket types</span></a> in OpenPGP with user-defined <a class="reference internal" href="../glossary.html#term-Notation"><span class="xref std std-term">notations</span></a>. <a class="reference internal" href="../glossary.html#term-Issuer"><span class="xref std std-term">Issuers</span></a> can use these <a class="reference internal" href="../glossary.html#term-Notation"><span class="xref std std-term">notations</span></a> to add name-value pairs to an <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a>.</p>
+<p><a class="reference internal" href="../glossary.html#term-Notation"><span class="xref std std-term">Notation</span></a> names - strings encoded in UTF-8 - may reside in the “user namespace.” This namespace is characterized by a <a class="reference internal" href="../glossary.html#term-Notation-Tag"><span class="xref std std-term">notation tag</span></a>, followed by a DNS domain name, both in UTF-8 format.</p>
+<p><a class="reference internal" href="../glossary.html#term-Notation"><span class="xref std std-term">Notations</span></a>, as described earlier, allow for user-defined extensions to the <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Subpacket-Type"><span class="xref std std-term">OpenPGP signature subpacket types</span></a>. A practical and popular application of this functionality is seen in Keyoxide, a decentralized <a class="reference internal" href="../glossary.html#term-Identity-Verification"><span class="xref std std-term">identity verification</span></a> service. Keyoxide uses <a class="reference internal" href="../glossary.html#term-Notation"><span class="xref std std-term">notations</span></a> in the <code class="docutils literal notranslate"><span class="pre">ariadne.id</span></code> namespace. For the details of this <a class="reference internal" href="../glossary.html#term-OpenPGP-Implementation"><span class="xref std std-term">implementation</span></a>, refer to the <a class="reference external" href="https://docs.keyoxide.org/wiki/ariadne-identity/">Keyoxide documentation</a>.</p>
+</section>
+<section id="choosing-the-hash-algorithm-for-a-signature">
+<h2><span class="section-number">20.2. </span>Choosing the hash algorithm for a signature<a class="headerlink" href="#choosing-the-hash-algorithm-for-a-signature" title="Link to this heading">¶</a></h2>
+<p>A central element of signature packets is the hash digest of the input data. Most OpenPGP software supports a set of different hash mechanisms, of which one is chosen for each signature packet (this is one aspect of OpenPGP’s <em>cryptographic agility</em>), and used to calculate the hash digest.</p>
+<p>Different hash mechanisms offer different trade-offs:</p>
+<ul class="simple">
+<li><p><em>Hash digest size</em>: Larger hash size tends to correspond with greater strength against cryptanalysis, and hash digests are relatively small: at the time of this writing, typical sizes are 32 to 64 bytes. However, for some use cases - especially where small messages are sent over a bandwidth-limited transport - larger hash sizes may unacceptably increase message size.</p></li>
+<li><p><em>Computational cost</em>: Different hash algorithms may have different computational costs. Some OpenPGP users may prefer to limit this cost, for example on constrained computing environments.</p></li>
+</ul>
+<p>The following sections discuss how the hash algorithm is chosen, based on preferences that are associated with the involved OpenPGP certificates.</p>
+<section id="typically-local-determination">
+<h3><span class="section-number">20.2.1. </span>Typically: Local determination<a class="headerlink" href="#typically-local-determination" title="Link to this heading">¶</a></h3>
+<p>Often, signature creation isn’t targeted at a specific receiver. Many signatures are issued for an indeterminate set of “anyone who receives the signature.”</p>
+<p>For example, self-signatures that form a certificate are aimed at everyone who interacts with that certificate. Similarly, when creating a data signature for a software package, this signature is aimed at “anyone who will check the signature,” often over a long period of time, easily spanning years.</p>
+<p>In such cases, the issuer of that signature chooses the hash algorithm locally, without following preferences of a third party.</p>
+</section>
+<section id="with-a-specific-recipient-negotiation-based-on-recipient-s-preferences">
+<h3><span class="section-number">20.2.2. </span>With a specific recipient: “Negotiation” based on recipient’s preferences<a class="headerlink" href="#with-a-specific-recipient-negotiation-based-on-recipient-s-preferences" title="Link to this heading">¶</a></h3>
+<p>In contrast, when a message is created for a specific recipient, the sender can - and should - choose the hash algorithm for the signature packet <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithm-preferences">based on the recipient’s hash algorithm preference</a>.</p>
+<p>The recipient’s hash algorithm preference is defined in metadata of their certificate, see <a class="reference internal" href="../certificates.html#algo-pref"><span class="std std-ref">Algorithm preferences and feature signaling</span></a> for more details.</p>
+<p>In this workflow, the signed hash digest is created with a hash algorithm that follows the recipient’s preferences, and its intersection with the sender’s capabilities and preferences.</p>
+</section>
+</section>
+<section id="signature-versions">
+<h2><span class="section-number">20.3. </span>Signature versions<a class="headerlink" href="#signature-versions" title="Link to this heading">¶</a></h2>
+<p>As described in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-packet-type-id-2">RFC</a>, the version of a generated signature packet must conform to the version of the key that issues the signature.</p>
+<p>That is:</p>
+<ul class="simple">
+<li><p>OpenPGP version 6 keys must generate version 6 signature packets</p></li>
+<li><p>OpenPGP version 4 keys must generate version 4 signature packets</p></li>
+</ul>
+<p>Note that some historical version 3 signature packets may still be relevant for applications that handle old OpenPGP data[^sig-v3]. These version 3 signature packets will have been generated by version 4 keys.</p>
+<p>[sig-v3]Version 4 signature packets were introduced in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc2440#section-5.2">RFC 2440</a> in 1998, which specifies that applications SHOULD generate v4 signature, however generation of v3 signature packets has remained allowed through <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc4880.html#section-5.2">RFC 4880</a>.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="private_keys.html" title="Previous document"><span class="section-number">19. </span>Advanced material: Private keys</a>
+        </li>
+        <li>
+          <a href="signing_data.html" title="Next document"><span class="section-number">21. </span>Advanced material: Signatures over data</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">20. Advanced material: Signatures</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#notation-signature-subpackets">20.1. Notation signature subpackets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#choosing-the-hash-algorithm-for-a-signature">20.2. Choosing the hash algorithm for a signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#signature-versions">20.3. Signature versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="private_keys.html" title="previous chapter"><span class="section-number">19. </span>Advanced material: Private keys</a></li>
+      <li>Next: <a href="signing_data.html" title="next chapter"><span class="section-number">21. </span>Advanced material: Signatures over data</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

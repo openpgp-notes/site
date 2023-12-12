@@ -1,0 +1,154 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Encryption
+
+[Encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-confidentiality-via-encrypt) is one of the core facilities of OpenPGP. It provides confidentiality.
+
+For an in-depth, packet-level view of encrypted data in OpenPGP, see [](/zoom/encryption).
+
+## Terminology
+
+| Term         | Description                                                                                                |
+|--------------|------------------------------------------------------------------------------------------------------------|
+| SEIPD Packet | *Symmetrically Encrypted, Integrity Protected Data* packet; contains the encrypted message payload         |
+| SKESK Packet | *Symmetric-Key Encrypted Session Key* packet; contains or provides a passphrase-encrypted session key      |
+| PKESK Packet | *Public-Key Encrypted Session Key* packet; contains a session key encrypted using an asymmetric public key |
+| Session Key  | Symmetric encryption key, which is either used directly as - or to derive - the message key                |
+| Message Key  | Symmetric encryption key used to encrypt the contents of the SEIPD packet                                  |
+
+## High-Level overview of the message encryption process
+
+Encryption in OpenPGP is performed in two distinct steps:
+
+1. **Symmetric encryption**: The plaintext is encrypted based on a (secret) symmetric key, the [*session key*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-confidentiality-via-encrypt). The (potentially large) ciphertext only needs to be stored once, even if it is sent to multiple recipients. All recipients get access to the same shared *session key* to decrypt the message.
+2. **Session key transmission**: For each recipient of the message, a packet that contains a protected copy of the session key is generated.
+   - Usually, the *session key* is encrypted to a public encryption component key of the recipient.
+   - Alternatively - or additionally - the *session key* may also be encrypted using a passphrase. This is a specialized and less commonly used mode of operation that doesn't require OpenPGP certificates.
+
+```{note}
+Above, "plaintext" means one of:
+- *Literal Data* packet,
+- *Compressed Data* packet or a
+- *signed message*.
+
+A *signed message*, in turn, is a packet sequence that either
+- resembles an *inline-signed message* (a *Literal Data* packet sandwhiched between one or more *One-Pass-Signature* and their respective *Signature* packets), or a
+- *prefixed-signed* message (one or more *Signature* packets followed by a single *Literal Data* packet).
+```
+
+## Encryption mechanism versions
+
+OpenPGP's encryption mechanisms have evolved over time. The RFC shows an [overview of encryption mechanisms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.3.2.1), and how they may be combined.
+
+Two generations of encryption mechanisms are currently relevant in OpenPGP, and will co-exist for the foreseeable future.
+
+The main difference between these lies in the symmetric part of the encryption mechanism, represented by versions 1 and 2 of the *Symmetrically Encrypted and Integrity Protected Data* packets (abbreviated as "SEIPD"). The two versions use different mechanisms to provide non-malleability. More on these below.
+
+Older, legacy encryption mechanisms exist in OpenPGP. However, those must not be used for encryption anymore. Messages encrypted using these legacy mechanisms may still be decrypted, although with caution. For more information, see the [decryption](/decryption) chapter.
+
+SEIPD packets are used in combination with two mechanisms that store *session keys*:
+
+- [Public-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio) (PKESK) packets and
+- [Symmetric-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#skesk) (SKESK) packets.
+
+The typical combination of mechanisms for encryption in OpenPGP is a [hybrid cryptosystem](hybrid_cryptosystems), consisting of one or more [Public-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio) packets (PKESK), followed by a [Symmetrically Encrypted Integrity Protected Data](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-int) (SEIPD) packet.
+
+In this combination, an asymmetric cryptographic mechanism is used to protect a *session key* inside PKESK packets. The *session key*, in turn, is used to protect the plaintext using symmetric-key encryption in a SEIPD packet.
+
+## Encrypted session keys: PKESK, SKESK
+
+Encrypted session key (ESK) packets are a family of two mechanisms for securing symmetric key material:
+
+- [PKESK](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio): Uses asymmetric OpenPGP key material to protect a session key, and
+- [SKESK](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-encrypted-ses): Uses passphrases to protect the symmetric key material, instead of OpenPGP asymmetric key material (this is less commonly used).
+
+An arbitrary number of PKESKs and SKESKs can be used in the same message. It is also possible to mix the two, resulting in a message which can be decrypted using either one of the designated OpenPGP keys or any of the passphrases used to encrypt the message. This is useful to make a message available to a number of known recipients, with the option to provide the passphrase to future recipients.
+
+### PKESK: Session key encrypted to an asymmetric OpenPGP key
+
+To encrypt an OpenPGP message for a recipient, the session key is encrypted to the recipient's public key. The resulting encrypted session key is packed into a PKESK packet, which holds essential metadata, like an identifier of the recipients encryption (sub)-key.
+
+This procedure is repeated for each recipient of the message, and all resulting PKESK packets are prepended to the SEIPD packet (see below) containing the actual message.
+
+Typically, the sender would also include themselves as a recipient, to be able to decrypt the message with their own key at a later point in time.
+
+### SKESK: Session key encrypted to a passphrase
+
+As an alternative (or augmentation) to PKESK packets, a message can also be encrypted to a symmetric passphrase. This is done using a SKESK packet, which uses an S2K mechanism to derive a symmetric key from a passphrase. This key is either used directly as the session key, or more commonly, used as a key-encapsulation-key (KEK) to encrypt the session key.
+
+Also see https://flowcrypt.com/docs/guide/send-and-receive/send-password-protected-emails.html
+
+As for protection of secret key material, it is important to choose appropriate S2K parameters when generating an SKESK packet.
+The specification currently recommends to use either *Iterated and Salted S2K* or *Argon2*.
+
+```{admonition} TODO:
+:class: warning
+
+Add further guidance for recommended S2K parameters, like iteration count or Argon2 configuration. Perhaps in a dedicated "S2K Parameters" section, which can be reused for the encryption chapter and when we talk about secret key encryption in TSKs.
+```
+
+## Symmetric encryption of data, SEIPD
+
+*Symmetrically Encrypted Integrity Protected Data* (SEIPD) packets represent the symmetric aspect of OpenPGP's encryption mechanism. The function of these packets is entirely independent of (asymmetric) OpenPGP keys.
+
+A SEIPD packet contains the actual payload: the ciphertext of the encrypted message. For a large encrypted message, the SEIPD packet will also be large.
+
+```{note}
+SEIPD packets are the successor to the [Symmetrically Encrypted Data](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-dat) packet, which is obsolete.
+```
+
+Two versions of the SEIPD packet (differentiated by the version number) have been specified. Version 1, introduced in RFC4880, is used in OpenPGP v4 while SEIPD version 2 was introduced with OpenPGP v6. Both versions can be used with either OpenPGP v4 or v6 keys, although OpenPGP v4 keys need to announce support for SEIPD version 2 via the *Feature* signature subpacket.
+
+When decrypted, the data contained in a SEIPD packet forms an [OpenPGP message](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages). That is, the decrypted data consists of a series of OpenPGP packets.
+
+In both versions of SEIPD, the decryptor must have obtained a *session key* in a previous step, before processing the SEIPD packet. Using this session key, the decryptor can decrypt the SEIPD packet and process the plaintext data that it contains.
+
+### v1 SEIPD, based on MDC
+
+The [version 1 SEIPD](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-one-seipd) mechanism is supported by all modern OpenPGP version 4 implementations. It was introduced in [RFC 4880](https://www.rfc-editor.org/rfc/rfc4880.html#section-5.13) as a replacement for the *SED* (Symmetrically Encrypted Data) packet. SEIPDv1 provides integrity protection of the ciphertext using a SHA-1 checksum of the plaintext as modification detection code.
+
+Version 1 SEIPD can only be combined with [version 3 PKESK](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v3-pkesk) and/or [version 4 SKESK](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v4-skesk) packets.
+
+In this version of the SEIPD packet, the session key is used directly as message key, meaning the payload is encrypted symmetrically using the session key.
+
+When communicating with a mix of recipients, some of whose OpenPGP software only supports OpenPGP version 4, then this mechanism must be used.
+
+```{figure} plain_svg/SEIPDv1-PKESK.svg
+:name: fig-encryption-seipdv1-pkesk
+:alt: Depicts a dotted hexagon labeled "Plaintext", from which a curved arrow passes another dotted hexagon "Session Key" and finally points to a "SEIPDv1" packet. Two more curved arrows originate from the session key and pass Alice' and Bob's encryption key, ending in two PKESK packets.
+
+With SEIPDv1, the session key is directly used as message key to encrypt the payload
+```
+
+(SEIPDv2)=
+### v2 SEIPD, based on AEAD
+
+The [version 2 SEIPD](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-two-seipd) mechanism was introduced in OpenPGP version 6. Consequently, it can only be used for encryption when all recipients explicitly announce support for it using a *Feature* signature subpacket.
+It provides integrity protection of the ciphertext using *AEAD* (authenticated encryption with additional data).
+v2 SEIPD can only be combined with either [version 6 PKESK](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v6-pkesk) and/or [version 6 SKESK](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v6-skesk) packets.
+
+In version 2 SEIPD, the *session key* is transformed into a *message key*, based on a per-message salt value stored separately in the v2 SEIPD packet. The message key is then used in an AEAD scheme to encrypt the message payload.
+
+```{note}
+The session key can use a different symmetric algorithm than the message key.
+```
+
+```{figure} plain_svg/SEIPDv2-PKESK.svg
+:name: fig-encryption-seipdv2-pkesk
+:alt: TODO
+
+With SEIPDv2, the message key is derived from the session key in an extra step.
+```
+
+This additional step introduces key-separation into the protocol, which protects against certain attacks, such as an [OpenPGP SEIP downgrade attack](https://www.metzdowd.com/pipermail/cryptography/2015-October/026685.html).
+ 
+```{admonition} TODO
+:class: warning
+
+Explain, that with SEIPDv2, a session key can essentially protect more than one message by reusing the same session key and *ESK packets with a fresh, per-message salt.
+
+This might very well go into the advanced topics section though.
+```

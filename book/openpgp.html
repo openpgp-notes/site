@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. A high-level view &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Cryptographic concepts and terms" href="cryptography.html" />
+    <link rel="prev" title="1. Introducing OpenPGP" href="about.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="about.html" title="Previous document"><span class="section-number">1. </span>Introducing OpenPGP</a>
+        </li>
+        <li>
+          <a href="cryptography.html" title="Next document"><span class="section-number">3. </span>Cryptographic concepts and terms</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="a-high-level-view">
+<h1><span class="section-number">2. </span>A high-level view<a class="headerlink" href="#a-high-level-view" title="Link to this heading">¶</a></h1>
+<section id="why-openpgp">
+<h2><span class="section-number">2.1. </span>Why OpenPGP?<a class="headerlink" href="#why-openpgp" title="Link to this heading">¶</a></h2>
+<p>OpenPGP is a widely recognized, IETF-standardized set of cryptographic operations. It is broadly used in securing communications, like encrypted messages and email, and ensuring the integrity of software packages in most Linux distributions. It enjoys a vast ecosystem of libraries, tools, and community support forums. Moreover, its robustness and versatility have made OpenPGP a security choice for other use cases in which encryption and integrity are important. These include file transfer applications, password managers, secure data storage, and signing source code in git repositories.</p>
+<p>There are other compelling reasons for why you might consider using OpenPGP in your project:</p>
+<ol class="arabic simple">
+<li><p><strong>Decentralized trust model</strong>: OpenPGP’s decentralization defines mechanisms for <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authentication</span></a> that allow individuals and entities to create and manage their own cryptographic <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identities</span></a>. Unlike centralized <a class="reference internal" href="glossary.html#term-Trust-Model"><span class="xref std std-term">trust models</span></a>, decentralized <a class="reference internal" href="glossary.html#term-Trust-Model"><span class="xref std std-term">trust models</span></a> empower individuals and entities to manage their own <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identities</span></a>, fostering a community-driven web of trust instead of relying on a centralized authority, thus reducing single points of failure.</p></li>
+<li><p><strong>End-to-end encryption</strong>: OpenPGP provides a robust framework for implementing end-to-end encryption. Content remains confidential, verifiable, <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authenticated</span></a>, and protected against unauthorized access, even when the communication channel itself might be otherwise compromised. Encryption is crucial in a myriad of scenarios, particularly when transmitting sensitive information such as financial data, personally identifiable information (PII), or proprietary business data.</p></li>
+<li><p><strong>Anonymity and pseudonymity</strong>: In sensitive and volatile situations where identity protection is crucial, OpenPGP can be used to provide a level of anonymity or pseudonymity that helps protect user identities. For example, OpenPGP has been used alongside other privacy tools, such as <a class="reference external" href="https://en.wikipedia.org/wiki/The_Tor_Project">Tor</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/Virtual_private_network">VPN</a>s, to provide secure and anonymous communication for whistleblowers, human rights lawyers, activists in repressive regimes, and journalists, reducing their risks for retaliation and state violence.</p></li>
+<li><p><strong>Interoperability</strong>: OpenPGP is a well-structured and standardized protocol, widely adopted by various public and private entities but not tied to any particular vendor’s technology. It supports all major operating systems, such as Windows, macOS, GNU/Linux, Android, and iOS. Because of standardization, wide adoption, cross-platform compatibility, and adaptability, OpenPGP’s interoperability significantly contributes to reducing development time, costs, and technical hurdles.</p></li>
+</ol>
+</section>
+<section id="a-very-brief-history">
+<h2><span class="section-number">2.2. </span>A very brief history<a class="headerlink" href="#a-very-brief-history" title="Link to this heading">¶</a></h2>
+<p>The OpenPGP standard has evolved over time, and remains under active development.</p>
+<p>(Also see <a class="reference external" href="https://www.openpgp.org/about/history/">https://www.openpgp.org/about/history/</a>)</p>
+<section id="pretty-good-privacy-pgp">
+<h3><span class="section-number">2.2.1. </span>Pretty Good Privacy (PGP)<a class="headerlink" href="#pretty-good-privacy-pgp" title="Link to this heading">¶</a></h3>
+<p>The origins of OpenPGP can be traced back to <em>Pretty Good Privacy (PGP)</em>, a software program written by <a class="reference external" href="https://en.wikipedia.org/wiki/Phil_Zimmermann">Phil Zimmermann</a> and first released in 1991.</p>
+<p>The original PGP software played a role in the political struggles sometimes referred to as the <a class="reference external" href="https://en.wikipedia.org/wiki/Crypto_Wars">“Crypto Wars”</a> (also see <a class="reference external" href="https://en.wikipedia.org/wiki/Crypto_(book)">“Crypto: How the Code Rebels Beat the Government Saving Privacy in the Digital” (2002)</a>, which includes some of PGP’s history).</p>
+<p>The original PGP software was never under a Free Software license, despite its source code being widely published by its author. <a class="reference external" href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy#PGP_Corporation_and_Symantec">PGP’s ownership has changed over the years</a>, and <a class="reference external" href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy#PGP_Corporation_encryption_applications">PGP’s scope and suite of products have expanded</a>.</p>
+</section>
+<section id="standardizing-openpgp">
+<h3><span class="section-number">2.2.2. </span>Standardizing OpenPGP<a class="headerlink" href="#standardizing-openpgp" title="Link to this heading">¶</a></h3>
+<p>While PGP was first developed as commercial software, the owner at the time, PGP Inc., started a standardization effort with the IETF, first publishing <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc1991">RFC 1991 “PGP Message Exchange Formats”</a> in August 1996.</p>
+<p>In July 1997, a process to produce an open standard under the then new name <a class="reference external" href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy#OpenPGP">OpenPGP</a> was started, resulting in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc2440">RFC 2440 “OpenPGP Message Format”</a>, published in November 1998.</p>
+<p>The name OpenPGP can be used freely by implementations, unlike the name PGP, which is a <a class="reference external" href="https://uspto.report/TM/74685229">registered trademark</a>.</p>
+</section>
+<section id="gnupg-an-early-free-software-implementation">
+<h3><span class="section-number">2.2.3. </span>GnuPG, an early Free Software implementation<a class="headerlink" href="#gnupg-an-early-free-software-implementation" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://gnupg.org/download/release_notes.html#sec-2-70">First released 1997-12-20</a> by Werner Koch, a German computer programmer, GNU Privacy Guard (GnuPG) is a free and open-source implementation of the OpenPGP standard.</p>
+<p>GnuPG was a major early implementation of OpenPGP. Over the years, the importance of GnuPG has grown significantly as it became a foundational tool for email security, software signing, and more. It played an important (and successful) role in the <a class="reference external" href="https://theintercept.com/2014/10/28/smuggling-snowden-secrets/">release of NSA documents</a> by <a class="reference external" href="https://en.wikipedia.org/wiki/Edward_Snowden">Edward Snowden</a>.</p>
+<p>Because the GnuPG program binary is called “gpg,” “GnuPG” and “gpg” are often used interchangeably.</p>
+</section>
+</section>
+<section id="the-rfc-4880-era">
+<h2><span class="section-number">2.3. </span>The RFC 4880 era<a class="headerlink" href="#the-rfc-4880-era" title="Link to this heading">¶</a></h2>
+<section id="openpgp-version-4">
+<h3><span class="section-number">2.3.1. </span>OpenPGP version 4<a class="headerlink" href="#openpgp-version-4" title="Link to this heading">¶</a></h3>
+<p>In 2007, the IETF published <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc4880">RFC 4880</a>, which defines version 4 OpenPGP artifacts. As of late 2023, version 4 is the most commonly used version.</p>
+<p>An extension for Elliptic Curve Cryptography was defined in <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc6637">RFC 6637</a>, specifying the use of three NIST prime field curves.</p>
+<p>Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#name-elliptic-curve-cryptography">rfc4880bis</a> document. These algorithms are widely used, even though rfc4880bis has never been finalized as a new version of the standard.</p>
+</section>
+<section id="major-implementations-of-openpgp">
+<span id="major-implementations"></span><h3><span class="section-number">2.3.2. </span>Major implementations of OpenPGP<a class="headerlink" href="#major-implementations-of-openpgp" title="Link to this heading">¶</a></h3>
+<p>Today, multiple implementations of OpenPGP play important roles:</p>
+<ul class="simple">
+<li><p>The Mozilla Thunderbird email software uses <a class="reference external" href="https://www.rnpgp.org/">RNP</a>, a C++ implementation of OpenPGP.</p></li>
+<li><p><a class="reference external" href="https://gnupg.org/">GNU Privacy Guard (GnuPG)</a>, a key implementation of the OpenPGP standard, is integral to numerous critical infrastructures, most prominently in ensuring package integrity verification for Linux distributions.</p></li>
+<li><p>Proton Mail, which provides email encryption services for a large number of users, uses and maintains <a class="reference external" href="https://openpgpjs.org/">OpenPGP.js</a> as well as <a class="reference external" href="https://gopenpgp.org/">GopenPGP</a>, an OpenPGP wrapper library written in golang.</p></li>
+<li><p>The RPM Package Manager software includes an OpenPGP backend based on <a class="reference external" href="https://sequoia-pgp.org/">Sequoia PGP</a>, a modern OpenPGP implementation written in Rust. The Fedora Linux operating system <a class="reference external" href="https://sequoia-pgp.org/blog/2023/04/27/rpm-sequoia/">uses Sequoia PGP in rpm</a> since version 38.</p></li>
+</ul>
+</section>
+<section id="interoperability">
+<span id="interop-section"></span><h3><span class="section-number">2.3.3. </span>Interoperability<a class="headerlink" href="#interoperability" title="Link to this heading">¶</a></h3>
+<p>OpenPGP was standardized in 1997 to encourage development of interoperable implementations. This has already been a success early on, but in recent years, there has been <a class="reference internal" href="#major-implementations"><span class="std std-ref">much development of new implementations</span></a>.</p>
+<p>Historically, interoperability has only been tested in an adhoc manner. Since 2019, the Sequoia project is maintaining and operating the <a class="reference external" href="https://tests.sequoia-pgp.org/">“OpenPGP interoperability test suite”</a>, for more rigorous and systematic testing. The test suite has identified numerous <a class="reference external" href="https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite#hall-of-fame">issues</a>.</p>
+</section>
+</section>
+<section id="the-road-ahead">
+<h2><span class="section-number">2.4. </span>The road ahead<a class="headerlink" href="#the-road-ahead" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Software and protocol development sometimes skips version numbers due to reasons like internal testing, significant changes, avoiding confusion, marketing decisions, or technical issues. The official successor to OpenPGP version 4 is OpenPGP version 6, detailed below.</p>
+</div>
+<section id="openpgp-version-6">
+<h3><span class="section-number">2.4.1. </span>OpenPGP version 6<a class="headerlink" href="#openpgp-version-6" title="Link to this heading">¶</a></h3>
+<p>As of this writing (in 2023), <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/">version 6 of OpenPGP</a> is approaching publication as an RFC.
+The <a class="reference external" href="https://datatracker.ietf.org/wg/openpgp/about/#autoid-1">IETF OpenPGP working group</a> is focused on updating the cryptographic mechanisms, adding new algorithms, and the deprecation of obsolete algorithms.</p>
+<p>This document describes OpenPGP version 6, while pointing out differences to previous versions that are relevant to application developers.</p>
+<p>Significant support for OpenPGP version 6 has already been achieved for multiple implementations, including:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/bcgit/bc-java/issues/1421">Bouncy Castle Java</a>,</p></li>
+<li><p><a class="reference external" href="https://github.com/ProtonMail/gopenpgp/tree/v3">GopenPGP</a>,</p></li>
+<li><p><a class="reference external" href="https://github.com/openpgpjs/openpgpjs/releases/tag/v6.0.0-alpha.0">OpenPGP.js</a>,</p></li>
+<li><p><a class="reference external" href="https://github.com/dkg/PGPy/tree/dkg/crypto-refresh">PGPy</a>,</p></li>
+<li><p><a class="reference external" href="https://gitlab.com/sequoia-pgp/sequoia/-/tree/crypto-refresh">Sequoia PGP</a>.</p></li>
+</ul>
+<p>Initial efforts to incorporate support for OpenPGP version 6 have been undertaken in the PGPainless and RNP implementations.</p>
+</section>
+<section id="post-quantum-cryptography-in-openpgp">
+<h3><span class="section-number">2.4.2. </span>Post-quantum cryptography in OpenPGP<a class="headerlink" href="#post-quantum-cryptography-in-openpgp" title="Link to this heading">¶</a></h3>
+<p>There is <a class="reference external" href="https://datatracker.ietf.org/doc/draft-wussler-openpgp-pqc/">ongoing work</a> to standardize and add support for post-quantum <a class="reference internal" href="glossary.html#term-Public-Key-Algorithm"><span class="xref std std-term">public-key algorithms</span></a> in OpenPGP. This project is funded by the <a class="reference external" href="https://en.wikipedia.org/wiki/Federal_Office_for_Information_Security">german “BSI”</a>. Goals include adding support for post-quantum cryptography to Thunderbird and GnuPG. A <a class="reference external" href="https://datatracker.ietf.org/meeting/113/materials/slides-113-openpgp-a-post-quantum-approach-for-openpgp-00">presentation</a> was given at <a class="reference external" href="https://datatracker.ietf.org/meeting/113/session/openpgp/">IETF 113</a>.</p>
+</section>
+</section>
+<section id="zooming-in-internal-structure-of-openpgp-data">
+<h2><span class="section-number">2.5. </span>Zooming in: Internal structure of OpenPGP data<a class="headerlink" href="#zooming-in-internal-structure-of-openpgp-data" title="Link to this heading">¶</a></h2>
+<p>OpenPGP data is internally structured as “packets.” We’ll look into examples of this internal structure in a series of chapters at the end of this document.</p>
+<p>Getting familiar with the internal format of OpenPGP data provides practical insight into the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/">RFC</a>, which describes the internal structure of OpenPGP <a class="reference internal" href="glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> in full detail, and may also come in handy for debugging issues.</p>
+<p>(Most of the time, however, we will look at OpenPGP artifacts at a higher level of abstraction.)</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="about.html" title="Previous document"><span class="section-number">1. </span>Introducing OpenPGP</a>
+        </li>
+        <li>
+          <a href="cryptography.html" title="Next document"><span class="section-number">3. </span>Cryptographic concepts and terms</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. A high-level view</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-openpgp">2.1. Why OpenPGP?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-very-brief-history">2.2. A very brief history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-rfc-4880-era">2.3. The RFC 4880 era</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-road-ahead">2.4. The road ahead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zooming-in-internal-structure-of-openpgp-data">2.5. Zooming in: Internal structure of OpenPGP data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="about.html" title="previous chapter"><span class="section-number">1. </span>Introducing OpenPGP</a></li>
+      <li>Next: <a href="cryptography.html" title="next chapter"><span class="section-number">3. </span>Cryptographic concepts and terms</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

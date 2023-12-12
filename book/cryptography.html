@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Cryptographic concepts and terms &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Certificates" href="certificates.html" />
+    <link rel="prev" title="2. A high-level view" href="openpgp.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="openpgp.html" title="Previous document"><span class="section-number">2. </span>A high-level view</a>
+        </li>
+        <li>
+          <a href="certificates.html" title="Next document"><span class="section-number">4. </span>Certificates</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="cryptographic-concepts-and-terms">
+<h1><span class="section-number">3. </span>Cryptographic concepts and terms<a class="headerlink" href="#cryptographic-concepts-and-terms" title="Link to this heading">¶</a></h1>
+<section id="cryptographic-hash-functions">
+<span id="crypto-hash"></span><h2><span class="section-number">3.1. </span>Cryptographic hash functions<a class="headerlink" href="#cryptographic-hash-functions" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">Cryptographic hash functions</a> take data strings of any length (like a text message or file) and output a fixed-size code, a “hash digest,” which is often abbreviated as either “digest” or “hash.” A hash digest is also sometimes called a “(cryptographic) checksum.” A hash digest acts like a unique identifier for the original data.</p>
+<p>Cryptographic hash functions have two important properties:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Preimage_attack"><strong>Pre-image resistance</strong></a>: Given a hash digest, it should be very difficult to determine any data that matches this hash digest (including, but not limited to, the original data the hash represents). This property embodies the concept of a <a class="reference external" href="https://en.wikipedia.org/wiki/One-way_function">one-way function</a> – a calculation that is easy to perform, but very hard to reverse.</p></li>
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Collision_resistance"><strong>Collision resistance</strong></a>: It should be very difficult to find two distinct pieces of data that map to the same hash digest.</p></li>
+</ul>
+</section>
+<section id="message-authentication-codes">
+<span id="id1"></span><h2><span class="section-number">3.2. </span>Message authentication codes<a class="headerlink" href="#message-authentication-codes" title="Link to this heading">¶</a></h2>
+<p>A <a class="reference external" href="https://en.wikipedia.org/wiki/Message_authentication_code">message authentication code</a> (MAC), also known as an <a class="reference internal" href="glossary.html#term-Authentication-Tag"><span class="xref std std-term">authentication tag</span></a>, is a small piece of information used to verify the integrity and authenticity of a message.</p>
+<p>It is derived from the original message using a <a class="reference internal" href="glossary.html#term-Symmetric-Secret-Key"><span class="xref std std-term">(symmetric) secret key</span></a>. The recipient of a message containing a MAC, who is also in possession of the secret key, can verify that the message has not been altered.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/HMAC">HMAC</a> is a type of MAC that relies on a hash function. It is used in the OpenPGP protocol.</p>
+<section id="key-derivation-functions">
+<h3><span class="section-number">3.2.1. </span>Key derivation functions<a class="headerlink" href="#key-derivation-functions" title="Link to this heading">¶</a></h3>
+<p>A hash function can also be used to create a <a class="reference external" href="https://en.wikipedia.org/wiki/Key_derivation_function">key derivation function</a> (KDF).
+One application of KDFs is to generate symmetric key material from a password by iteratively passing it through a hash function.</p>
+<p>A notable KDF for the OpenPGP specification is the <a class="reference external" href="https://en.wikipedia.org/wiki/HKDF">HKDF</a>, which is a key derivation function based on the HMAC.</p>
+<p>For detailed information on KDFs and their role in the OpenPGP protocol, see the <a class="reference internal" href="private_keys.html#encrypted-secrets"><span class="std std-ref">encrypted secrets</span></a> chapter and the <a class="reference internal" href="encryption.html#seipdv2"><span class="std std-ref">SEIPDv2</span></a> section of the encryption chapter.</p>
+</section>
+</section>
+<section id="symmetric-key-cryptography">
+<span id="id2"></span><h2><span class="section-number">3.3. </span>Symmetric-key cryptography<a class="headerlink" href="#symmetric-key-cryptography" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm">Symmetric-key cryptography</a> uses the same cryptographic key for both encryption and decryption, unlike asymmetric cryptography where a pair of keys is used: a public key for encryption and a corresponding private key for decryption. Symmetric-key cryptographic systems support <em>encryption/decryption</em> operations.</p>
+<p>Participants in symmetric-key operations need to exchange the shared secret over a secure channel.</p>
+<figure class="align-default" id="fig-symmetric-key">
+<img alt="Depicts a box with a white background and the title &quot;Symmetric key&quot;. In the box a single key symbol, rendered with full yellow line, is shown pointing to the right hand side." src="_images/symmetric_key.svg" /><figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">A symmetric cryptographic key (which acts as a shared secret)</span><a class="headerlink" href="#fig-symmetric-key" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="benefits-and-downsides">
+<h3><span class="section-number">3.3.1. </span>Benefits and downsides<a class="headerlink" href="#benefits-and-downsides" title="Link to this heading">¶</a></h3>
+<p>Symmetric-key cryptography has major benefits: It is much faster than public-key cryptography (see below). Also, most current symmetric-key cryptographic mechanisms are believed to be resilient against possible advances in quantum computing<a class="footnote-reference brackets" href="#postquantum" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<p>However, exchanging the required shared secret is a problem that needs to be solved separately.</p>
+<p><a class="reference internal" href="#hybrid-cryptosystems"><span class="std std-ref">Hybrid cryptosystems</span></a> combine the advantages of symmetric-key cryptography with a separate mechanism for managing the shared secret, using public-key cryptography.</p>
+</section>
+<section id="symmetric-key-cryptography-in-openpgp">
+<h3><span class="section-number">3.3.2. </span>Symmetric-key cryptography in OpenPGP<a class="headerlink" href="#symmetric-key-cryptography-in-openpgp" title="Link to this heading">¶</a></h3>
+<p>Symmetric-key cryptography is used in OpenPGP in three contexts:</p>
+<ul class="simple">
+<li><p>most prominently, as part of a hybrid cryptosystem to encrypt and decrypt data,</p></li>
+<li><p>to encrypt <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption">password-protected private key material</a>, and</p></li>
+<li><p>for <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-encrypted-ses">password-protected data encryption</a>, a less commonly used feature of the standard.</p></li>
+</ul>
+<p>Where symmetric keys are used in OpenPGP for data encryption, they are called either “message keys” or “session keys<a class="footnote-reference brackets" href="#sessionkey" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.”</p>
+</section>
+<section id="authenticated-encryption-with-associated-data-aead">
+<h3><span class="section-number">3.3.3. </span>Authenticated encryption with associated data (AEAD)<a class="headerlink" href="#authenticated-encryption-with-associated-data-aead" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Authenticated_encryption">Authenticated encryption</a> offers more than just confidentiality; it ensures data integrity too.</p>
+<p>In OpenPGP version 6, AEAD replaced the MDC<a class="footnote-reference brackets" href="#mdc" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> mechanism to address malleability. In earlier OpenPGP versions, malicious alterations to ciphertext might go unnoticed. AEAD guards against such undetected changes.</p>
+<p>By addressing the malleability problem, AEAD also counters a variation of the EFAIL<a class="footnote-reference brackets" href="#efail" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> attack.</p>
+</section>
+</section>
+<section id="public-key-asymmetric-cryptography">
+<span id="id7"></span><h2><span class="section-number">3.4. </span>Public-key (asymmetric) cryptography<a class="headerlink" href="#public-key-asymmetric-cryptography" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Public-key_cryptography">Public-key cryptography</a> uses asymmetric pairs of related keys. Each pair consists of a public key and a private key. These systems support encryption, decryption, and digital signature operations.</p>
+<p>Unlike symmetric cryptography, participants are not required to pre-arrange a shared secret. In public-key cryptography, the public key material is shared openly for certain cryptographic operations, such as encryption and signature verification, while the private key, kept confidential, is used for operations like decryption and signature creation.</p>
+<section id="asymmetric-cryptographic-key-pairs">
+<span id="asymmetric-key-pair"></span><h3><span class="section-number">3.4.1. </span>Asymmetric cryptographic key pairs<a class="headerlink" href="#asymmetric-cryptographic-key-pairs" title="Link to this heading">¶</a></h3>
+<p>Throughout this document, we will frequently reference asymmetric cryptographic key pairs:</p>
+<figure class="align-default" id="fig-asymmetric-keypair">
+<img alt="Depicts a box with white background and the title &quot;Asymmetric keypair&quot;. In the box two key symbols with text next to them are shown. The top key symbol is rendered using full green lines, points to the right hand side and has the accompanying text &quot;Public key&quot;. The lower key symbol is rendered using dotted red lines, points to the left hand side and has the accompanying text &quot;Private key&quot;." src="_images/asymmetric_keypair.svg" /><figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">An asymmetric cryptographic key pair</span><a class="headerlink" href="#fig-asymmetric-keypair" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Each key pair comprises two parts: the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> and the <a class="reference internal" href="glossary.html#term-Transferable-Secret-Key"><span class="xref std std-term">private key</span></a>. For ease of identification in this documentation, the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> will be shown in green and the private key in red. Additionally, <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public keys</span></a> are depicted with a solid border and pointing to the right, while <a class="reference internal" href="glossary.html#term-Transferable-Secret-Key"><span class="xref std std-term">private keys</span></a> are shown with a dotted border and pointing to the left.</p>
+<p>It’s important to note that in many scenarios, only the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> is exposed or used. These situations will be elaborated upon in subsequent sections of this document.</p>
+<figure class="align-default" id="fig-public-key">
+<img alt="Depicts a box with white background and the title &quot;Public part of an asymmetric keypair&quot;. In the box one key symbol with text next to it is shown. The key symbol is rendered using full green lines, points to the right hand side and has the accompanying text &quot;Public key&quot;." src="_images/public_key.svg" /><figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">The public part of an asymmetric key pair</span><a class="headerlink" href="#fig-public-key" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="usage-and-terminology-in-openpgp">
+<h3><span class="section-number">3.4.2. </span>Usage and terminology in OpenPGP<a class="headerlink" href="#usage-and-terminology-in-openpgp" title="Link to this heading">¶</a></h3>
+<p>OpenPGP extensively uses <a class="reference internal" href="glossary.html#term-Public-Key-Algorithm"><span class="xref std std-term">public-key cryptography</span></a> for encryption and digital signing operations.</p>
+<div class="note admonition">
+<p class="admonition-title">Terminology</p>
+<p>OpenPGP documentation, including the foundational RFC, opts for the term “secret key” over the more widely accepted “private key.” As a result, in the RFC, you’ll encounter the “public/secret key” pairing more frequently than “public/private key.” This terminology reflects historical developments in the OpenPGP community, not a difference in technology.</p>
+<p>While “secret key” (as used in the OpenPGP RFC) and “private key” serve the same purpose in cryptographic operations, this document will use the more common “public/private” terminology for clarity and consistency with broader cryptographic discussions.</p>
+</div>
+</section>
+<section id="cryptographic-digital-signatures">
+<h3><span class="section-number">3.4.3. </span>Cryptographic digital signatures<a class="headerlink" href="#cryptographic-digital-signatures" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Digital_signature">Digital signatures</a> are a fundamental mechanism of <a class="reference internal" href="glossary.html#term-Asymmetric-Cryptography"><span class="xref std std-term">asymmetric cryptography</span></a>, providing secure, mathematical means to validate the <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authenticity</span></a>, integrity, and origin of digital messages and documents.</p>
+<p>In OpenPGP, digital signatures have diverse applications, extending beyond mere validation of a message’s origin. They can signify various intents, including <a class="reference internal" href="glossary.html#term-Certification"><span class="xref std std-term">certification</span></a>, consent, acknowledgment, or even revocation by the signer. The multifaceted nature of “statements” conveyed through <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">digital signatures</span></a> in cryptographic protocols is wide-ranging but crucial, allowing third parties to inspect/evaluate these statements for <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authenticity</span></a> and intended purpose.</p>
+<p><a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">Digital signatures</span></a> in OpenPGP are used in two primary contexts:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="signing_data.html"><span class="doc std std-doc">Data signatures</span></a></p></li>
+<li><p><a class="reference internal" href="signing_components.html"><span class="doc std std-doc">Signatures on components</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="hybrid-cryptosystems">
+<span id="id8"></span><h2><span class="section-number">3.5. </span>Hybrid cryptosystems<a class="headerlink" href="#hybrid-cryptosystems" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Hybrid_cryptosystem">Hybrid cryptosystems</a> combine the use of <a class="reference internal" href="glossary.html#term-Symmetric-Cryptography"><span class="xref std std-term">symmetric</span></a> and <a class="reference internal" href="glossary.html#term-Asymmetric-Cryptography"><span class="xref std std-term">asymmetric (public-key)</span></a> cryptography to capitalize on the strengths of each, namely <a class="reference internal" href="glossary.html#term-Symmetric-Cryptography"><span class="xref std std-term">symmetric cryptography</span></a>’s speed and efficiency and <a class="reference internal" href="glossary.html#term-Asymmetric-Cryptography"><span class="xref std std-term">public-key cryptography</span></a>’s mechanism for secure key exchange.</p>
+<section id="id9">
+<h3><span class="section-number">3.5.1. </span>Usage and terminology in OpenPGP<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<p>OpenPGP uses a <a class="reference internal" href="glossary.html#term-Hybrid-Cryptosystem"><span class="xref std std-term">hybrid cryptosystem</span></a> for encryption.  This approach involves generating unique shared secrets, known as “session keys,” for each session. For detailed information on this topic, please refer to the chapters <a class="reference internal" href="encryption.html"><span class="doc std std-doc">Encryption</span></a> and <a class="reference internal" href="decryption.html"><span class="doc std std-doc">Decryption</span></a>.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="postquantum" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">1</a><span class="fn-bracket">]</span></span>
+<p>Daniel J. Bernstein (2009). <a class="reference external" href="http://www.pqcrypto.org/www.springer.com/cda/content/document/cda_downloaddocument/9783540887010-c1.pdf">“Introduction to post-quantum cryptography” (PDF)</a> states that: “many important classes of cryptographic systems”, including secret-key cryptographic mechanisms like AES “[..] are believed to resist classical computers and quantum computers.” (pages 1, 2).</p>
+</aside>
+<aside class="footnote brackets" id="sessionkey" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">2</a><span class="fn-bracket">]</span></span>
+<p>In OpenPGP version 6, the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-2-symmetrically-enc">“Version 2 Symmetrically Encrypted Integrity Protected Data Packet Format”</a> requires that a “message key” is derived from a “session key.” In contrast, up to OpenPGP version 4, and in version 6 when using <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-1-symmetrically-enc">“Version 1 Symmetrically Encrypted Integrity Protected Data Packet Format”</a>, the “session key” was used directly as a symmetric encryption key.</p>
+</aside>
+<aside class="footnote brackets" id="mdc" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">3</a><span class="fn-bracket">]</span></span>
+<p>OpenPGP version 4 introduced a mechanism called MDC (Modification Detection Code), which fulfills a comparable purpose as AEAD in safeguarding message integrity. MDC is a non-standard mechanism, but no known attacks have compromised this scheme as of this document’s last update.</p>
+</aside>
+<aside class="footnote brackets" id="efail" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">4</a><span class="fn-bracket">]</span></span>
+<p>A variation of the <a class="reference external" href="https://en.wikipedia.org/wiki/EFAIL">EFAIL</a> attack can be prevented by both the MDC and AEAD mechanisms. Also see <a class="reference external" href="https://proton.me/blog/pgp-vulnerability-efail">“No, PGP is not broken, not even with the Efail vulnerabilities,”</a> especially the section “Malleability Gadget Exfiltration Channel Attack.”</p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="openpgp.html" title="Previous document"><span class="section-number">2. </span>A high-level view</a>
+        </li>
+        <li>
+          <a href="certificates.html" title="Next document"><span class="section-number">4. </span>Certificates</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Cryptographic concepts and terms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cryptographic-hash-functions">3.1. Cryptographic hash functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#message-authentication-codes">3.2. Message authentication codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#symmetric-key-cryptography">3.3. Symmetric-key cryptography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#public-key-asymmetric-cryptography">3.4. Public-key (asymmetric) cryptography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hybrid-cryptosystems">3.5. Hybrid cryptosystems</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="openpgp.html" title="previous chapter"><span class="section-number">2. </span>A high-level view</a></li>
+      <li>Next: <a href="certificates.html" title="next chapter"><span class="section-number">4. </span>Certificates</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# OpenPGP versions
+
+## Differences between OpenPGP versions
+
+```{admonition} TODO
+:class: warning
+
+write about the delta between v4 and v6, most of all
+- a starting point? https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-upgrade-guidance-adapting-i
+```

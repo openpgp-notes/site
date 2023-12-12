@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7. Signatures over data &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="8. Signatures on components" href="signing_components.html" />
+    <link rel="prev" title="6. OpenPGP Signatures" href="signatures.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signatures.html" title="Previous document"><span class="section-number">6. </span>OpenPGP Signatures</a>
+        </li>
+        <li>
+          <a href="signing_components.html" title="Next document"><span class="section-number">8. </span>Signatures on components</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="signatures-over-data">
+<h1><span class="section-number">7. </span>Signatures over data<a class="headerlink" href="#signatures-over-data" title="Link to this heading">¶</a></h1>
+<p>In OpenPGP, a <em><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">data signature</span></a></em> guarantees the <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authenticity</span></a> and, implicitly, the integrity of certain data. Typical use cases of <a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">data signatures</span></a> include the <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authentication</span></a> of software packages and emails.</p>
+<p>“<a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">Authenticity</span></a>” in this context means that the <a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">data signature</span></a> was issued by <a class="reference internal" href="glossary.html#term-Certificate-Holder"><span class="xref std std-term">the entity controlling the signing key material</span></a>. However,
+it does not automatically signal if the expected party indeed controls the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a> <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">certificate</span></a>. OpenPGP does offer mechanisms for <em>strong <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authentication</span></a></em>, connecting <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">certificates</span></a> to specific <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identities</span></a>. This verifies that the intended communication partner is indeed associated with the cryptographic <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identity</span></a> behind the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a><a class="footnote-reference brackets" href="#sign-auth" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<p><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">Data signatures</span></a> can only be issued by <a class="reference internal" href="glossary.html#term-Component-Key"><span class="xref std std-term">component keys</span></a> with the <em><a class="reference internal" href="glossary.html#term-Signing-Key-Flag"><span class="xref std std-term">signing</span></a></em> <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags">key flag</a>.</p>
+<p>Note that <a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">data signatures</span></a> are distinct from <a class="reference internal" href="signing_components.html"><span class="doc std std-doc">Signatures on components</span></a>, which are used to form and maintain <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">certificates</span></a>, as well as to <a class="reference internal" href="glossary.html#term-Certification"><span class="xref std std-term">certify</span></a> <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identities</span></a> on <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">certificates</span></a>.</p>
+<section id="signature-types">
+<span id="data-signature-types"></span><h2><span class="section-number">7.1. </span>Signature types<a class="headerlink" href="#signature-types" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">OpenPGP data signatures</span></a> use one of two <a class="reference internal" href="signatures.html#signature-types"><span class="std std-ref">signature types</span></a>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-binary"><strong>Binary signature</strong></a> (<a class="reference internal" href="glossary.html#term-Signature-Type-ID"><span class="xref std std-term">type ID</span></a> <code class="docutils literal notranslate"><span class="pre">0x00</span></code>): This is the standard <a class="reference internal" href="glossary.html#term-Signature-Type"><span class="xref std std-term">signature type</span></a> for binary data and is typically used for files or data streams. <a class="reference internal" href="glossary.html#term-Binary-Signature"><span class="xref std std-term">Binary signatures</span></a> are calculated over the data without any modifications or transformations.</p></li>
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-of-a-canonical-te"><strong>Text signature</strong></a> (<a class="reference internal" href="glossary.html#term-Signature-Type-ID"><span class="xref std std-term">type ID</span></a> <code class="docutils literal notranslate"><span class="pre">0x01</span></code>): Used for textual data, such as email bodies. When calculating a <a class="reference internal" href="glossary.html#term-Text-Signature"><span class="xref std std-term">text signature</span></a>, the data is first normalized by converting line endings into a canonical form (<code class="docutils literal notranslate"><span class="pre">&lt;CR&gt;&lt;LF&gt;</span></code>). This approach mitigates issues caused by platform-specific text encodings. This is especially important for detached and <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signatures</span></a>, where the  message file might undergo re-encoding between the creation and <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> of the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a>.</p></li>
+</ul>
+<p><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">Data signatures</span></a> are generated by <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hashing</span></a> the message content along with the <a class="reference internal" href="glossary.html#term-Metadata"><span class="xref std std-term">metadata</span></a> in the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature packet</span></a>, and calculating a <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> over that <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hash</span></a>. The resulting <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> is stored in the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packet</span></a>.</p>
+<p><a class="reference internal" href="glossary.html#term-Data-Signature-Packet"><span class="xref std std-term">Data signature packets</span></a> manifest in three distinct forms, which will be detailed in the subsequent section.</p>
+</section>
+<section id="forms-of-openpgp-data-signatures">
+<span id="id2"></span><h2><span class="section-number">7.2. </span>Forms of OpenPGP data signatures<a class="headerlink" href="#forms-of-openpgp-data-signatures" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">OpenPGP data signatures</span></a> can be applied in three distinct forms<a class="footnote-reference brackets" href="#sign-modes-gpg" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>:</p>
+<ul class="simple">
+<li><p><strong><a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">Detached</span></a></strong>: The OpenPGP signature exists as a separate entity, independent of the signed data.</p></li>
+<li><p><strong><a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">Inline</span></a></strong>: Both the original data and its corresponding <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a> are encapsulated within an <a class="reference internal" href="glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a>.</p></li>
+<li><p><strong><a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">Cleartext signature</span></a></strong>: A plaintext message and its <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a> coexist in a combined text format, preserving the readability of the original message.</p></li>
+</ul>
+<section id="detached-signatures">
+<h3><span class="section-number">7.2.1. </span>Detached signatures<a class="headerlink" href="#detached-signatures" title="Link to this heading">¶</a></h3>
+<p>A <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> is produced by calculating an <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a> over the data intended for signing. The original data remains unchanged, and the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a> is stored as a standalone file. A <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> file can be distributed alongside or independent of the original data. The <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authenticity</span></a> and integrity of the original data file can be <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verified</span></a> by using the <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> file.</p>
+<p>This <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> format is especially useful for signing software releases and other files where it is imperative that the content remains unaltered during the signing process.</p>
+</section>
+<section id="inline-signatures">
+<span id="inline-signature"></span><h3><span class="section-number">7.2.2. </span>Inline signatures<a class="headerlink" href="#inline-signatures" title="Link to this heading">¶</a></h3>
+<p>An <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline signature</span></a> joins the signed data and its corresponding <a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">data signature</span></a> into a single <a class="reference internal" href="glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a>.</p>
+<p>This method is commonly used for signing or encrypting emails. Most email software capable of handling OpenPGP communications typically uses <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline signatures</span></a>.</p>
+<section id="structure">
+<h4><span class="section-number">7.2.2.1. </span>Structure<a class="headerlink" href="#structure" title="Link to this heading">¶</a></h4>
+<p>An <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline-signed</span></a> <a class="reference internal" href="glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a> consists of three segments:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#one-pass-sig"><strong>One-pass signature packets</strong></a>: These one or more <a class="reference internal" href="glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> precede the signed data and enable <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> computation in one pass.</p></li>
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit"><strong>Literal data packet</strong></a>: This contains the original data (e.g., the body of a message), without additional interpretation or conversion.</p></li>
+<li><p><strong><a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">Data signature packets</span></a></strong>: These contain the <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> corresponding to the original data.</p></li>
+</ol>
+</section>
+<section id="creation">
+<h4><span class="section-number">7.2.2.2. </span>Creation<a class="headerlink" href="#creation" title="Link to this heading">¶</a></h4>
+<p>To produce an <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline signature</span></a>, the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a> processes the entirety of the data by reading from an input file and writing into an output <a class="reference internal" href="glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a> file. As the data is processed, the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a> simultaneously calculates a <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a>. This procedure results in the appending of a <a class="reference internal" href="glossary.html#term-Data-Signature-Packet"><span class="xref std std-term">data signature packet</span></a> to the output <a class="reference internal" href="glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a> file, where it can be efficiently stored.</p>
+<p>For efficient <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a>, an application must understand how to handle the <a class="reference internal" href="glossary.html#term-Literal-Data-Packet"><span class="xref std std-term">literal data</span></a> prior to its reading. This requirement is addressed by the <a class="reference internal" href="glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packets</span></a> located at the beginning of <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline-signed</span></a> messages. These <a class="reference internal" href="glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> include essential information such as the <a class="reference internal" href="glossary.html#term-OpenPGP-Fingerprint"><span class="xref std std-term">fingerprint</span></a> of the <a class="reference internal" href="glossary.html#term-OpenPGP-Component-Key"><span class="xref std std-term">signing key</span></a> and the <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hash</span></a> algorithm used for computing the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a>’s <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hash digest</span></a>. This setup enables the verifier to process the data correctly and efficiently.</p>
+<p>Strictly speaking, knowing just the hash algorithm would be sufficient to begin the verification process. However, having efficient access to the signer’s fingerprint or key ID upfront allows OpenPGP software to fetch the signer’s certificates before processing the entirety of the - potentially large - signed data, and .</p>
+</section>
+<section id="verification">
+<h4><span class="section-number">7.2.2.3. </span>Verification<a class="headerlink" href="#verification" title="Link to this heading">¶</a></h4>
+<p><a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">Inline-signed</span></a> messages enable efficient <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> in <em>one pass</em>, structured as follows:</p>
+<ol class="arabic simple">
+<li><p><strong>Initiation with <a class="reference internal" href="glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packets</span></a></strong>: These <a class="reference internal" href="glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> begin the <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> process. They include the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>’s <a class="reference internal" href="glossary.html#term-Key-ID"><span class="xref std std-term">key ID</span></a>/<a class="reference internal" href="glossary.html#term-OpenPGP-Fingerprint"><span class="xref std std-term">fingerprint</span></a>, essential for identifying the appropriate <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> for signature <a class="reference internal" href="glossary.html#term-Validation"><span class="xref std std-term">validation</span></a>.</p></li>
+<li><p><strong>Processing the <a class="reference internal" href="glossary.html#term-Literal-Data-Packet"><span class="xref std std-term">literal data packet</span></a></strong>: This step involves <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hashing</span></a> the literal data, preparing it for <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a>.</p></li>
+<li><p><strong><a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">Verifying</span></a> <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packets</span></a></strong>: Located at the end of the message, these <a class="reference internal" href="glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> are checked against the previously calculated <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hash digest</span></a>.</p></li>
+</ol>
+<p>Important to note, the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>’s <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a>, critical for the final <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> step, is not embedded in the message. Verifiers must acquire this <a class="reference internal" href="glossary.html#term-Key"><span class="xref std std-term">key</span></a> externally (e.g., from a <a class="reference internal" href="glossary.html#term-Key-Server"><span class="xref std std-term">key server</span></a>) to authenticate the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> successfully.</p>
+</section>
+</section>
+<section id="cleartext-signatures">
+<span id="cleartext-sig"></span><h3><span class="section-number">7.2.3. </span>Cleartext signatures<a class="headerlink" href="#cleartext-signatures" title="Link to this heading">¶</a></h3>
+<p>The <em><a class="reference internal" href="glossary.html#term-Cleartext-Signature-Framework"><span class="xref std std-term">Cleartext Signature Framework</span></a></em> (CSF) in OpenPGP accomplishes two primary objectives:</p>
+<ul class="simple">
+<li><p>maintaining the message in a human-readable cleartext format, accessible without OpenPGP-specific software</p></li>
+<li><p>incorporating an <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a> for <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authentication</span></a> by users with OpenPGP-compatible software</p></li>
+</ul>
+<section id="example">
+<h4><span class="section-number">7.2.3.1. </span>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h4>
+<p>The following is a detailed example of a <a class="reference internal" href="zoom/signatures.html#cleartext"><span class="std std-numref">Section 28.3</span></a> signature:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+hello world
+-----BEGIN PGP SIGNATURE-----
+
+wpgGARsKAAAAKQWCZT0vBCIhBtB7JOyRoU3SQKwtU+bIqeBUlJpBIi6nOFdu0Zyu
+o9yZAAAAANqgIHAzoRTzu/7Zuxc8Izf4r3/qSCmBfDqWzTXqmVtsSBSHACka3qbN
+eehqu8H6S0UK8V7yHbpVhExu9Hu72jWEzU/B0h9MR5gDhJPoWurx8YfyXBDsRS4y
+r13/eqMN8kfCDw==
+=Ks9w
+-----END PGP SIGNATURE-----
+</pre></div>
+</div>
+<p>This <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">signature</span></a> consists of two parts: a message (“hello world”) and an ASCII-armored <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a>. The message is immediately comprehensible to a human reader, while the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> block allows for the message’s <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authenticity</span></a> <a class="reference internal" href="glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> via OpenPGP software.</p>
+</section>
+<section id="use-case">
+<h4><span class="section-number">7.2.3.2. </span>Use case<a class="headerlink" href="#use-case" title="Link to this heading">¶</a></h4>
+<p><a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">Cleartext signatures</span></a> combine the advantages of both <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached</span></a> and <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline signatures</span></a>:</p>
+<ul class="simple">
+<li><p><strong>Self-contained format</strong>: <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">Cleartext signatures</span></a> enable the message and its <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> to be stored as a single file.</p></li>
+<li><p><strong>Human readability</strong>: The message within a <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signature</span></a> remains accessible in a plain text format. This eliminates the need for specialized software to read the message content.</p></li>
+</ul>
+<p>These features are particularly beneficial in scenarios where signed messages are managed semi-manually and where existing system infrastructure offers limited or no native support for OpenPGP in the workflow<a class="footnote-reference brackets" href="#arch-certifications" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+</section>
+<section id="text-transformations-for-cleartext-signatures">
+<h4><span class="section-number">7.2.3.3. </span>Text transformations for cleartext signatures<a class="headerlink" href="#text-transformations-for-cleartext-signatures" title="Link to this heading">¶</a></h4>
+<p>The <a class="reference internal" href="glossary.html#term-Cleartext-Signature-Framework"><span class="xref std std-term">cleartext signature framework</span></a> includes specific text normalization procedures to ensure the integrity and clarity of the message:</p>
+<ul class="simple">
+<li><p><strong>Escaping dashes</strong>: The framework implements a method of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-dash-escaped-text">dash-escaped text</a> within the message. Dash-escaping ensures that the parser correctly distinguishes between the armor headers, which are part of the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a>’s structure, and any lines in the message that happen to start with a dash.</p></li>
+<li><p><strong>Normalization of line endings</strong>: Consistent with the approach for any other <a class="reference internal" href="#data-signature-types"><span class="std std-ref">text signature</span></a>, a <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signature</span></a> is calculated on the text with normalized line endings (<code class="docutils literal notranslate"><span class="pre">&lt;CR&gt;&lt;LF&gt;</span></code>). This ensures that the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> remains valid regardless of the text format of the receiving <a class="reference internal" href="glossary.html#term-OpenPGP-Implementation"><span class="xref std std-term">implementation</span></a>.</p></li>
+</ul>
+</section>
+<section id="pitfalls">
+<h4><span class="section-number">7.2.3.4. </span>Pitfalls<a class="headerlink" href="#pitfalls" title="Link to this heading">¶</a></h4>
+<p>Despite their widespread adoption, <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signatures</span></a> have their limitations and are sometimes viewed as a “legacy method”<a class="footnote-reference brackets" href="#csf-gnupg" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>. The <a class="reference internal" href="glossary.html#term-RFC"><span class="xref std std-term">RFC</span></a> details the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-issues-with-the-cleartext-s">pitfalls of cleartext signatures</a>, such as incompatibility with semantically meaningful whitespace, challenges with large messages, and security vulnerabilities related to misleading Hash header manipulations. Given these issues, safer alternatives like <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline</span></a> and <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> forms are advised.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="sign-auth" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Other signing solutions, like <a class="reference external" href="https://flak.tedunangst.com/post/signify">signify</a>, focus on pure signing without strong <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authentication</span></a> of the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>’s <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identity</span></a>.</p>
+</aside>
+<aside class="footnote brackets" id="sign-modes-gpg" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>These three forms of <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> application align with GnuPG’s <code class="docutils literal notranslate"><span class="pre">--detach-sign</span></code>, <code class="docutils literal notranslate"><span class="pre">--sign</span></code>, and <code class="docutils literal notranslate"><span class="pre">--clearsign</span></code> command options.</p>
+</aside>
+<aside class="footnote brackets" id="arch-certifications" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>An illustrative example is the workflow adopted by Arch Linux to <a class="reference internal" href="glossary.html#term-Certification"><span class="xref std std-term">certify</span></a> <a class="reference internal" href="glossary.html#term-User-ID"><span class="xref std std-term">User IDs</span></a> of new packagers. This process relies on <a class="reference external" href="https://gitlab.archlinux.org/archlinux/archlinux-keyring/-/blob/master/.gitlab/issue_templates/New%20Packager%20Key.md?ref_type=heads&amp;amp;plain=1#L33-46">cleartext signed statements from existing packagers</a>. These signed statements are stored as attachments in an issue tracking system for later inspection. The advantage of this approach lies in the convenience of having the message and signature in a single file, which simplifies manual handling. Based on the vouches in these <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signed</span></a> messages and an <a class="reference external" href="https://gitlab.archlinux.org/archlinux/archlinux-keyring/-/wikis/workflows/verify-a-packager-key">email confirmation from the new packager</a>, the main key operators can issue <a class="reference internal" href="glossary.html#term-Third-party-Identity-Certification"><span class="xref std std-term">OpenPGP third-party certifications</span></a>.</p>
+</aside>
+<aside class="footnote brackets" id="csf-gnupg" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
+<p>https://lists.gnupg.org/pipermail/gnupg-devel/2023-November/035428.html</p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="signatures.html" title="Previous document"><span class="section-number">6. </span>OpenPGP Signatures</a>
+        </li>
+        <li>
+          <a href="signing_components.html" title="Next document"><span class="section-number">8. </span>Signatures on components</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Signatures over data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#signature-types">7.1. Signature types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forms-of-openpgp-data-signatures">7.2. Forms of OpenPGP data signatures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="signatures.html" title="previous chapter"><span class="section-number">6. </span>OpenPGP Signatures</a></li>
+      <li>Next: <a href="signing_components.html" title="next chapter"><span class="section-number">8. </span>Signatures on components</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

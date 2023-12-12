@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+# SPDX-License-Identifier: CC0-1.0
+#
+# See https://docs.codeberg.org/codeberg-pages/using-custom-domain/ for
+# details. The first domain should be "main" the rest are aliases.
+
+openpgp.dev
+openpgp.codeberg.page

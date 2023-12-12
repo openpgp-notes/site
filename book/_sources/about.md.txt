@@ -1,0 +1,51 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Introducing OpenPGP
+
+This documentation project is designed to provide a comprehensive understanding of OpenPGP, highlighting its functionalities and applications for software developers. While this document predominantly references [OpenPGP version 6, as outlined in the latest RFC](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/), it is important to note that the fundamental principles and functionalities of OpenPGP have remained consistent across its versions since its first release as an open standard in RFC 2440 in 1998.
+
+This documentation project seeks to introduce all OpenPGP concepts and functionalities to application developers who wish to use it in their projects.
+
+## What is OpenPGP?
+
+OpenPGP is an open standard for cryptographic operations. It is a system based on well-understood [cryptographic building blocks](/cryptography). OpenPGP supports the secure delivery of files and messages between a sender and a recipient. It also addresses identities and their verification. OpenPGP is an outgrowth of the ["Pretty Good Privacy (PGP)"](https://en.wikipedia.org/wiki/Pretty_Good_Privacy) encryption program and has many widely used and [interoperable implementations](interop_section).
+
+With OpenPGP, you can:
+
+- [Encrypt](/encryption) and [decrypt](/decryption) messages to preserve confidentiality
+- [Sign](/signing_data) and [verify](/verification) data to ensure {term}`authenticity<Authentication>`
+- [Issue and validate certifications](/signing_components) about {term}`keys<Key>` and {term}`identities<Identity>`, similar to the role of a {term}`Certificate Authority<Certification Authority>` ({term}`CA<Certification Authority>`) in validating {term}`identities<Identity>`.
+
+## Who is the audience for this document?
+
+Three groups of people interact with OpenPGP:
+
+1. End-users, who use software that contains OpenPGP functionality (e.g., the Thunderbird email software)
+2. Software developers who build applications that contain OpenPGP functionality
+3. Implementers of OpenPGP libraries (or other software that directly handles the processing of internal OpenPGP data structures)
+
+This document is not intended for end-users or implementers of OpenPGP libraries (or other software that directly handles internal OpenPGP data structures).
+
+Instead, this document is focused on the second group, application developers, who use OpenPGP functionality in their software projects. It describes the properties of the OpenPGP system and its uses. It presupposes solid knowledge of software development concepts and of general cryptographic concepts. Thus, this text describes OpenPGP at the "library-level," teaching concepts that will help software developers get started as a user of any implementation (e.g., [OpenPGP.js](https://openpgpjs.org/), [Sequoia-PGP](https://sequoia-pgp.org/)).
+
+With the emergence of a new crop of modern, high-quality OpenPGP libraries, and the imminent release of the updated [OpenPGP version 6 specification](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/), we think that now is a great time to implement OpenPGP functionality in applications or to modernize existing OpenPGP subsystems.
+
+The goal of this document is to offer an implementation-independent introduction to the OpenPGP technology, assisting software developers in quickly familiarizing themselves and serving as a pathway to relevant information in the RFC.
+
+## Why not just use the OpenPGP RFC?
+
+The [OpenPGP RFC](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/)
+defines *the message formats used in OpenPGP.* That is, it describes the internal structure of OpenPGP data, which is crucial for OpenPGP library implementers. However, this level of detail is not required for software developers who use OpenPGP via a library.
+
+This document describes OpenPGP concepts at the "library" level of abstraction, omitting unnecessary detail about the internal encoding of OpenPGP artifacts. Instead, we focus on the properties of these OpenPGP artifacts and how they are used, while adding context that is not elaborated on in the [RFC](https://en.wikipedia.org/wiki/Request_for_Comments).
+
+## Which version of OpenPGP does this address?
+
+This documentation encompasses the core aspects of modern OpenPGP practices, applicable across different versions. This respects that, at a foundational level, there is significant overlap, continuity, and consistency from its earliest version to its latest. 
+
+While using version 6 as a reference for current standards, we include insights derived from earlier versions, particularly version 4, which continues to be widely used in ongoing projects. 
+
+Where differences between OpenPGP versions are relevant to application development, we provide focused insights to ensure the content remains as version-agnostic as possible and, thus, broadly applicable for developers working with various iterations of OpenPGP.

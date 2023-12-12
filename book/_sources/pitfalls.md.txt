@@ -1,0 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Pitfalls / Things to keep in mind
+
+## Key IDs are really not guaranteed to be unique
+
+Use fingerprints, or expect duplicates
+
+## Signature Subpackets can have duplicates
+
+## Packet Nesting can be unreasonable
+
+- EBNF of allowed packet sequences is complex -> Recommend [stricter](https://mailarchive.ietf.org/arch/msg/openpgp/uepOF6XpSegMO4c59tt9e5H1i4g/) best-practices?

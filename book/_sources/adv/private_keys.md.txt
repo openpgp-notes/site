@@ -1,0 +1,82 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Advanced material: Private keys
+
+(key-store-design)=
+## Private keystores
+
+This section examines the diverse architectures and operational mechanics of private keystores in OpenPGP. It focuses on the various design choices, their functional implications, and how they contribute to the secure management of private key material.
+
+### Design variations
+
+The design of private key subsystems within the OpenPGP framework varies, offering different approaches to cryptographic operations:
+
+1. **Separate backend operations**: Some designs execute the primitive cryptographic operations in a separate backend, using only the cryptographic key material. This approach is particularly compatible with general purpose hardware cryptographic devices, such as [trusted platform modules (TPMs)](https://en.wikipedia.org/wiki/Trusted_Platform_Module).
+2. **Component key-based systems**: An OpenPGP private key subsystem may be built around component keys, specifically the content of [Secret-Key packets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats). These packets contain metadata that is required for some operations. ECDH operations, in particular, require metadata as KDF parameters.
+3. **Full transferable secret keys**: Some designs maintain copies of full TSKs in the private key subsystem, leveraging these for private key operations.
+
+While private keystore operations require component keys, they do not require access to the entire OpenPGP certificate.
+
+```{note}
+The third design option, involving the storage of full TSKs in the private key subsystem, can cause "split brain" problems.
+
+For example, a private keystore might contain a TSK with outdated certificate metadata, marking the certificate as expired, while the updated version in the local public keystore could indicate an extended expiration time. 
+
+This problem was notably present in GnuPG 1.x, which held separate TSK copies in its private store component. Similarly, the current design of Thunderbird's OpenPGP subsystem can lead to users experiencing such issues.
+```
+
+### Two-tier architecture
+
+At its core, an OpenPGP private key subsystem performs operations requiring only the private cryptographic key material, akin to the "separate backend operations" model described above.
+
+However, the subsystem also supports operations that require additional access to the metadata of the component key. These operations, supplementary to the core keystore operations, do not involve the private key material.
+
+When implementing a keystore based on hardware cryptographic devices like [OpenPGP card](card-priv), its design will consist of two layers:
+
+- **core layer**: directly handles private key material, and
+- **supplementary layer**: performs additional cryptographic operations that don't directly use the private key material, such as [AES key wrap](https://www.rfc-editor.org/rfc/rfc3394.html) for ECDH.
+
+```{note}
+ The decryption process using ECC algorithms, especially ECDH, has multiple steps. The initial step, potentially performed by devices such as OpenPGP cards, directly uses private key material to produce a "shared secret." Following this, operations like ["AES key unwrap"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-ec-dh-algorithm-ecdh) are conducted in software outside the hardware device. 
+ 
+ Further details on this process can be found in the "Advanced Encryption Standard (AES) Key Wrap Algorithm" [RFC 3394](https://www.rfc-editor.org/rfc/rfc3394.html).
+```
+
+### Addressing individual keys
+
+A critical aspect of private keystore design involves determining how users address individual keys.
+
+One common method is using the fingerprint of each component key. The availability of these fingerprints, however, depends on the underlying technology of the keystore. For instance, in software-based private keystores or OpenPGP cards, fingerprints of component keys are usually readily available. Keystores relying on generic cryptographic hardware, like TPMs, need to implement their own mechanisms for tracking and managing the fingerprints of each key.
+
+### Additional keystore duties
+
+In addition to key management, a keystore often involves various supplementary functions:
+
+- **Tracking devices**: Keystores may track which devices contain particular component keys.
+
+- **Handling secrets**: This involves the management of sensitive information such as passphrases for software keys or PINs for OpenPGP cards.
+
+- **User interaction alerts**: Keystores might also need to prompt users for necessary interactions during certain operations. For example, OpenPGP cards may require user touch confirmation to authorize each cryptographic action.
+
+## Understanding key overwriting (KO) attacks
+
+### What they are
+
+OpenPGP is subject to specific vulnerabilities known as key overwriting (KO) attacks. These attacks exploit weaknesses in how encrypted private keys or their metadata are handled, potentially leading to the leakage of secret data when the key is used. The core issue lies in OpenPGP's handling of Secret-Key packets, where corruption of the non-encrypted fields can cause the unaltered private key material to be used with altered parameters. This mismatch can result in private key leakage.
+
+Importantly, KO attacks are particularly relevant when an attacker is responsible for storing a user's encrypted private key. By altering the algorithm field in the Secret-Key packet, the attacker may cause the user to perform a cryptographic operation with a different algorithm. E.g., performing a DSA operation with ECC private key material. By observing the output of that attacker-corrupted operation, the attacker can recover the user's unencrypted private key material, even though the attacker had no direct access to it.
+
+### Mitigation
+
+Understanding KO attacks is crucial due to their potential to compromise the integrity and confidentiality of encrypted communications, and the risk of complete private key material compromise. KO attacks highlight the necessity for robust key validation procedures and the dangers of storing keys in insecure environments. OpenPGP application developers should consider if this attack class is a concern in their applications.
+
+Private keys that are protected with [S2K usage mode 253 (AEAD)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption), are not vulnerable to KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields (including the algorithm field) as the *authentication tag* for integrity verification in the decryption process. When an attacker alters the unencrypted part of the packet, then decryption of the private key material will fail, and the user is prevented from e.g. accidentally using the key material with an altered attacker-controlled algorithm.
+
+Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (also see {ref}`migration_s2k`).
+
+#### Resources
+
+For comprehensive information on KO attacks, including background, attack vectors, countermeasures, and technical analyses, visit [KOpenPGP.com](https://www.kopenpgp.com/). It is based on the paper "Victory by KO: Attacking OpenPGP Using Key Overwriting" written by Lara Bruseghini, Daniel Huigens, and Kenneth G. Paterson for the Proceedings of ACM Conference on Computer and Communications Security, Los Angeles, November 2022.

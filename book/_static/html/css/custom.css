@@ -1,0 +1,57 @@
+/*
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC0-1.0
+
+NOTE: Colors are adapted to match those of the "alabaster" theme
+*/
+
+/*
+External links
+*/
+a.external.reference {
+  color: darkgreen;
+  text-decoration: none;
+  border-bottom: 1px solid darkgreen;
+}
+
+/*
+Internal links
+*/
+a.internal.reference {
+  text-decoration: none;
+  border-bottom-style: none;
+}
+
+/*
+Text in section and reference links
+*/
+span.std-doc,
+span.std-numref,
+span.std-ref,
+a.footnote-reference {
+  border-bottom: 1px dashed #3333ff;
+  color: #3333ff;
+  text-decoration: none;
+}
+
+a.footnote-reference:hover {
+  border-bottom: 1px dashed #3333ff;
+  text-decoration: none;
+}
+
+/*
+Text in glossary links
+*/
+span.std-term {
+  color: rgb(62, 67, 73);
+  border-bottom: 1px dotted rgb(62, 67, 73);
+}
+
+/*
+Footnote list
+*/
+aside.footnote-list {
+  border-top: 1px solid black;
+  margin-top: 2em;
+  padding-top: 2em;
+}

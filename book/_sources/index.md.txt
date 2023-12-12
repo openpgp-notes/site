@@ -1,0 +1,51 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# OpenPGP for application developers
+
+**{sub-ref}`today`**
+
+```{toctree}
+:numbered:
+:maxdepth: 2
+:glob:
+
+about.md
+openpgp.md
+cryptography.md
+certificates.md
+private_keys.md
+signatures.md
+signing_data.md
+signing_components.md
+verification.md
+encryption.md
+decryption.md
+compression.md
+armor.md
+pitfalls.md
+policy.md
+versions.md
+migration.md
+
+adv/certificates.md
+adv/private_keys.md
+adv/signatures.md
+adv/signing_data.md
+adv/signing_components.md
+adv/verification.md
+adv/encryption.md
+adv/decryption.md
+
+zoom/certificates.md
+zoom/private_keys.md
+zoom/signatures.md
+zoom/encryption.md
+
+glossary.md
+acknowledgements.md
+
+artifacts.md
+```

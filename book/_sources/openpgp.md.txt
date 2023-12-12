@@ -1,0 +1,112 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# A high-level view
+
+## Why OpenPGP?
+
+OpenPGP is a widely recognized, IETF-standardized set of cryptographic operations. It is broadly used in securing communications, like encrypted messages and email, and ensuring the integrity of software packages in most Linux distributions. It enjoys a vast ecosystem of libraries, tools, and community support forums. Moreover, its robustness and versatility have made OpenPGP a security choice for other use cases in which encryption and integrity are important. These include file transfer applications, password managers, secure data storage, and signing source code in git repositories. 
+
+There are other compelling reasons for why you might consider using OpenPGP in your project:
+
+1. **Decentralized trust model**: OpenPGP's decentralization defines mechanisms for {term}`authentication` that allow individuals and entities to create and manage their own cryptographic {term}`identities<Identity>`. Unlike centralized {term}`trust models<Trust Model>`, decentralized {term}`trust models<Trust Model>` empower individuals and entities to manage their own {term}`identities<Identity>`, fostering a community-driven web of trust instead of relying on a centralized authority, thus reducing single points of failure.
+
+2. **End-to-end encryption**: OpenPGP provides a robust framework for implementing end-to-end encryption. Content remains confidential, verifiable, {term}`authenticated<Authentication>`, and protected against unauthorized access, even when the communication channel itself might be otherwise compromised. Encryption is crucial in a myriad of scenarios, particularly when transmitting sensitive information such as financial data, personally identifiable information (PII), or proprietary business data.
+
+3. **Anonymity and pseudonymity**: In sensitive and volatile situations where identity protection is crucial, OpenPGP can be used to provide a level of anonymity or pseudonymity that helps protect user identities. For example, OpenPGP has been used alongside other privacy tools, such as [Tor](https://en.wikipedia.org/wiki/The_Tor_Project) and [VPN](https://en.wikipedia.org/wiki/Virtual_private_network)s, to provide secure and anonymous communication for whistleblowers, human rights lawyers, activists in repressive regimes, and journalists, reducing their risks for retaliation and state violence.
+
+4. **Interoperability**: OpenPGP is a well-structured and standardized protocol, widely adopted by various public and private entities but not tied to any particular vendor's technology. It supports all major operating systems, such as Windows, macOS, GNU/Linux, Android, and iOS. Because of standardization, wide adoption, cross-platform compatibility, and adaptability, OpenPGP's interoperability significantly contributes to reducing development time, costs, and technical hurdles.
+
+## A very brief history
+
+The OpenPGP standard has evolved over time, and remains under active development.
+
+(Also see [https://www.openpgp.org/about/history/](https://www.openpgp.org/about/history/))
+
+### Pretty Good Privacy (PGP)
+
+The origins of OpenPGP can be traced back to *Pretty Good Privacy (PGP)*, a software program written by [Phil Zimmermann](https://en.wikipedia.org/wiki/Phil_Zimmermann) and first released in 1991.
+
+The original PGP software played a role in the political struggles sometimes referred to as the ["Crypto Wars"](https://en.wikipedia.org/wiki/Crypto_Wars) (also see ["Crypto: How the Code Rebels Beat the Government Saving Privacy in the Digital" (2002)](https://en.wikipedia.org/wiki/Crypto_(book)), which includes some of PGP's history).
+
+The original PGP software was never under a Free Software license, despite its source code being widely published by its author. [PGP's ownership has changed over the years](https://en.wikipedia.org/wiki/Pretty_Good_Privacy#PGP_Corporation_and_Symantec), and [PGP's scope and suite of products have expanded](https://en.wikipedia.org/wiki/Pretty_Good_Privacy#PGP_Corporation_encryption_applications).
+
+### Standardizing OpenPGP
+
+While PGP was first developed as commercial software, the owner at the time, PGP Inc., started a standardization effort with the IETF, first publishing [RFC 1991 "PGP Message Exchange Formats"](https://datatracker.ietf.org/doc/html/rfc1991) in August 1996.
+
+In July 1997, a process to produce an open standard under the then new name [OpenPGP](https://en.wikipedia.org/wiki/Pretty_Good_Privacy#OpenPGP) was started, resulting in [RFC 2440 "OpenPGP Message Format"](https://datatracker.ietf.org/doc/html/rfc2440), published in November 1998.
+
+The name OpenPGP can be used freely by implementations, unlike the name PGP, which is a [registered trademark](https://uspto.report/TM/74685229).
+
+### GnuPG, an early Free Software implementation
+
+[First released 1997-12-20](https://gnupg.org/download/release_notes.html#sec-2-70) by Werner Koch, a German computer programmer, GNU Privacy Guard (GnuPG) is a free and open-source implementation of the OpenPGP standard. 
+
+GnuPG was a major early implementation of OpenPGP. Over the years, the importance of GnuPG has grown significantly as it became a foundational tool for email security, software signing, and more. It played an important (and successful) role in the [release of NSA documents](https://theintercept.com/2014/10/28/smuggling-snowden-secrets/) by [Edward Snowden](https://en.wikipedia.org/wiki/Edward_Snowden).
+
+Because the GnuPG program binary is called "gpg," "GnuPG" and "gpg" are often used interchangeably.
+
+## The RFC 4880 era
+
+### OpenPGP version 4
+
+In 2007, the IETF published [RFC 4880](https://datatracker.ietf.org/doc/html/rfc4880), which defines version 4 OpenPGP artifacts. As of late 2023, version 4 is the most commonly used version.
+
+An extension for Elliptic Curve Cryptography was defined in [RFC 6637](https://www.rfc-editor.org/rfc/rfc6637), specifying the use of three NIST prime field curves.
+
+Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in the [rfc4880bis](https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#name-elliptic-curve-cryptography) document. These algorithms are widely used, even though rfc4880bis has never been finalized as a new version of the standard.
+
+(major_implementations)=
+### Major implementations of OpenPGP
+
+Today, multiple implementations of OpenPGP play important roles:
+
+- The Mozilla Thunderbird email software uses [RNP](https://www.rnpgp.org/), a C++ implementation of OpenPGP.
+- [GNU Privacy Guard (GnuPG)](https://gnupg.org/), a key implementation of the OpenPGP standard, is integral to numerous critical infrastructures, most prominently in ensuring package integrity verification for Linux distributions.
+- Proton Mail, which provides email encryption services for a large number of users, uses and maintains [OpenPGP.js](https://openpgpjs.org/) as well as [GopenPGP](https://gopenpgp.org/), an OpenPGP wrapper library written in golang.
+- The RPM Package Manager software includes an OpenPGP backend based on [Sequoia PGP](https://sequoia-pgp.org/), a modern OpenPGP implementation written in Rust. The Fedora Linux operating system [uses Sequoia PGP in rpm](https://sequoia-pgp.org/blog/2023/04/27/rpm-sequoia/) since version 38.
+
+(interop_section)=
+### Interoperability
+
+OpenPGP was standardized in 1997 to encourage development of interoperable implementations. This has already been a success early on, but in recent years, there has been [much development of new implementations](major_implementations).
+
+Historically, interoperability has only been tested in an adhoc manner. Since 2019, the Sequoia project is maintaining and operating the ["OpenPGP interoperability test suite"](https://tests.sequoia-pgp.org/), for more rigorous and systematic testing. The test suite has identified numerous [issues](https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite#hall-of-fame).
+
+## The road ahead
+
+```{note}
+Software and protocol development sometimes skips version numbers due to reasons like internal testing, significant changes, avoiding confusion, marketing decisions, or technical issues. The official successor to OpenPGP version 4 is OpenPGP version 6, detailed below.
+```
+
+### OpenPGP version 6
+
+As of this writing (in 2023), [version 6 of OpenPGP](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/) is approaching publication as an RFC.
+The [IETF OpenPGP working group](https://datatracker.ietf.org/wg/openpgp/about/#autoid-1) is focused on updating the cryptographic mechanisms, adding new algorithms, and the deprecation of obsolete algorithms.
+
+This document describes OpenPGP version 6, while pointing out differences to previous versions that are relevant to application developers.
+
+Significant support for OpenPGP version 6 has already been achieved for multiple implementations, including:
+
+- [Bouncy Castle Java](https://github.com/bcgit/bc-java/issues/1421),
+- [GopenPGP](https://github.com/ProtonMail/gopenpgp/tree/v3),
+- [OpenPGP.js](https://github.com/openpgpjs/openpgpjs/releases/tag/v6.0.0-alpha.0),
+- [PGPy](https://github.com/dkg/PGPy/tree/dkg/crypto-refresh),
+- [Sequoia PGP](https://gitlab.com/sequoia-pgp/sequoia/-/tree/crypto-refresh).
+
+Initial efforts to incorporate support for OpenPGP version 6 have been undertaken in the PGPainless and RNP implementations.
+
+### Post-quantum cryptography in OpenPGP
+
+There is [ongoing work](https://datatracker.ietf.org/doc/draft-wussler-openpgp-pqc/) to standardize and add support for post-quantum {term}`public-key algorithms<Public Key Algorithm>` in OpenPGP. This project is funded by the [german "BSI"](https://en.wikipedia.org/wiki/Federal_Office_for_Information_Security). Goals include adding support for post-quantum cryptography to Thunderbird and GnuPG. A [presentation](https://datatracker.ietf.org/meeting/113/materials/slides-113-openpgp-a-post-quantum-approach-for-openpgp-00) was given at [IETF 113](https://datatracker.ietf.org/meeting/113/session/openpgp/).
+
+## Zooming in: Internal structure of OpenPGP data
+
+OpenPGP data is internally structured as "packets." We'll look into examples of this internal structure in a series of chapters at the end of this document.
+
+Getting familiar with the internal format of OpenPGP data provides practical insight into the [RFC](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/), which describes the internal structure of OpenPGP {term}`packets<Packet>` in full detail, and may also come in handy for debugging issues.
+
+(Most of the time, however, we will look at OpenPGP artifacts at a higher level of abstraction.) 

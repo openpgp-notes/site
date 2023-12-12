@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>13. ASCII armor &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="14. Pitfalls / Things to keep in mind" href="pitfalls.html" />
+    <link rel="prev" title="12. Compression" href="compression.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="compression.html" title="Previous document"><span class="section-number">12. </span>Compression</a>
+        </li>
+        <li>
+          <a href="pitfalls.html" title="Next document"><span class="section-number">14. </span>Pitfalls / Things to keep in mind</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="ascii-armor">
+<h1><span class="section-number">13. </span>ASCII armor<a class="headerlink" href="#ascii-armor" title="Link to this heading">¶</a></h1>
+<p>The native format of OpenPGP data is binary.</p>
+<p>However, in many use cases it is customary to use OpenPGP data in a non-binary encoding called “ASCII armor.” For example, ASCII armored OpenPGP data is often used in email, for encrypted messages or for signatures.</p>
+<section id="mechanism">
+<h2><span class="section-number">13.1. </span>Mechanism<a class="headerlink" href="#mechanism" title="Link to this heading">¶</a></h2>
+<p>OpenPGP’s ASCII armor mechanism consists of:</p>
+<ul class="simple">
+<li><p>An <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-armor-header-line">armor header line</a></p></li>
+<li><p>Optional <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-armor-headers">armor headers</a> that can contain additional metadata</p></li>
+<li><p>The <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-base64-conversions">base64 encoded</a> OpenPGP data</p></li>
+<li><p>An <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-optional-checksum">optional checksum</a> for this data</p></li>
+<li><p>An <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-armor-tail-line">armor tail line</a> (or footer) that matches the header line</p></li>
+</ul>
+</section>
+<section id="example">
+<h2><span class="section-number">13.2. </span>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
+<p>In the chapter <a class="reference internal" href="zoom/certificates.html"><span class="doc std std-doc">Zooming in: Packet structure of certificates</span></a>, we take a look at a very minimal variant of Alice’s certificate. In ASCII armored form, the certificate is 388 bytes long, and looks like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cat alice_minimal.pub
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xioGZRbqphsAAAAgUyTpQ6+rFfdu1bUSmHlpzRtdEGXr50Liq0f0hrOuZT7CtgYf
+GwoAAAA9BYJlFuqmBYkFpI+9AwsJBwMVCggCmwECHgEiIQaqoYy7JUaFxYNYMgVj
+/Te2fzMA+fsOxFc3jNKfECaYswAAAAoJEKqhjLslRoXFZ0cgouNjgeNr0E9W18g4
+gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
++BXIoY2sIEQrLd4TAEEy0BA8aQZTPEmMdiOCM1QB+V+BQZAO
+=5nyq
+-----END PGP PUBLIC KEY BLOCK-----
+</pre></div>
+</div>
+<p>In this example, the <em>armor header line</em> uses the <em>header line text</em> <code class="docutils literal notranslate"><span class="pre">BEGIN</span> <span class="pre">PGP</span> <span class="pre">PUBLIC</span> <span class="pre">KEY</span> <span class="pre">BLOCK</span></code> (referring to the certificate data using the term <em>PGP public key</em>). Note that the matching footer uses the text <code class="docutils literal notranslate"><span class="pre">END</span> <span class="pre">PGP</span> <span class="pre">PUBLIC</span> <span class="pre">KEY</span> <span class="pre">BLOCK</span></code>.</p>
+<p>There are no <em>armor headers</em> with additional metadata in this example. The base64 encoded message spans five lines, and is followed by a CRC24 checksum line with the content <code class="docutils literal notranslate"><span class="pre">=5nyq</span></code>.</p>
+<p>The armored format is convenient when transferring OpenPGP data (like this certificate) in email Text. It is a robust format for manual copying and pasting, etc.</p>
+<section id="contrast-with-binary-openpgp-data">
+<h3><span class="section-number">13.2.1. </span>Contrast with binary OpenPGP data<a class="headerlink" href="#contrast-with-binary-openpgp-data" title="Link to this heading">¶</a></h3>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">sq</span></code> commandline tool, we can compare this with the same OpenPGP data in binary form:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq dearmor alice_minimal.pub &gt; alice_minimal.pub.bin
+</pre></div>
+</div>
+<p>The resulting binary representation of the same data comprises 228 bytes. We can look at its hexdump:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ hexdump -C alice_minimal.pub.bin
+00000000  c6 2a 06 65 16 ea a6 1b  00 00 00 20 53 24 e9 43  |.*.e....... S$.C|
+00000010  af ab 15 f7 6e d5 b5 12  98 79 69 cd 1b 5d 10 65  |....n....yi..].e|
+00000020  eb e7 42 e2 ab 47 f4 86  b3 ae 65 3e c2 b6 06 1f  |..B..G....e&gt;....|
+00000030  1b 0a 00 00 00 3d 05 82  65 16 ea a6 05 89 05 a4  |.....=..e.......|
+00000040  8f bd 03 0b 09 07 03 15  0a 08 02 9b 01 02 1e 01  |................|
+00000050  22 21 06 aa a1 8c bb 25  46 85 c5 83 58 32 05 63  |&quot;!.....%F...X2.c|
+00000060  fd 37 b6 7f 33 00 f9 fb  0e c4 57 37 8c d2 9f 10  |.7..3.....W7....|
+00000070  26 98 b3 00 00 00 0a 09  10 aa a1 8c bb 25 46 85  |&amp;............%F.|
+00000080  c5 67 47 20 a2 e3 63 81  e3 6b d0 4f 56 d7 c8 38  |.gG ..c..k.OV..8|
+00000090  80 02 25 e8 53 39 49 6b  90 c6 0d 76 8f 44 b4 ec  |..%.S9Ik...v.D..|
+000000a0  4c 42 38 8e 4d 3d 10 c2  ad 29 c0 57 ce 66 01 73  |LB8.M=...).W.f.s|
+000000b0  b3 78 81 9e 89 52 cf 43  8d 28 11 a9 77 09 7f cb  |.x...R.C.(..w...|
+000000c0  f8 15 c8 a1 8d ac 20 44  2b 2d de 13 00 41 32 d0  |...... D+-...A2.|
+000000d0  10 3c 69 06 53 3c 49 8c  76 23 82 33 54 01 f9 5f  |.&lt;i.S&lt;I.v#.3T.._|
+000000e0  81 41 90 0e                                       |.A..|
+000000e4
+</pre></div>
+</div>
+<p>If you read the chapter that discusses the <a class="reference internal" href="zoom/certificates.html"><span class="doc std std-doc">packet internals of certificate data</span></a>, you may recognize this data.</p>
+<p>This binary data is, of course, not convenient to copy into the text of an email, or similar. On the other hand, it’s a more compact format. In this example, the binary OpenPGP data is around 40% smaller than the ASCII armored representation.</p>
+<p>Both the binary and the ASCII armored format encode exactly the same information. Depending on the context in which the OpenPGP data is used, one or the other is more appropriate.</p>
+</section>
+</section>
+<section id="the-cleartext-signature-framework">
+<h2><span class="section-number">13.3. </span>The cleartext signature framework<a class="headerlink" href="#the-cleartext-signature-framework" title="Link to this heading">¶</a></h2>
+<p>One noteworthy mechanism in OpenPGP that uses a specialized variant of ASCII armoring is the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#cleartext-signature"><em>cleartext signature framework</em></a>, which stores an ASCII-armored signature and a cleartext message as a combined text file.</p>
+<p>See our section on the <a class="reference internal" href="signing_data.html#cleartext-sig"><span class="std std-ref">cleartext signature framework</span></a> for an example of that format.</p>
+</section>
+<section id="advanced-topics">
+<h2><span class="section-number">13.4. </span>Advanced topics<a class="headerlink" href="#advanced-topics" title="Link to this heading">¶</a></h2>
+<section id="optional-checksum-and-its-deprecation">
+<h3><span class="section-number">13.4.1. </span>Optional checksum and its deprecation<a class="headerlink" href="#optional-checksum-and-its-deprecation" title="Link to this heading">¶</a></h3>
+<p>Historically, the ASCII armor mechanism of OpenPGP has specified an (optional) checksum mechanism for the base64 encoded data.</p>
+<p>The specification for OpenPGP version 6 <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-optional-checksum">deprecates this mechanism</a>.</p>
+<p>Existing CRC24 footers should be ignored, and generating these footers is strongly discouraged, except in cases where interoperability requires it.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="compression.html" title="Previous document"><span class="section-number">12. </span>Compression</a>
+        </li>
+        <li>
+          <a href="pitfalls.html" title="Next document"><span class="section-number">14. </span>Pitfalls / Things to keep in mind</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">13. ASCII armor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mechanism">13.1. Mechanism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">13.2. Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-cleartext-signature-framework">13.3. The cleartext signature framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-topics">13.4. Advanced topics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="compression.html" title="previous chapter"><span class="section-number">12. </span>Compression</a></li>
+      <li>Next: <a href="pitfalls.html" title="next chapter"><span class="section-number">14. </span>Pitfalls / Things to keep in mind</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

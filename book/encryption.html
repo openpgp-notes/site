@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>10. Encryption &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="11. Decryption" href="decryption.html" />
+    <link rel="prev" title="9. Signature verification" href="verification.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="verification.html" title="Previous document"><span class="section-number">9. </span>Signature verification</a>
+        </li>
+        <li>
+          <a href="decryption.html" title="Next document"><span class="section-number">11. </span>Decryption</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="encryption">
+<h1><span class="section-number">10. </span>Encryption<a class="headerlink" href="#encryption" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-confidentiality-via-encrypt">Encryption</a> is one of the core facilities of OpenPGP. It provides confidentiality.</p>
+<p>For an in-depth, packet-level view of encrypted data in OpenPGP, see <a class="reference internal" href="zoom/encryption.html"><span class="doc std std-doc">Zooming in: Packet structure of encrypted data</span></a>.</p>
+<section id="terminology">
+<h2><span class="section-number">10.1. </span>Terminology<a class="headerlink" href="#terminology" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SEIPD Packet</p></td>
+<td><p><em>Symmetrically Encrypted, Integrity Protected Data</em> packet; contains the encrypted message payload</p></td>
+</tr>
+<tr class="row-odd"><td><p>SKESK Packet</p></td>
+<td><p><em>Symmetric-Key Encrypted Session Key</em> packet; contains or provides a passphrase-encrypted session key</p></td>
+</tr>
+<tr class="row-even"><td><p>PKESK Packet</p></td>
+<td><p><em>Public-Key Encrypted Session Key</em> packet; contains a session key encrypted using an asymmetric public key</p></td>
+</tr>
+<tr class="row-odd"><td><p>Session Key</p></td>
+<td><p>Symmetric encryption key, which is either used directly as - or to derive - the message key</p></td>
+</tr>
+<tr class="row-even"><td><p>Message Key</p></td>
+<td><p>Symmetric encryption key used to encrypt the contents of the SEIPD packet</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="high-level-overview-of-the-message-encryption-process">
+<h2><span class="section-number">10.2. </span>High-Level overview of the message encryption process<a class="headerlink" href="#high-level-overview-of-the-message-encryption-process" title="Link to this heading">¶</a></h2>
+<p>Encryption in OpenPGP is performed in two distinct steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Symmetric encryption</strong>: The plaintext is encrypted based on a (secret) symmetric key, the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-confidentiality-via-encrypt"><em>session key</em></a>. The (potentially large) ciphertext only needs to be stored once, even if it is sent to multiple recipients. All recipients get access to the same shared <em>session key</em> to decrypt the message.</p></li>
+<li><p><strong>Session key transmission</strong>: For each recipient of the message, a packet that contains a protected copy of the session key is generated.</p>
+<ul class="simple">
+<li><p>Usually, the <em>session key</em> is encrypted to a public encryption component key of the recipient.</p></li>
+<li><p>Alternatively - or additionally - the <em>session key</em> may also be encrypted using a passphrase. This is a specialized and less commonly used mode of operation that doesn’t require OpenPGP certificates.</p></li>
+</ul>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Above, “plaintext” means one of:</p>
+<ul class="simple">
+<li><p><em>Literal Data</em> packet,</p></li>
+<li><p><em>Compressed Data</em> packet or a</p></li>
+<li><p><em>signed message</em>.</p></li>
+</ul>
+<p>A <em>signed message</em>, in turn, is a packet sequence that either</p>
+<ul class="simple">
+<li><p>resembles an <em>inline-signed message</em> (a <em>Literal Data</em> packet sandwhiched between one or more <em>One-Pass-Signature</em> and their respective <em>Signature</em> packets), or a</p></li>
+<li><p><em>prefixed-signed</em> message (one or more <em>Signature</em> packets followed by a single <em>Literal Data</em> packet).</p></li>
+</ul>
+</div>
+</section>
+<section id="encryption-mechanism-versions">
+<h2><span class="section-number">10.3. </span>Encryption mechanism versions<a class="headerlink" href="#encryption-mechanism-versions" title="Link to this heading">¶</a></h2>
+<p>OpenPGP’s encryption mechanisms have evolved over time. The RFC shows an <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.3.2.1">overview of encryption mechanisms</a>, and how they may be combined.</p>
+<p>Two generations of encryption mechanisms are currently relevant in OpenPGP, and will co-exist for the foreseeable future.</p>
+<p>The main difference between these lies in the symmetric part of the encryption mechanism, represented by versions 1 and 2 of the <em>Symmetrically Encrypted and Integrity Protected Data</em> packets (abbreviated as “SEIPD”). The two versions use different mechanisms to provide non-malleability. More on these below.</p>
+<p>Older, legacy encryption mechanisms exist in OpenPGP. However, those must not be used for encryption anymore. Messages encrypted using these legacy mechanisms may still be decrypted, although with caution. For more information, see the <a class="reference internal" href="decryption.html"><span class="doc std std-doc">decryption</span></a> chapter.</p>
+<p>SEIPD packets are used in combination with two mechanisms that store <em>session keys</em>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio">Public-Key Encrypted Session Key</a> (PKESK) packets and</p></li>
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#skesk">Symmetric-Key Encrypted Session Key</a> (SKESK) packets.</p></li>
+</ul>
+<p>The typical combination of mechanisms for encryption in OpenPGP is a <a class="reference internal" href="cryptography.html#hybrid-cryptosystems"><span class="std std-ref">hybrid cryptosystem</span></a>, consisting of one or more <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio">Public-Key Encrypted Session Key</a> packets (PKESK), followed by a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-int">Symmetrically Encrypted Integrity Protected Data</a> (SEIPD) packet.</p>
+<p>In this combination, an asymmetric cryptographic mechanism is used to protect a <em>session key</em> inside PKESK packets. The <em>session key</em>, in turn, is used to protect the plaintext using symmetric-key encryption in a SEIPD packet.</p>
+</section>
+<section id="encrypted-session-keys-pkesk-skesk">
+<h2><span class="section-number">10.4. </span>Encrypted session keys: PKESK, SKESK<a class="headerlink" href="#encrypted-session-keys-pkesk-skesk" title="Link to this heading">¶</a></h2>
+<p>Encrypted session key (ESK) packets are a family of two mechanisms for securing symmetric key material:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio">PKESK</a>: Uses asymmetric OpenPGP key material to protect a session key, and</p></li>
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-encrypted-ses">SKESK</a>: Uses passphrases to protect the symmetric key material, instead of OpenPGP asymmetric key material (this is less commonly used).</p></li>
+</ul>
+<p>An arbitrary number of PKESKs and SKESKs can be used in the same message. It is also possible to mix the two, resulting in a message which can be decrypted using either one of the designated OpenPGP keys or any of the passphrases used to encrypt the message. This is useful to make a message available to a number of known recipients, with the option to provide the passphrase to future recipients.</p>
+<section id="pkesk-session-key-encrypted-to-an-asymmetric-openpgp-key">
+<h3><span class="section-number">10.4.1. </span>PKESK: Session key encrypted to an asymmetric OpenPGP key<a class="headerlink" href="#pkesk-session-key-encrypted-to-an-asymmetric-openpgp-key" title="Link to this heading">¶</a></h3>
+<p>To encrypt an OpenPGP message for a recipient, the session key is encrypted to the recipient’s public key. The resulting encrypted session key is packed into a PKESK packet, which holds essential metadata, like an identifier of the recipients encryption (sub)-key.</p>
+<p>This procedure is repeated for each recipient of the message, and all resulting PKESK packets are prepended to the SEIPD packet (see below) containing the actual message.</p>
+<p>Typically, the sender would also include themselves as a recipient, to be able to decrypt the message with their own key at a later point in time.</p>
+</section>
+<section id="skesk-session-key-encrypted-to-a-passphrase">
+<h3><span class="section-number">10.4.2. </span>SKESK: Session key encrypted to a passphrase<a class="headerlink" href="#skesk-session-key-encrypted-to-a-passphrase" title="Link to this heading">¶</a></h3>
+<p>As an alternative (or augmentation) to PKESK packets, a message can also be encrypted to a symmetric passphrase. This is done using a SKESK packet, which uses an S2K mechanism to derive a symmetric key from a passphrase. This key is either used directly as the session key, or more commonly, used as a key-encapsulation-key (KEK) to encrypt the session key.</p>
+<p>Also see https://flowcrypt.com/docs/guide/send-and-receive/send-password-protected-emails.html</p>
+<p>As for protection of secret key material, it is important to choose appropriate S2K parameters when generating an SKESK packet.
+The specification currently recommends to use either <em>Iterated and Salted S2K</em> or <em>Argon2</em>.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO:</p>
+<p>Add further guidance for recommended S2K parameters, like iteration count or Argon2 configuration. Perhaps in a dedicated “S2K Parameters” section, which can be reused for the encryption chapter and when we talk about secret key encryption in TSKs.</p>
+</div>
+</section>
+</section>
+<section id="symmetric-encryption-of-data-seipd">
+<h2><span class="section-number">10.5. </span>Symmetric encryption of data, SEIPD<a class="headerlink" href="#symmetric-encryption-of-data-seipd" title="Link to this heading">¶</a></h2>
+<p><em>Symmetrically Encrypted Integrity Protected Data</em> (SEIPD) packets represent the symmetric aspect of OpenPGP’s encryption mechanism. The function of these packets is entirely independent of (asymmetric) OpenPGP keys.</p>
+<p>A SEIPD packet contains the actual payload: the ciphertext of the encrypted message. For a large encrypted message, the SEIPD packet will also be large.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SEIPD packets are the successor to the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-dat">Symmetrically Encrypted Data</a> packet, which is obsolete.</p>
+</div>
+<p>Two versions of the SEIPD packet (differentiated by the version number) have been specified. Version 1, introduced in RFC4880, is used in OpenPGP v4 while SEIPD version 2 was introduced with OpenPGP v6. Both versions can be used with either OpenPGP v4 or v6 keys, although OpenPGP v4 keys need to announce support for SEIPD version 2 via the <em>Feature</em> signature subpacket.</p>
+<p>When decrypted, the data contained in a SEIPD packet forms an <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages">OpenPGP message</a>. That is, the decrypted data consists of a series of OpenPGP packets.</p>
+<p>In both versions of SEIPD, the decryptor must have obtained a <em>session key</em> in a previous step, before processing the SEIPD packet. Using this session key, the decryptor can decrypt the SEIPD packet and process the plaintext data that it contains.</p>
+<section id="v1-seipd-based-on-mdc">
+<h3><span class="section-number">10.5.1. </span>v1 SEIPD, based on MDC<a class="headerlink" href="#v1-seipd-based-on-mdc" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-one-seipd">version 1 SEIPD</a> mechanism is supported by all modern OpenPGP version 4 implementations. It was introduced in <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc4880.html#section-5.13">RFC 4880</a> as a replacement for the <em>SED</em> (Symmetrically Encrypted Data) packet. SEIPDv1 provides integrity protection of the ciphertext using a SHA-1 checksum of the plaintext as modification detection code.</p>
+<p>Version 1 SEIPD can only be combined with <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v3-pkesk">version 3 PKESK</a> and/or <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v4-skesk">version 4 SKESK</a> packets.</p>
+<p>In this version of the SEIPD packet, the session key is used directly as message key, meaning the payload is encrypted symmetrically using the session key.</p>
+<p>When communicating with a mix of recipients, some of whose OpenPGP software only supports OpenPGP version 4, then this mechanism must be used.</p>
+<figure class="align-default" id="fig-encryption-seipdv1-pkesk">
+<img alt="Depicts a dotted hexagon labeled &quot;Plaintext&quot;, from which a curved arrow passes another dotted hexagon &quot;Session Key&quot; and finally points to a &quot;SEIPDv1&quot; packet. Two more curved arrows originate from the session key and pass Alice' and Bob's encryption key, ending in two PKESK packets." src="_images/SEIPDv1-PKESK.svg" /><figcaption>
+<p><span class="caption-number">Fig. 24 </span><span class="caption-text">With SEIPDv1, the session key is directly used as message key to encrypt the payload</span><a class="headerlink" href="#fig-encryption-seipdv1-pkesk" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="v2-seipd-based-on-aead">
+<span id="seipdv2"></span><h3><span class="section-number">10.5.2. </span>v2 SEIPD, based on AEAD<a class="headerlink" href="#v2-seipd-based-on-aead" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-two-seipd">version 2 SEIPD</a> mechanism was introduced in OpenPGP version 6. Consequently, it can only be used for encryption when all recipients explicitly announce support for it using a <em>Feature</em> signature subpacket.
+It provides integrity protection of the ciphertext using <em>AEAD</em> (authenticated encryption with additional data).
+v2 SEIPD can only be combined with either <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v6-pkesk">version 6 PKESK</a> and/or <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v6-skesk">version 6 SKESK</a> packets.</p>
+<p>In version 2 SEIPD, the <em>session key</em> is transformed into a <em>message key</em>, based on a per-message salt value stored separately in the v2 SEIPD packet. The message key is then used in an AEAD scheme to encrypt the message payload.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The session key can use a different symmetric algorithm than the message key.</p>
+</div>
+<figure class="align-default" id="fig-encryption-seipdv2-pkesk">
+<img alt="TODO" src="_images/SEIPDv2-PKESK.svg" /><figcaption>
+<p><span class="caption-number">Fig. 25 </span><span class="caption-text">With SEIPDv2, the message key is derived from the session key in an extra step.</span><a class="headerlink" href="#fig-encryption-seipdv2-pkesk" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>This additional step introduces key-separation into the protocol, which protects against certain attacks, such as an <a class="reference external" href="https://www.metzdowd.com/pipermail/cryptography/2015-October/026685.html">OpenPGP SEIP downgrade attack</a>.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>Explain, that with SEIPDv2, a session key can essentially protect more than one message by reusing the same session key and *ESK packets with a fresh, per-message salt.</p>
+<p>This might very well go into the advanced topics section though.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="verification.html" title="Previous document"><span class="section-number">9. </span>Signature verification</a>
+        </li>
+        <li>
+          <a href="decryption.html" title="Next document"><span class="section-number">11. </span>Decryption</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">9. Signature verification</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">10. Encryption</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#terminology">10.1. Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-overview-of-the-message-encryption-process">10.2. High-Level overview of the message encryption process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encryption-mechanism-versions">10.3. Encryption mechanism versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encrypted-session-keys-pkesk-skesk">10.4. Encrypted session keys: PKESK, SKESK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#symmetric-encryption-of-data-seipd">10.5. Symmetric encryption of data, SEIPD</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="verification.html" title="previous chapter"><span class="section-number">9. </span>Signature verification</a></li>
+      <li>Next: <a href="decryption.html" title="next chapter"><span class="section-number">11. </span>Decryption</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

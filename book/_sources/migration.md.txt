@@ -1,0 +1,114 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Migration from OpenPGP v4 to v6
+
+The OpenPGP protocol has developed over time, and will continue to do so, adapting to new challenges and expectations.
+
+Some of these changes might be subtle, like the addition of a new hash algorithm, while others are more invasive, like a new OpenPGP key format.
+
+This makes it necessary to migrate both implementations and existing user keys and certificates.
+
+In this chapter, we want to explore possible steps to migrate from OpenPGP v4 as defined by RFC4880 to v6 (crypto-refresh).
+
+## Adoption of new features
+
+The new standard introduced a number of new features, which improve security aspects of the protocol.
+Some of these features can only be used with new OpenPGP version 6 keys, and require users to migrate to fresh keys.
+
+Other features can be used with existing OpenPGP version 4 keys, as soon as implementations support the features, and users' certificates reflect that the features are supported by the user's software.
+
+### SEIPD v2
+
+A perfect example for a newly introduced feature that can be applied to existing v4 keys are the new SEIPD v2 packets.
+
+Existing OpenPGP v4 keys can simply announce support for SEIPD v2 via a *Feature* subpacket in their certificate. Publishing such an updated *Feature* set via their OpenPGP certificate signals that the user's OpenPGP software is capable of handling SEIPD v2.
+
+Senders who can produce this new encryption mode can then opt to use it when encrypting to this recipient.
+
+(migration_s2k)=
+### S2K usage mode AEAD
+
+Another good example is the S2K mechanism for secret-key encryption.
+
+This feature concerns local copies of OpenPGP private keys on each user's machine. There is, by definition, no interoperability concern around this feature: Passphrase-protection of the private key material is a local implementation detail on each user's machine.
+
+The RFC [states](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-avoiding-ciphertext-malleab) that: "Users are RECOMMENDED to migrate to AEAD."
+
+In the context of this chapter, this means that encrypted private keys should be upgraded by the user's OpenPGP software to use [S2K usage mode 253](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption-s2k-u) (AEAD) to encrypt the user's private key material.
+
+Note that S2K usage mode 253 (AEAD) can be applied to both version 6 and version 4 private keys, with sufficiently up-to-date OpenPGP software. This S2K usage mode is strongly recommended for private keys of all versions.
+
+#### S2K method Argon2
+
+Independently, the RFC recommends the use of the Argon2 S2K method to hash passphrases, when it is available. This mechanism also concerns the local passphrase-protection of private key material.
+
+Use of Argon2 is only allowed in combination with AEAD.
+
+Users can and should migrate the protection of their private keys to Argon2 (combined with the AEAD usage mode).
+
+### OpenPGP v6 signatures
+
+Version 6 signatures can't be generated with OpenPGP v4 keys. Only OpenPGP v6 keys can issue v6 signatures.
+
+On the receiving/verifying side, v6 signatures can be checked by anyone whose OpenPGP software supports v6 certificates and v6 signature verification. This includes OpenPGP users who currently use a v4 key.
+
+### Software migration
+
+Over time, steadily more OpenPGP libraries and tools will add support for OpenPGP v6 features. This migration might take a while, while implementers catch up.
+
+The OpenPGP v6 standard gives guidance for library authors to extend an OpenPGP implementation to support version 6 in [Appendix B. Upgrade Guidance](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-upgrade-guidance-adapting-i).
+
+## Key migration
+
+Some OpenPGP v6 features are only available for use with keys in the v6 format.
+
+For example, only an [OpenPGP v6 key can issue a v6 signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-versions-in-signatur).
+
+On the other hand, an OpenPGP v6 key can *only* issue v6 signatures, so if you require compatibility with v4 verifiers, you shouldn't yet migrate to a v6 key/certificate.
+
+When migrating to a v6 key, generating a fresh v6 key is the recommended approach.
+
+It is not possible to adopt v4 subkeys into a v6 key, since every subkey to a v6 primary key must itself be a v6 subkey, see in [OpenPGP v6 certificate structure](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.1.1-5).
+
+### Converting v4 component keys into v6 component keys
+
+That is, taking the existing key material from a v4 component key and re-framing it as a v6 component key, for use with an OpenPGP version 6 certificate.
+
+```{admonition} TL;DR
+:class: info
+
+don't.
+```
+
+#### Motivation to convert
+
+It might be tempting to consider migrating existing key material to the v6 format. Such a step should be considered very carefully though.
+
+Unfortunately, keys cannot simply be converted into the new format, and used seamlessly. For one thing, the Fingerprint of component keys changes for the same key material between version 4 and version 6 (and with it, the Key ID that is a shortened version of the Fingerprint).
+
+An OpenPGP v4 Fingerprint is calculated as the SHA-1 checksum of the normalized public key packet, which results in a 20 byte fingerprint (often represented as a 40 character hexadecimal string). The v4 Key ID consists of the *last* 64 bits of the fingerprint.
+
+On the other hand, a v6 fingerprint is calculated as the SHA-256 checksum of the normalized public key packet, so it comprises 32 bytes. The v6 Key ID consists of the *first* 64 bit of the fingerprint.
+
+As a consequence, component key identifiers in OpenPGP artifacts, such as issuer subpackets in signatures, or recipient Key IDs in PKESK packets issued by a v4 key do not match the component key identifiers of same key material converted to v6.
+
+Further, v6 keys can only issue v6 signatures, and v6 certificates can only be used to verify v6 signatures. Otherwise, a downgrade vector could exist, by which verifiers could be tricked into verifying specially crafted v4 signatures against OpenPGP v6 certificates. If a vulnerability arose in OpenPGP v4 at some point, which allows an attacker to craft valid v4 signatures, this could affect OpenPGP v6 certificates.
+
+#### Retaining decryption access to old messages
+
+Another motivation for converting old key material might be the desire to stay able to decrypt messages encrypted for the old key.
+This won't be possible out of the box, as the Key ID in the respective PKESK packet no longer matches that of the converted key. So at the bare minimum, the user's implementation would need to be able to map Key IDs. This is not a feature prevalent in the ecosystem though.
+
+An alternative approach - that doesn't require special handling in the user's OpenPGP software - is to replace the PKESK headers of the messages. The session key for each message can be easily obtained by decrypting the message using the old key, so the session key can be re-encrypted for either the converted v6 key, or a freshly generated v6 key. This new PKESK packet can be added to, or replaced in, the message.
+
+#### Conclusion
+
+In conclusion, converting v4 key material to v6 to verify old signatures is not a strong argument.
+Being able to read old messages using a converted key is also not really viable, since it is equally simple to just re-create the PKESK headers for a fresh v6 key.
+
+```{note}
+Also see <https://wiki.gnupg.org/OpenPGPEmailSummit202305Notes>
+```

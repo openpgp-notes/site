@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>25. Advanced material: Decryption &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="26. Zooming in: Packet structure of certificates" href="../zoom/certificates.html" />
+    <link rel="prev" title="24. Advanced material: Encryption" href="encryption.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="encryption.html" title="Previous document"><span class="section-number">24. </span>Advanced material: Encryption</a>
+        </li>
+        <li>
+          <a href="../zoom/certificates.html" title="Next document"><span class="section-number">26. </span>Zooming in: Packet structure of certificates</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="advanced-material-decryption">
+<h1><span class="section-number">25. </span>Advanced material: Decryption<a class="headerlink" href="#advanced-material-decryption" title="Link to this heading">¶</a></h1>
+<section id="verify-successful-session-key-decryption">
+<span id="decryption-seipd-quick-check"></span><h2><span class="section-number">25.1. </span>Verify successful session key decryption<a class="headerlink" href="#verify-successful-session-key-decryption" title="Link to this heading">¶</a></h2>
+<p>SEIPDv1 packets might make use of a “quick check” mechanism to quickly verify that the correct session key was used without the need to decrypt the whole SEIPD packet.
+This check consists of 16 random bytes, followed by a copy of the two last bytes, which are prefixed to the plaintext.
+During decrypting, these 2 bytes can be compared to the 15th and 16th random byte to detect use of the wrong session key.</p>
+<p>Since the chance to accidentally end up with matching quick check bytes albeit the use of the wrong session key is 1:65536, some implementations validate further contents of the plaintext, such as the packet headers.</p>
+<p>The standard <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-risks-of-a-quick-check-orac">warns against</a> using the quick check mechanism, as it introduces the risk of a decryption oracle. Instead, the use of SEIPDv2 is recommended, as the AEAD mechanism automatically detects use of the wrong session key early on after the first chunk has been decrypted.</p>
+</section>
+<section id="anonymous-recipients">
+<span id="decryption-anonymous-recipient"></span><h2><span class="section-number">25.2. </span>Anonymous recipients<a class="headerlink" href="#anonymous-recipients" title="Link to this heading">¶</a></h2>
+<p>Having all recipients keys listed as part of the PKESK packets presents a metadata leakage. An observer can easily enumerate recipients of a message by comparing the PKESKs with certificates of potential recipients.</p>
+<p>To prevent this issue, the sender can decide to add individual recipients as anonymous recipients using a wildcard key-ID / fingerprint.
+This is done by creating a normal PKESK packet for the recipient, but setting the recipient key field to <code class="docutils literal notranslate"><span class="pre">0</span></code> (as well as omitting the version number of the key for v6 PKESKs).</p>
+<p>A recipient of such a message that does not find a PKESK addressed specifically to any of their keys, can then try to decrypt any anonymous PKESK packets using any of their encryption subkeys.</p>
+<p>To reduce the number of keys to try, the recipient can skip all secret keys which do not share the public-key algorithm stated in the PKESK packet.</p>
+<div class="warning admonition">
+<p class="admonition-title">TODO</p>
+<p>When did the decryption succeed? Describe quick check of the check sum and decryption of first few bytes of the SEIPD as test strategies.</p>
+</div>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="encryption.html" title="Previous document"><span class="section-number">24. </span>Advanced material: Encryption</a>
+        </li>
+        <li>
+          <a href="../zoom/certificates.html" title="Next document"><span class="section-number">26. </span>Zooming in: Packet structure of certificates</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">25. Advanced material: Decryption</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#verify-successful-session-key-decryption">25.1. Verify successful session key decryption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#anonymous-recipients">25.2. Anonymous recipients</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/signatures.html">28. Zooming in: Packet structure of data signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zoom/encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="encryption.html" title="previous chapter"><span class="section-number">24. </span>Advanced material: Encryption</a></li>
+      <li>Next: <a href="../zoom/certificates.html" title="next chapter"><span class="section-number">26. </span>Zooming in: Packet structure of certificates</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

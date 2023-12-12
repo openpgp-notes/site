@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>28. Zooming in: Packet structure of data signatures &#8212; OpenPGP for application developers  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=516e89f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/html/css/custom.css?v=11a5f932" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="29. Zooming in: Packet structure of encrypted data" href="encryption.html" />
+    <link rel="prev" title="27. Zooming in: Packet structure of private key material" href="private_keys.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="private_keys.html" title="Previous document"><span class="section-number">27. </span>Zooming in: Packet structure of private key material</a>
+        </li>
+        <li>
+          <a href="encryption.html" title="Next document"><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+<section id="zooming-in-packet-structure-of-data-signatures">
+<h1><span class="section-number">28. </span>Zooming in: Packet structure of data signatures<a class="headerlink" href="#zooming-in-packet-structure-of-data-signatures" title="Link to this heading">¶</a></h1>
+<p>In this chapter, we’ll create signatures using <a class="reference internal" href="../artifacts.html#alice-priv"><span class="std std-ref">Alice’s private key</span></a> material, and inspect the packet structure of those signatures.</p>
+<p>In some examples, we’ll use a test-message that contains the string <code class="docutils literal notranslate"><span class="pre">hello</span> <span class="pre">world</span></code> followed by one line feed (<code class="docutils literal notranslate"><span class="pre">0x0a</span></code>) character:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ echo &quot;hello world&quot; &gt; message.txt
+</pre></div>
+</div>
+<section id="detached-signature">
+<h2><span class="section-number">28.1. </span>Detached signature<a class="headerlink" href="#detached-signature" title="Link to this heading">¶</a></h2>
+<p>We can produce a detached signature for this “hello world” message, using Alice’s private signing key material:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq sign --detached --signer-file alice.pgp message.txt
+-----BEGIN PGP SIGNATURE-----
+
+wpgGABsKAAAAKQWCZT0tDyIhBtB7JOyRoU3SQKwtU+bIqeBUlJpBIi6nOFdu0Zyu
+o9yZAAAAANueIJCkVJ5aC1Zw485o7Y72uHPnk7ktkZyhKH2MuHjCdIHQU0qe/8bR
+0B3ywHNzLwUoqj0efYWhj6XeXa08haxUH7i50MEDjfFrPc281B0C5fiiGN4PYc76
+B8tA2/ZjsSgHCw==
+=n8EV
+-----END PGP SIGNATURE-----
+</pre></div>
+</div>
+<p>And inspect the packet structure of this signature:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex detached-sig.txt
+Signature Packet, new CTB, 2 header bytes + 152 bytes
+    Version: 6
+    Type: Binary
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-10-28 15:47:27 UTC (critical)
+      Issuer Fingerprint: D07B24EC91A14DD240AC2D53E6C8A9E054949A41222EA738576ED19CAEA3DC99
+    Digest prefix: DB9E
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     98                                              length
+    00000002        06                                           version
+    00000003           00                                        type
+    00000004              1b                                     pk_algo
+    00000005                 0a                                  hash_algo
+    00000006                    00 00  00 29                     hashed_area_len
+    0000000a                                 05                  subpacket length
+    0000000b                                    82               subpacket tag
+    0000000c                                       65 3d 2d 0f   sig creation time
+    00000010  22                                                 subpacket length
+    00000011     21                                              subpacket tag
+    00000012        06                                           version
+    00000013           d0 7b 24 ec 91  a1 4d d2 40 ac 2d 53 e6   issuer fp
+    00000020  c8 a9 e0 54 94 9a 41 22  2e a7 38 57 6e d1 9c ae
+    00000030  a3 dc 99
+    00000033           00 00 00 00                               unhashed_area_len
+    00000037                       db                            digest_prefix1
+    00000038                           9e                        digest_prefix2
+    00000039                              20                     salt_len
+    0000003a                                 90 a4 54 9e 5a 0b   salt
+    00000040  56 70 e3 ce 68 ed 8e f6  b8 73 e7 93 b9 2d 91 9c
+    00000050  a1 28 7d 8c b8 78 c2 74  81 d0
+    0000005a                                 53 4a 9e ff c6 d1   ed25519_sig
+    00000060  d0 1d f2 c0 73 73 2f 05  28 aa 3d 1e 7d 85 a1 8f
+    00000070  a5 de 5d ad 3c 85 ac 54  1f b8 b9 d0 c1 03 8d f1
+    00000080  6b 3d cd bc d4 1d 02 e5  f8 a2 18 de 0f 61 ce fa
+    00000090  07 cb 40 db f6 63 b1 28  07 0b
+</pre></div>
+</div>
+</section>
+<section id="inline-signature">
+<h2><span class="section-number">28.2. </span>Inline signature<a class="headerlink" href="#inline-signature" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq sign --signer-file alice.pgp message.txt
+-----BEGIN PGP MESSAGE-----
+
+xEYGAAobIK+vlFDAK62+055LpOCoOGecp66NiyRz6M+emCLp5Nbg0Hsk7JGhTdJA
+rC1T5sip4FSUmkEiLqc4V27RnK6j3JkByxJiAAAAAABoZWxsbyB3b3JsZArCmAYA
+GwoAAAApBYJlPXuNIiEG0Hsk7JGhTdJArC1T5sip4FSUmkEiLqc4V27RnK6j3JkA
+AAAAhrggr6+UUMArrb7Tnkuk4Kg4Z5ynro2LJHPoz56YIunk1uApSiAe9CYGgqrs
+p6Ud6ARDVcOWWFhxTJK2rNULlZ9k4HPFvUT4PTrjpb4kjRAb6MDgSSclPaj14FjL
+rpr/eqQF
+=r993
+-----END PGP MESSAGE-----
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex inline-sig.txt
+One-Pass Signature Packet, new CTB, 2 header bytes + 70 bytes
+    Version: 6
+    Type: Binary
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Issuer: D07B24EC91A14DD240AC2D53E6C8A9E054949A41222EA738576ED19CAEA3DC99
+    Last: true
+
+    00000000  c4                                                 CTB
+    00000001     46                                              length
+    00000002        06                                           version
+    00000003           00                                        type
+    00000004              0a                                     hash_algo
+    00000005                 1b                                  pk_algo
+    00000006                    20                               salt_len
+    00000007                       af  af 94 50 c0 2b ad be d3   salt
+    00000010  9e 4b a4 e0 a8 38 67 9c  a7 ae 8d 8b 24 73 e8 cf
+    00000020  9e 98 22 e9 e4 d6 e0
+    00000027                       d0  7b 24 ec 91 a1 4d d2 40   issuer
+    00000030  ac 2d 53 e6 c8 a9 e0 54  94 9a 41 22 2e a7 38 57
+    00000040  6e d1 9c ae a3 dc 99
+    00000047                       01                            last
+
+Literal Data Packet, new CTB, 2 header bytes + 18 bytes
+    Format: Binary data
+    Content: &quot;hello world\n&quot;
+
+    00000000  cb                                                 CTB
+    00000001     12                                              length
+    00000002        62                                           format
+    00000003           00                                        filename_len
+    00000004              00 00 00 00                            date
+    00000008                           68 65 6c 6c 6f 20 77 6f           hello wo
+    00000010  72 6c 64 0a                                        rld.
+
+Signature Packet, new CTB, 2 header bytes + 152 bytes
+    Version: 6
+    Type: Binary
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-10-28 21:22:21 UTC (critical)
+      Issuer Fingerprint: D07B24EC91A14DD240AC2D53E6C8A9E054949A41222EA738576ED19CAEA3DC99
+    Digest prefix: 86B8
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     98                                              length
+    00000002        06                                           version
+    00000003           00                                        type
+    00000004              1b                                     pk_algo
+    00000005                 0a                                  hash_algo
+    00000006                    00 00  00 29                     hashed_area_len
+    0000000a                                 05                  subpacket length
+    0000000b                                    82               subpacket tag
+    0000000c                                       65 3d 7b 8d   sig creation time
+    00000010  22                                                 subpacket length
+    00000011     21                                              subpacket tag
+    00000012        06                                           version
+    00000013           d0 7b 24 ec 91  a1 4d d2 40 ac 2d 53 e6   issuer fp
+    00000020  c8 a9 e0 54 94 9a 41 22  2e a7 38 57 6e d1 9c ae
+    00000030  a3 dc 99
+    00000033           00 00 00 00                               unhashed_area_len
+    00000037                       86                            digest_prefix1
+    00000038                           b8                        digest_prefix2
+    00000039                              20                     salt_len
+    0000003a                                 af af 94 50 c0 2b   salt
+    00000040  ad be d3 9e 4b a4 e0 a8  38 67 9c a7 ae 8d 8b 24
+    00000050  73 e8 cf 9e 98 22 e9 e4  d6 e0
+    0000005a                                 29 4a 20 1e f4 26   ed25519_sig
+    00000060  06 82 aa ec a7 a5 1d e8  04 43 55 c3 96 58 58 71
+    00000070  4c 92 b6 ac d5 0b 95 9f  64 e0 73 c5 bd 44 f8 3d
+    00000080  3a e3 a5 be 24 8d 10 1b  e8 c0 e0 49 27 25 3d a8
+    00000090  f5 e0 58 cb ae 9a ff 7a  a4 05
+</pre></div>
+</div>
+</section>
+<section id="cleartext-signature">
+<span id="cleartext"></span><h2><span class="section-number">28.3. </span>Cleartext signature<a class="headerlink" href="#cleartext-signature" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq sign --cleartext-signature --signer-file alice.pgp message.txt
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+hello world
+-----BEGIN PGP SIGNATURE-----
+
+wpgGARsKAAAAKQWCZT0vBCIhBtB7JOyRoU3SQKwtU+bIqeBUlJpBIi6nOFdu0Zyu
+o9yZAAAAANqgIHAzoRTzu/7Zuxc8Izf4r3/qSCmBfDqWzTXqmVtsSBSHACka3qbN
+eehqu8H6S0UK8V7yHbpVhExu9Hu72jWEzU/B0h9MR5gDhJPoWurx8YfyXBDsRS4y
+r13/eqMN8kfCDw==
+=Ks9w
+-----END PGP SIGNATURE-----
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex cleartext-sig.txt
+Signature Packet, new CTB, 2 header bytes + 152 bytes
+    Version: 6
+    Type: Text
+    Pk algo: Ed25519
+    Hash algo: SHA512
+    Hashed area:
+      Signature creation time: 2023-10-28 15:55:48 UTC (critical)
+      Issuer Fingerprint: D07B24EC91A14DD240AC2D53E6C8A9E054949A41222EA738576ED19CAEA3DC99
+    Digest prefix: DAA0
+    Level: 0 (signature over data)
+
+    00000000  c2                                                 CTB
+    00000001     98                                              length
+    00000002        06                                           version
+    00000003           01                                        type
+    00000004              1b                                     pk_algo
+    00000005                 0a                                  hash_algo
+    00000006                    00 00  00 29                     hashed_area_len
+    0000000a                                 05                  subpacket length
+    0000000b                                    82               subpacket tag
+    0000000c                                       65 3d 2f 04   sig creation time
+    00000010  22                                                 subpacket length
+    00000011     21                                              subpacket tag
+    00000012        06                                           version
+    00000013           d0 7b 24 ec 91  a1 4d d2 40 ac 2d 53 e6   issuer fp
+    00000020  c8 a9 e0 54 94 9a 41 22  2e a7 38 57 6e d1 9c ae
+    00000030  a3 dc 99
+    00000033           00 00 00 00                               unhashed_area_len
+    00000037                       da                            digest_prefix1
+    00000038                           a0                        digest_prefix2
+    00000039                              20                     salt_len
+    0000003a                                 70 33 a1 14 f3 bb   salt
+    00000040  fe d9 bb 17 3c 23 37 f8  af 7f ea 48 29 81 7c 3a
+    00000050  96 cd 35 ea 99 5b 6c 48  14 87
+    0000005a                                 00 29 1a de a6 cd   ed25519_sig
+    00000060  79 e8 6a bb c1 fa 4b 45  0a f1 5e f2 1d ba 55 84
+    00000070  4c 6e f4 7b bb da 35 84  cd 4f c1 d2 1f 4c 47 98
+    00000080  03 84 93 e8 5a ea f1 f1  87 f2 5c 10 ec 45 2e 32
+    00000090  af 5d ff 7a a3 0d f2 47  c2 0f
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="private_keys.html" title="Previous document"><span class="section-number">27. </span>Zooming in: Packet structure of private key material</a>
+        </li>
+        <li>
+          <a href="encryption.html" title="Next document"><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenPGP for application developers</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. Introducing OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openpgp.html">2. A high-level view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography.html">3. Cryptographic concepts and terms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../certificates.html">4. Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../private_keys.html">5. Managing private key material in OpenPGP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signatures.html">6. OpenPGP Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_data.html">7. Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../signing_components.html">8. Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../verification.html">9. Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../encryption.html">10. Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../decryption.html">11. Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression.html">12. Compression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../armor.html">13. ASCII armor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pitfalls.html">14. Pitfalls / Things to keep in mind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../policy.html">15. Algorithms and Policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">16. OpenPGP versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">17. Migration from OpenPGP v4 to v6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/certificates.html">18. Advanced material: Certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/private_keys.html">19. Advanced material: Private keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signatures.html">20. Advanced material: Signatures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signing_data.html">21. Advanced material: Signatures over data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/signing_components.html">22. Advanced material: Signatures on components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/verification.html">23. Advanced material: Signature verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/encryption.html">24. Advanced material: Encryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adv/decryption.html">25. Advanced material: Decryption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="certificates.html">26. Zooming in: Packet structure of certificates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="private_keys.html">27. Zooming in: Packet structure of private key material</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">28. Zooming in: Packet structure of data signatures</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#detached-signature">28.1. Detached signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inline-signature">28.2. Inline signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cleartext-signature">28.3. Cleartext signature</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="encryption.html">29. Zooming in: Packet structure of encrypted data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">30. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgements.html">31. Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artifacts.html">32. Appendix A: OpenPGP artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="private_keys.html" title="previous chapter"><span class="section-number">27. </span>Zooming in: Packet structure of private key material</a></li>
+      <li>Next: <a href="encryption.html" title="next chapter"><span class="section-number">29. </span>Zooming in: Packet structure of encrypted data</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

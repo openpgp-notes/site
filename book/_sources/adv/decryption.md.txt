@@ -1,0 +1,35 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Advanced material: Decryption
+
+(decryption_seipd_quick_check)=
+## Verify successful session key decryption
+
+SEIPDv1 packets might make use of a "quick check" mechanism to quickly verify that the correct session key was used without the need to decrypt the whole SEIPD packet.
+This check consists of 16 random bytes, followed by a copy of the two last bytes, which are prefixed to the plaintext.
+During decrypting, these 2 bytes can be compared to the 15th and 16th random byte to detect use of the wrong session key.
+
+Since the chance to accidentally end up with matching quick check bytes albeit the use of the wrong session key is 1:65536, some implementations validate further contents of the plaintext, such as the packet headers.
+
+The standard [warns against](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-risks-of-a-quick-check-orac) using the quick check mechanism, as it introduces the risk of a decryption oracle. Instead, the use of SEIPDv2 is recommended, as the AEAD mechanism automatically detects use of the wrong session key early on after the first chunk has been decrypted.
+
+(decryption_anonymous_recipient)=
+## Anonymous recipients
+
+Having all recipients keys listed as part of the PKESK packets presents a metadata leakage. An observer can easily enumerate recipients of a message by comparing the PKESKs with certificates of potential recipients.
+
+To prevent this issue, the sender can decide to add individual recipients as anonymous recipients using a wildcard key-ID / fingerprint.
+This is done by creating a normal PKESK packet for the recipient, but setting the recipient key field to `0` (as well as omitting the version number of the key for v6 PKESKs).
+
+A recipient of such a message that does not find a PKESK addressed specifically to any of their keys, can then try to decrypt any anonymous PKESK packets using any of their encryption subkeys.
+
+To reduce the number of keys to try, the recipient can skip all secret keys which do not share the public-key algorithm stated in the PKESK packet.
+
+```{admonition} TODO
+:class: warning
+
+When did the decryption succeed? Describe quick check of the check sum and decryption of first few bytes of the SEIPD as test strategies.
+```

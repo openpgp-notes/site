@@ -1,0 +1,95 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# ASCII armor
+
+The native format of OpenPGP data is binary.
+
+However, in many use cases it is customary to use OpenPGP data in a non-binary encoding called "ASCII armor." For example, ASCII armored OpenPGP data is often used in email, for encrypted messages or for signatures.
+
+## Mechanism
+
+OpenPGP's ASCII armor mechanism consists of:
+
+- An [armor header line](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-armor-header-line)
+- Optional [armor headers](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-armor-headers) that can contain additional metadata
+- The [base64 encoded](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-base64-conversions) OpenPGP data 
+- An [optional checksum](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-optional-checksum) for this data
+- An [armor tail line](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-armor-tail-line) (or footer) that matches the header line
+
+## Example
+
+In the chapter [](zoom/certificates), we take a look at a very minimal variant of Alice's certificate. In ASCII armored form, the certificate is 388 bytes long, and looks like this:
+
+```text
+$ cat alice_minimal.pub
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xioGZRbqphsAAAAgUyTpQ6+rFfdu1bUSmHlpzRtdEGXr50Liq0f0hrOuZT7CtgYf
+GwoAAAA9BYJlFuqmBYkFpI+9AwsJBwMVCggCmwECHgEiIQaqoYy7JUaFxYNYMgVj
+/Te2fzMA+fsOxFc3jNKfECaYswAAAAoJEKqhjLslRoXFZ0cgouNjgeNr0E9W18g4
+gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
++BXIoY2sIEQrLd4TAEEy0BA8aQZTPEmMdiOCM1QB+V+BQZAO
+=5nyq
+-----END PGP PUBLIC KEY BLOCK-----
+```
+
+In this example, the *armor header line* uses the *header line text* `BEGIN PGP PUBLIC KEY BLOCK` (referring to the certificate data using the term *PGP public key*). Note that the matching footer uses the text `END PGP PUBLIC KEY BLOCK`.
+
+There are no *armor headers* with additional metadata in this example. The base64 encoded message spans five lines, and is followed by a CRC24 checksum line with the content `=5nyq`.
+
+The armored format is convenient when transferring OpenPGP data (like this certificate) in email Text. It is a robust format for manual copying and pasting, etc.
+
+### Contrast with binary OpenPGP data
+
+Using the `sq` commandline tool, we can compare this with the same OpenPGP data in binary form:
+
+```text
+$ sq dearmor alice_minimal.pub > alice_minimal.pub.bin
+```
+
+The resulting binary representation of the same data comprises 228 bytes. We can look at its hexdump:
+
+```text
+$ hexdump -C alice_minimal.pub.bin
+00000000  c6 2a 06 65 16 ea a6 1b  00 00 00 20 53 24 e9 43  |.*.e....... S$.C|
+00000010  af ab 15 f7 6e d5 b5 12  98 79 69 cd 1b 5d 10 65  |....n....yi..].e|
+00000020  eb e7 42 e2 ab 47 f4 86  b3 ae 65 3e c2 b6 06 1f  |..B..G....e>....|
+00000030  1b 0a 00 00 00 3d 05 82  65 16 ea a6 05 89 05 a4  |.....=..e.......|
+00000040  8f bd 03 0b 09 07 03 15  0a 08 02 9b 01 02 1e 01  |................|
+00000050  22 21 06 aa a1 8c bb 25  46 85 c5 83 58 32 05 63  |"!.....%F...X2.c|
+00000060  fd 37 b6 7f 33 00 f9 fb  0e c4 57 37 8c d2 9f 10  |.7..3.....W7....|
+00000070  26 98 b3 00 00 00 0a 09  10 aa a1 8c bb 25 46 85  |&............%F.|
+00000080  c5 67 47 20 a2 e3 63 81  e3 6b d0 4f 56 d7 c8 38  |.gG ..c..k.OV..8|
+00000090  80 02 25 e8 53 39 49 6b  90 c6 0d 76 8f 44 b4 ec  |..%.S9Ik...v.D..|
+000000a0  4c 42 38 8e 4d 3d 10 c2  ad 29 c0 57 ce 66 01 73  |LB8.M=...).W.f.s|
+000000b0  b3 78 81 9e 89 52 cf 43  8d 28 11 a9 77 09 7f cb  |.x...R.C.(..w...|
+000000c0  f8 15 c8 a1 8d ac 20 44  2b 2d de 13 00 41 32 d0  |...... D+-...A2.|
+000000d0  10 3c 69 06 53 3c 49 8c  76 23 82 33 54 01 f9 5f  |.<i.S<I.v#.3T.._|
+000000e0  81 41 90 0e                                       |.A..|
+000000e4
+```
+
+If you read the chapter that discusses the [packet internals of certificate data](/zoom/certificates), you may recognize this data.
+
+This binary data is, of course, not convenient to copy into the text of an email, or similar. On the other hand, it's a more compact format. In this example, the binary OpenPGP data is around 40% smaller than the ASCII armored representation.
+
+Both the binary and the ASCII armored format encode exactly the same information. Depending on the context in which the OpenPGP data is used, one or the other is more appropriate.
+
+## The cleartext signature framework
+
+One noteworthy mechanism in OpenPGP that uses a specialized variant of ASCII armoring is the [*cleartext signature framework*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#cleartext-signature), which stores an ASCII-armored signature and a cleartext message as a combined text file.
+
+See our section on the [cleartext signature framework](cleartext-sig) for an example of that format.
+
+## Advanced topics
+
+### Optional checksum and its deprecation
+
+Historically, the ASCII armor mechanism of OpenPGP has specified an (optional) checksum mechanism for the base64 encoded data.
+
+The specification for OpenPGP version 6 [deprecates this mechanism](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-optional-checksum).
+
+Existing CRC24 footers should be ignored, and generating these footers is strongly discouraged, except in cases where interoperability requires it.

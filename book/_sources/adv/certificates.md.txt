@@ -1,0 +1,380 @@
+<!--
+SPDX-FileCopyrightText: 2023 The "Notes on OpenPGP" project
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
+# Advanced material: Certificates
+
+## When are certificates valid?
+
+Certificates are composites of components that are linked together using [signatures](../signing_components).
+
+A certificate can be valid or invalid as a whole. However, even when a certificate is valid, individual components (subkeys or identities) of it can be invalid.
+
+In this section, we discuss the validity of certificates and their components. This discussion is closely related to [signature validity](/verification), and builds on that concept.
+
+The validity of the signatures that link a certificate is a necessary precondition. Two concepts are particularly central to the validity of certificates and components:
+
+- Expiration
+- Revocation
+
+### Expiration
+
+Certificates and components can "expire," which renders them invalid. Each component of a certificate can have an expiration time, or be unlimited in its temporal validity.
+
+The OpenPGP software of a sender will refuse to encrypt email using an expired certificate, or using an encryption component key that is expired. The sender's software rejects encryption to the key, essentially as a courtesy to the certificate owner, respecting the preferences expressed in their certificate metadata.
+
+The expiration mechanism in OpenPGP is complemented by a mechanism to extend/renew expiration time.
+
+Using the expiration mechanism is useful for two reasons:
+
+- Expiration of a certificate means that it cannot be used anymore. This forces users of that certificate (or their OpenPGP software) to poll for updates for it. For example, from a keyserver.
+- It is a passive way for certificates to "time out," e.g., if their owner loses control over them, or isn't able to broadcast a revocation, for any reason.
+
+Component keys use *Key Expiration Time* subpackets for expressing the expiration time. Identity components rely on the [*signature expiration time*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#signature-expiration-subpacket) subpacket of their binding signature. If a binding signature expires, the binding becomes invalid, and the component is considered expired.
+
+### Revocation
+
+Since OpenPGP certificates act as ["append only" data structures](append-only), existing components or signatures cannot simply be "removed." Instead, they can be marked as invalid by issuing revocation signatures. These additional revocation signatures are added to the certificate.
+
+Each component, such as User ID and a subkey, can be revoked without affecting the rest of the certificate.
+
+The *primary User ID* is an exception: when it is revoked, the entire certificate is considered invalid.
+
+Revoking the primary key with a [*Key revocation signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-revocation-signature-ty) (type ID `0x20`) also marks the entire certificate, including all of its components, as invalid and unusable.
+
+### Semantics of Revocations
+
+In contrast to expiration, revocation is typically final and not withdrawn[^undo-revocations].
+
+[^undo-revocations]: While some revocations can be reverted, undoing revocations is an uncommon workflow. Unlike expirations, which are commonly undone by extending the expiration time.
+
+A revocation indicates that the component should not be used. Revocation signatures over components use a [*Reason for Revocation*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#reason-for-revocation) subpacket to specify further details about the reason why the component or certification was revoked. The OpenPGP format specifies a set of distinct [values for *Reasons for Revocation*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#table-10), and additionally provides space for a human-readable free text field for comments about the revocation.
+
+Some libraries, such as Sequoia PGP, expose these distinct reasons for users, enabling nuanced machine-readable statements by the revoker. Other implementations focus mainly on the distinction between "hard" and "soft" revocations.
+
+Of the defined revocation types, *Key is superseded*, *Key is retired* and *User ID is no longer valid* are considered "soft" revocations. Any other reason (including a missing *reason for revocation* subpacket) means that the revocation is "hard."
+
+The distinction between hard and soft revocations plays a role when evaluating the validity of a component or signature at a specified reference time: Hard revocations have unbounded [temporal validity](temporal-validity), they are in effect even before their creation time and therefore invalidate the revoked component or signature at all points in time.
+
+By contrast, a soft revocation leaves the revoked component or signature valid before the creation time of the revocation signature. A soft revocation can technically be overridden, for example, with a newer binding signature (the new binding signature and its metadata then shadow the revocation and re-connect and re-validate the component).
+
+Hard revocations address the following problem: If a private key was compromised, then the attacker can issue signatures using that key. This means, the attacker could issue a signature dated before the revocation, impersonating the owner of the key. A recipient of that signature would mistakenly consider this signature valid if the issuing key has been soft revoked. This is a problem.
+To counteract this problem, it is reasonable to clearly mark compromised keys as suspect at any point in time. That's what hard revocations do.
+
+On the other hand, if the subkey was merely retired using a soft revocation, and the certificate holder moved to a different subkey, then the signatures in the past, made by the retired key, are still valid.
+
+(append-only)=
+## Certificates are effectively append-only data structures
+
+OpenPGP certificates act as *append-only data structures*, in practice. Packets that are associated with a certificate cannot be "recalled", once they were published. Third parties (such as other users, or keyservers) may keep and/or distribute copies of those packets.
+
+While it is not possible to *remove* elements, once they were publicly associated with an OpenPGP certificate, it is possible to invalidate them by adding new metadata to the certificate. This new metadata could set an *expiration time* on a component, or explicitly *revoke* that component. In both cases, no packets are removed from the certificate.
+
+Invalidation resembles removal of a component in a semantical sense. The component is not a valid element of the certificate anymore, at least starting from some point in time. Implementations that handle the certificate may omit the invalid component in their representation.
+
+We have to distinguish the "packet level" information about a certificate from an application-level view of that certificate. The two may differ.
+
+### Reasoning about append-only properties in a distributed system
+
+OpenPGP is a decentral and distributed system. Users can obtain and transmit certificate information about their own, as well as other users', certificates using a broad range of mechanisms. These mechanisms include keyservers, manual handling, [Web Key Directory](https://datatracker.ietf.org/doc/draft-koch-openpgp-webkey-service/) (WKD) and [Autocrypt](https://en.wikipedia.org/wiki/Autocrypt).
+
+Different users' OpenPGP software may obtain different views of a particular certificate, over time. Individual users' OpenPGP instances have to reconcile and store a combined version of the possibly disparate elements they obtain from different sources.
+
+In practice, this means that various OpenPGP users may have differing views of any given certificate. For various reasons, not all users will be in possession of a fully up-to date and complete version of a certificate.
+
+There are various potential problems associated with this fact: Users may not be aware that a component has been invalidated by the certificate holder. Revocations may not have been propagated to some third party. So for example, they may not be aware that the certificate holder has rotated their encryption subkey to a new one, and doesn't want to receive messages encrypted to the previous encryption subkey.
+
+One mechanism that addresses a part of this issue is *expiration*: By setting their certificates to expire after an appropriate interval, certificate holders can force their communication partners to refresh their certificate, e.g. from a keyserver[^mgorny].
+
+[^mgorny]: See, for example, [here](https://blogs.gentoo.org/mgorny/2018/08/13/openpgp-key-expiration-is-not-a-security-measure/): "Expiration times really serve two purposes: naturally eliminating unused keys, and enforcing periodical checks on the primary key."
+
+Good practices, like setting appropriate expiration times, can mitigate the complexity of the inherently distributed nature of certificates.
+
+However, such mitigations by definition cannot address all possible cases of outdated certificate information in a decentralized, asynchronous system such as OpenPGP. So a defensive approach is generally appropriate when reasoning about the view of certificates that different actors have.
+
+When thinking about edge cases, it's useful to "assume the worst." For example:
+
+- Recipients may not obtain updates to a certificate in a timely manner (this could happen for various reasons, including, but not limited to, interference by malicious actors).
+- Data associated with a certificate may compound, and a certificate can become too large for convenient handling, even in the course of normal operations (for example, a certificate may receive very many legitimate third-party certifications). If such a problem arises, then by definition, the certificate holder cannot address it: remember that the certificate holder cannot "recall" existing packets.
+
+### Differing "views" of a certificate exist
+
+Another way to think about this discussion is that different OpenPGP users may have a different view of any certificate. There is a notional "canonical" version of the certificate, but we cannot assume that every user has exactly this copy. Besides propagation of elements that the certificate holder has linked to a certificate, third-party certifications are by design a distributed mechanism. A third-party certification is issued by a third party, and may or may not be distributed widely by them, or by the certificate holder. Not distributing third-party certifications widely is a workflow that may be entirely appropriate for some use cases[^tpc-privacy].
+
+[^tpc-privacy]: The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see {ref}`metadata_graph`.
+
+As a general tendency, it is desirable for OpenPGP users to have the most complete possible view of all certificates that they interact with.
+
+However, there are contexts in which it is preferable to only use a subset of the available elements of a certificate. We discuss this in the section {ref}`cert-mini`.
+
+## Merging
+
+As described above, OpenPGP certificates are effectively [append-only](append-only) data structures. As part of the practical realization of this fact, OpenPGP software needs to *merge* different copies of a certificate.
+
+For example, Bob's OpenPGP software may have a local copy of Alice's certificate, and obtain a different version of Alice's certificate from a keyserver. The goal of the implementation is to add new information about Alice's certificate, if any, to the local copy. Alice may have added a new identity, replaced a subkey with a new subkey, or revoked some components of her certificate. Or, Alice may have revoked her certificate, signaling that she doesn't want communication partners to use that certificate anymore. All of these updates could be crucial for Bob to be aware of.
+
+Merging two versions of a certificate involves making decisions about which packets should be kept. The versions of the certificate will typically contain some packets that are identical. No duplicates of the exact same packet should be stored in the merged version of the certificate. Additionally, if the newly obtained copy contains packets that are in fact entirely unrelated to the certificate, those should not be retained (a third party may have included unrelated packets, either by mistake, or with malicious intent).
+
+### Handling unauthenticated information
+
+For information that *is* related to the certificate, but not bound to it by a self-signature, there is no generally correct approach. The receiving implementation must revolve these cases, possibly in a context-specific manner. Such cases include:
+
+- Third-party certifications. These could be valuable information, where a third party attests that the association of an identity to a certificate is valid. On the other hand, they could also be a type of spam.
+- Subpackets in the unhashed area of a signature packet. Again, these could contain information that is useful to the recipient. However, the data could also be either useless, or even misleading/harmful.
+
+(cert-mini)=
+## Certificate minimization
+
+Certificate minimization is the practice of presenting a partial view of a certificate by filtering out some of its components.
+
+Filtering out some elements of a certificate can serve various purposes:
+
+- Omitting unnecessary components for specific use-cases. For example, email clients need encryption, signing and certification component keys, but not authentication subkeys, which are used, e.g., for SSH connections.
+- Omitting third-party certifications if they are not required for a use-case. ["Certificate flooding,"](https://dkg.fifthhorseman.net/blog/openpgp-certificate-flooding.html) for example, can lead to consumer software rejecting a certificate entirely. Filtering out third-party User ID certifications on import can mitigate this.
+- Sometimes, a certificate organically grows so big that the user software [has problems handling it](https://www.reddit.com/r/GnuPG/comments/bp23p4/my_key_is_too_large/).
+
+### Elements that can be omitted as part of a minimization process
+
+There are different types of elements that can be omitted during minimization:
+
+- Subkeys (along with signatures on those subkeys)
+- Identity components (along with both their self-signatures and third-party signatures)
+- Signatures, by themselves:
+    - Self-signatures that have been superseded by newer self-signatures for the same purpose
+    - Third-party certifications
+
+### Minimization in applications
+
+#### Hagrid, which runs keys.openpgp.org
+
+The [hagrid keyserver software](https://gitlab.com/keys.openpgp.org/hagrid) doesn't publish the identity components in certificates by default. This is a central aspect of the [privacy policy](https://keys.openpgp.org/about/privacy) of the service. Certificates can be uploaded to the service by third parties, which is useful. However, identifying information is only distributed by the service on an explicit opt-in basis.
+
+Separately, third-party certifications are currently filtered out by the service, to avoid flooding attacks.
+
+#### GnuPG
+
+GnuPG offers two explicit methods for certificate minimization, described [in the GnuPG manual](https://www.gnupg.org/documentation/manuals/gnupg-devel/OpenPGP-Key-Management.html) as:
+
+*clean*
+: *Compact (by removing all signatures except the selfsig) any user ID that is no longer usable (e.g. revoked, or expired). Then, remove any signatures that are not usable by the trust calculations. Specifically, this removes any signature that does not validate, any signature that is superseded by a later signature, revoked signatures, and signatures issued by keys that are not present on the keyring.*
+
+*minimize*
+: *Make the key as small as possible. This removes all signatures from each user ID except for the most recent self-signature.*
+
+`clean` removes third-party signatures by certificates that are not present in current keyring, as well as other stale data. `minimize` removes superseded signatures that are not needed at the point when the command is executed.
+
+Independently, GnuPG by default [strips some signatures on key import](https://dev.gnupg.org/T4607#127792)[^gpg-default-strip]. However, a number of Linux distributions change this default behavior, and continue to import signatures without minimization by default. e.g. [Debian](https://dev.gnupg.org/T4628#128513) and Arch Linux: stripping third-party certifications on import, by default, is problematic for users who want to leverage authentication based on the [Web of Trust mechanism](wot).
+
+[^gpg-default-strip]: GnuPG's changes in the default handling of third-party certifications on imports were prompted by the 2019 [keyserver flooding](cert-flooding) event.
+
+### Limitations that can result from stripping historical self-signatures
+
+Some implementations, such as Sequoia, prefer to rely on the full historical set of self-signatures to construct a view of the certificate over time. This way, signatures can be verified at different reference times. In this model, removing superseded self-signatures can cause problems with the validation of historical signature.
+
+An example for the tension between minimization and nuanced verification of the [temporal validity](temporal-validity) of signatures can be seen in the case of rpm-sequoia. See [this discussion](https://github.com/rpm-software-management/rpm-sequoia/issues/50#issuecomment-1689642607) for details:
+
+Initially, when checking the validity of a data signature for a software package, `rpm-sequoia` used the signature's creation time as the reference time. However, the availability of historical self-signatures in certificates is limited. So sometimes only a more recent self-signature for the primary key is available, and there is no evidence that the primary key was valid at the reference time.
+
+To deal with this reality, the rpm-sequoia implementation was adjusted to accept data signatures that predate the validity of the current primary key self-signature[^primary-self-sig].
+
+[^primary-self-sig]: Which in OpenPGP version 4 is often a primary User ID binding signature.
+
+### Autocrypt
+
+The [Autocrypt](https://autocrypt.org/) project describes itself as:
+
+> [..] a set of guidelines for developers to achieve convenient end-to-end-encryption of e-mails. It specifies how e-mail programs negotiate encryption capabilities using regular e-mails.
+
+The Autocrypt Level 1 specification defines a specific [minimal format for OpenPGP certificates](https://autocrypt.org/level1.html#openpgp-based-key-data) that are distributed by the autocrypt mechanism.
+
+One goal of the Autocrypt mechanism is to distribute certificates widely. To this end, Autocrypt sends certificates in mail headers, where smaller size is greatly preferable.
+
+Basic encrypted email functionality requires only a small subset of the recipient's certificate, so small certificate size is feasible.
+
+### Minimization for email
+
+Note that minimization of certificates isn't generally "right" or "wrong." The benefit or harm depends on the context.
+
+For example, we might consider minimizing a certificate for distribution via WKD, with the use-case of email in mind.
+
+Many certificates can be significantly pruned if the only goal of distributing them is to enable encryption and signature verification. For such cases, many components can be dropped, including invalid subkeys and their binding signatures, authentication subkeys (which are irrelevant to email), shadowed self-signatures, and third-party certifications. With many real-world certificates, the space savings of such a minimization are significant[^space-example].
+
+Such minimization might be appropriate and convenient to enable encrypted communication with a ProtonMail client, which automatically fetches OpenPGP certificates via WKD while composing a message. The ProtonMail use case requires only component keys, not third-party certifications, and it doesn't require historical component keys or self-signatures.
+
+However, in a different context, the same certificate might be fetched to verify the authenticity of a signature. In that case, third-party certifications may be crucial for the client. Stripping them could prevent the client from performing Web of Trust calculations and validating the authenticity of the certificate.
+
+[^space-example]: The following fragment processes an example certificate. It drops any subkey that is not valid at the time of export (because of revocation or expiration), authentication subkeys, and any third-party certifications:
+
+    ```sh
+    gpg --export-options export-minimal,export-clean,no-export-attributes \
+        --export-filter keep-uid=mbox=wiktor@metacode.biz \
+        --export-filter 'drop-subkey=expired -t || revoked -t || usage =~ a' \
+        --export wiktor@metacode.biz
+    ```
+
+    At the time of writing, the original certificate consists of 152322 bytes of data. The filtered variant consists of only 3771 bytes, which is 40x smaller. In some contexts, there are hard constraints on size, and minimization is unavoidable, e.g., when embedding certificate data in email headers.
+
+### Pitfalls of minimization
+
+Disadvantages/risks of minimizing certificates:
+
+- A minimized certificate does not present a full view of how it (and the validity of its components) evolved over time.
+- As the OpenPGP subsystem on a user's computer learns about more certificates, third-party certifications that were previously unusable may become usable. Dropping third-party certifications by unknown issuers as a part of minimization prevents this mechanism.
+- An OpenPGP implementation that minimizes a certificate might remove component keys that it cannot use itself (e.g. because it doesn't support the algorithm of that key), even if the *receiving* implementation supports them.
+- Refreshing certificates from key servers may inflate the certificate again, since OpenPGP certificates tend to act as [append-only structures](append-only).
+- Some libraries, such as [anonaddy-sequoia](https://gitlab.com/willbrowning/anonaddy-sequoia/-/blob/master/src/sequoia.rs?ref_type=heads#L125) strip unusable encryption subkeys, but retain at least one subkey, even if all subkeys are expired. Although this may leave only an expired encryption subkey in the certificate, this presents a better UX for the end-user who potentially is still in possession of the private key for decryption.
+
+## Guidelines
+
+1. Don't minimize certificates unless you have a good reason to.
+2. When minimizing a certificate, minimize it in a way that suites your use-case. E.g., when minimizing a certificate for distribution alongside a signed software packet, make sure to include enough historical self-signatures as to not break the verification of the signed packet.
+3. When presenting a minimized view of a certificate to a consumer, consider when that a new version of that view needs to be generated. Ideally, minimized certificates are freshly generated on demand (e.g., an Autocrypt header is constructed while an email is sent or composed). The receiver is expected to typically merge all data it sees locally.
+
+## Fingerprints and beyond: "Naming" certificates in user-facing contexts
+
+Certificates in OpenPGP have traditionally often been "named" using hexadecimal strings of varying length.
+
+For example, a business card might have shown the hexadecimal fingerprint of a person's OpenPGP certificate to facilitate secure communication. Over time, different formats and lengths for these identifiers have been used.
+
+This section outlines the various ways in which certificates can be named, and their properties.
+
+### Fingerprints and Key IDs in Version 4
+
+With OpenPGP version 4 certificates, it was customary that user-facing software used 20 byte (160 bit) *fingerprints* as an identifier for the certificate. Or alternatively, the 8 byte (64 bit) *Key ID* variant of the fingerprint. Both were represented in hexadecimal format, sometimes with whitespace to group the identifier into blocks for easier readability.
+
+Workflows such as
+
+- accepting a certificate for a communication partner, or
+- issuing a third-party certification for an identity,
+
+required users to manually compare the 40 character long hexadecimal representation of a fingerprint against a reference source for that fingerprint.
+
+### Fingerprints in Version 6
+
+The OpenPGP version 6 standard uses 32 byte (256 bit) fingerprints, but explicitly defines no format for displaying those fingerprints in a human-readable form. The standard [recommends strongly against](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-fingerprint-usability) using version 6 fingerprints as identifiers in user-facing workflows.
+
+Instead, "mechanical fingerprint transfer and comparison" should be preferred, wherever possible. The reasoning is that humans tend to be bad at comparing high-entropy data[^schuermann] (in addition, many users are probably put off by being asked to compare long hexadecimal strings).
+
+[^schuermann]: See "An Empirical Study of Textual Key-Fingerprint Representations" <https://www.ibr.cs.tu-bs.de/papers/schuermann-usenix2016.pdf>
+
+### Use of Fingerprints and Key IDs in APIs
+
+However, both Fingerprints and Key IDs may (and usually *must*) be used, programmatically, by software that handles OpenPGP data, to address specific certificates. This is equally true for OpenPGP version 6.
+
+Note that regardless of the OpenPGP version, software that relies on 8-byte Key IDs should not assume that Key IDs are unique. It is trivial to generate collisions for 8-byte Key IDs, so applications must be able to handle Key ID collisions gracefully.
+
+The historical 4-byte "short Key IDs" format should not be used anywhere, anymore (finding collisions in a 32-bit keyspace has been [trivial for a long time](https://evil32.com/)).
+
+(email-lookup)=
+### Looking up certificates by email
+
+Searching OpenPGP certificates by email is a use case that often arises. For example, when composing an email to a new contact, the sender may want to find the OpenPGP certificate for that contact.
+
+Different mechanisms allow certificate lookup by email, for example:
+
+- [Web Key Directory](https://datatracker.ietf.org/doc/draft-koch-openpgp-webkey-service/) (WKD)
+- The [keys.openpgp.org](https://keys.openpgp.org/) "verifying keyserver" (also known as ["hagrid"](https://gitlab.com/keys.openpgp.org/hagrid), the name of the server software it runs)
+- SKS-style OpenPGP keyservers (today, most of these run the [Hockeypuck](https://github.com/hockeypuck/hockeypuck) software)
+
+Their properties differ, for more see {ref}`distribution`.
+
+(cert-freshness)=
+## Certificate freshness: Triggering updates with an expiration time
+
+For a certificate holder, one problem is that their communication partners may not regularly poll for updates of their certificate.
+
+A certificate holder usually prefers that everyone else regularly obtains updates for their certificate. This way, a third party will, for example, not mistakenly keep using the certificate indefinitely, after it gets revoked. Setting an expiration time on the certificate, ahead of time, limits the worst case scenario: communication partners will at most use a revoked certificate until its expiration time, even if they never learn of the revocation.
+
+Once the expiration time is reached, third parties, or ideally their OpenPGP software will have to stop using the certificate, and may attempt to obtain an update for it. For example, from a keyserver, or via WKD. Ideally, certificate updates are obtained automatically, by the user's OpenPGP software, without any need for human intervention.
+
+After the update, the updated copy of the certificate will usually have a fresh expiration time. The same procedure will repeat once that new expiration time has been reached.
+
+(metadata_graph)=
+## Metadata leak of Social Graph
+
+Third-party certifications are signatures over identity components made by other users.
+
+These certifications form the back-bone of the OpenPGP trust-model called the Web of Trust. The name stems from the fact that the collection of certifications forms a unidirectional graph resembling a web. Each edge of the graph connects the signing certificate to the identity component associated with another certificate.
+
+OpenPGP software can inspect that graph. Based on the certification data in the graph and a set of trust anchors, it can infer whether a target certificate is legitimate.
+
+The trust anchor is usually the certificate holder's own key, but a user may designate additional certificates of entities they are connected to as trust anchors.
+
+Third-party certifications can be published as part of the target certificate to facilitate the process of certificate authentication. Unfortunately, a side effect of this approach is that it's feasible to reconstruct the entire social graph of all people issuing certifications. In addition, the signature creation time of certifications can be used to deduce whether the certificate owner attended a Key Signing Party (and if it was public, where it was held) and whom they interacted with.
+
+So, there is some tension between the goals of
+
+- a decentralized system where every participant can access certification information and perform analysis on it locally,
+- privacy related goals (also see {ref}`email-lookup`, for a comparison of certificate distribution mechanisms, which also touches on this theme).
+
+(unbound_user_ids)=
+## Adding unbound, local User IDs to a certificate
+
+Some OpenPGP software may add User IDs to a certificate, which are not bound to the primary key by the certificate's owner. This can be useful to store local identity information (e.g., Sequoia's public store attaches ["pet-names"][PET] to certificates, in this way).
+
+[PET]: https://sequoia-pgp.org/blog/2023/04/08/sequoia-sq/#an-address-book-style-trust-model
+
+Sequoia additionally certifies these "local, third party, User IDs" with a local trust anchor to facilitate local authentication decisions.
+To prevent accidental publication of these local User IDs (e.g. to public keyservers), Sequoia marks these binding signatures as "local" artifacts using [Exportable Certification](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-exportable-certification) subpackets to mark them as non-exportable.
+
+(distribution)=
+## Certificate distribution mechanisms
+
+Different mechanisms for discovering certificates, and updating certificate data exist in the OpenPGP space:
+
+- A *Web Key Directory* service is based on a well-known location on a webserver, serving certificates in a specific format. A WKD server is operated by the entity that controls the DNS domain of an email-based identity of a certificate. This means that WKD is inherently decentralized, and the reliability of OpenPGP certificates may vary depending on the organization that operates a particular WKD instance.
+- The *keys.openpgp.org* service is a "verifying" keyserver: the keyserver software only publishes identity components (which include email addresses) after sending a verification email to that address, and receiving opt-in consent by the user of the email address. This service makes a different tradeoff: it is centralized, and relying on it to correctly perform the verification step requires trust in the operator. The tradeoff allows the service to only list identity information with the consent of the owner of that identity, and to prevent "enumeration" of the certificates and identities it stores (that is: third parties cannot obtain a list of email addresses in the service's database). By design, this service allows easy publication of revocations without requiring publication of any identity components.
+- *SKS-style keyservers* act as a distributed synchronizing database, which accepts certificate information without verification. The SKS network handles third-party signatures, additional changes to their handling are pending[^hip1].
+
+[^hip1]: <https://github.com/hockeypuck/hockeypuck/issues/136>
+
+One central difference between hockeypuck and hagrid (the software that runs the *keys.openpgp.org* service) is that hockeypuck distributes identity packets and third-party certifications that have indeterminate validity, while hagrid does not.
+
+(cert-flooding)=
+## Third-party certification flooding
+
+Traditional OpenPGP keyservers are one mechanism for [collection and distribution](distribution) of certificate information. Their model revolves around receiving certificate information from sources that don't identify themselves to the keyserver network. Traditionally, these keyservers have accepted both components bound to certificates by self-signatures, and third party identity certifications.
+
+While a convenience for consumers, indiscriminately accepting and integrating third-party identity certifications comes with significant risks.
+
+Without any restrictions in place, malicious entities can flood a certificate with excessive certifications. Called "certificate flooding," this form of digital vandalism grossly expands the certificate size, making the certificate cumbersome and impractical for users.
+
+It also opens the door to potential denial-of-service attacks, rendering the certificate non-functional or significantly impeding its operation.
+
+The popular [SKS keyserver network experienced certificate flooding firsthand](https://dkg.fifthhorseman.net/blog/openpgp-certificate-flooding.html) in 2019, causing significant changes to its operation.
+
+```{note}
+The *keys.openpgp.org* (KOO) service performs a similar function as the SKS-style keyservers.
+However, there are major differences in its design and tradeoffs.
+ 
+The KOO keyserver was designed to:
+
+1. conform to [GDPR regulations](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation), and
+2. be resistant to flooding-style vandalism.
+ 
+To achieve these goals, KOO does not serve identity components at all, unless an explicit opt-in has been performed, using a confirmation process vial email. Third-party certifications are also not served by default, but only under very specific circumstances, which preclude flooding.
+```
+
+### Hockeypuck-based keyservers
+
+Currently, third-party certification flooding can be worked around by users or administrators requesting the removal/re-adding of a certificate. [See here](https://github.com/hockeypuck/hockeypuck/wiki/HIP-1:-Regaining-control-over-public-key-identity-with-authenticated-key-management).
+
+Additional mechanisms [are upcoming](1pc3pc-support).
+
+## First-Party attested third-party certifications in OpenPGP (1pa3pc)
+
+[First-Party attested third-party certifications in OpenPGP](https://datatracker.ietf.org/doc/draft-dkg-openpgp-1pa3pc/) are a "mechanism to allow the owner of a certificate to explicitly approve of specific third-party certifications". 1pa3pc was designed to enable flooding-proof distribution of third-part certifications.
+
+This mechanism uses the *attested certifications* signature subpacket (type ID `37`), which currently only exists as a proposed feature in [draft-ietf-openpgp-rfc4880bis](https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#table-3)[^ac-draft].
+
+[^ac-draft]: Introducing the *attested certifications* signature subpacket (type ID `37`) was unfortunately not in scope of the chartered topics for the current "crypto-refresh" work of the OpenPGP working group. However, hopefully the working group can handle this feature in future rechartering.
+
+(1pc3pc-support)=
+### Support
+
+- The *keys.openpgp.org* (KOO) keyserver [supports *1pa3pc*](https://gitlab.com/keys.openpgp.org/hagrid/-/commit/39c0e12ac64588220d36bada6497d8396f5915b3).
+
+- The Hockeypuck keyserver software [plans to add support for *1pa3pc*](https://github.com/hockeypuck/hockeypuck/issues/136#issuecomment-1812466084) in version 2.2.0.
+
+- The Sequoia `sq` commandline tool [allows adding](https://man.archlinux.org/man/sq-key-attest-certifications.1) attested third-party certifications to a certificate.
