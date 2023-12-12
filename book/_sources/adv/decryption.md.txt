@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Advanced material: Decryption
 
-(decryption_seipd_quick_check)=
+(decryption-seipd-quick-check)=
 ## Verify successful session key decryption
 
 SEIPDv1 packets might make use of a "quick check" mechanism to quickly verify that the correct session key was used without the need to decrypt the whole SEIPD packet.
@@ -16,7 +16,7 @@ Since the chance to accidentally end up with matching quick check bytes albeit t
 
 The standard [warns against](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-risks-of-a-quick-check-orac) using the quick check mechanism, as it introduces the risk of a decryption oracle. Instead, the use of SEIPDv2 is recommended, as the AEAD mechanism automatically detects use of the wrong session key early on after the first chunk has been decrypted.
 
-(decryption_anonymous_recipient)=
+(decryption-anonymous-recipient)=
 ## Anonymous recipients
 
 Having all recipients keys listed as part of the PKESK packets presents a metadata leakage. An observer can easily enumerate recipients of a message by comparing the PKESKs with certificates of potential recipients.

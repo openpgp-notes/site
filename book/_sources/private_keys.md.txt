@@ -54,7 +54,7 @@ Transferable secret keys are sometimes colloquially referred to as "OpenPGP priv
 
 Historically, the concept of TSKs, which combine all elements of an OpenPGP certificate with the associated private key material, has sometimes been conflated with OpenPGP private key operations. However, TSKs are primarily a format for storage and transport; it is generally considered inappropriate as a data structure for use in a private keystore. For further details, see {ref}`key-store-design`.
 
-(encrypted_secrets)=
+(encrypted-secrets)=
 ## Protecting keys with passphrases
  
 In the OpenPGP format, private key material can be optionally protected with a [passphrase](https://en.wikipedia.org/wiki/Passphrase). 

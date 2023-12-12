@@ -54,7 +54,7 @@ SEIPD packets are used in combination with two mechanisms that store *session ke
 - [Public-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio) (PKESK) packets and
 - [Symmetric-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#skesk) (SKESK) packets.
 
-The typical combination of mechanisms for encryption in OpenPGP is a [hybrid cryptosystem](hybrid_cryptosystems), consisting of one or more [Public-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio) packets (PKESK), followed by a [Symmetrically Encrypted Integrity Protected Data](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-int) (SEIPD) packet.
+The typical combination of mechanisms for encryption in OpenPGP is a [hybrid cryptosystem](hybrid-cryptosystems), consisting of one or more [Public-Key Encrypted Session Key](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-encrypted-sessio) packets (PKESK), followed by a [Symmetrically Encrypted Integrity Protected Data](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-int) (SEIPD) packet.
 
 In this combination, an asymmetric cryptographic mechanism is used to protect a *session key* inside PKESK packets. The *session key*, in turn, is used to protect the plaintext using symmetric-key encryption in a SEIPD packet.
 
@@ -123,7 +123,7 @@ When communicating with a mix of recipients, some of whose OpenPGP software only
 With SEIPDv1, the session key is directly used as message key to encrypt the payload
 ```
 
-(SEIPDv2)=
+(seipdv2)=
 ### v2 SEIPD, based on AEAD
 
 The [version 2 SEIPD](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-two-seipd) mechanism was introduced in OpenPGP version 6. Consequently, it can only be used for encryption when all recipients explicitly announce support for it using a *Feature* signature subpacket.

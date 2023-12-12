@@ -28,7 +28,7 @@ Existing OpenPGP v4 keys can simply announce support for SEIPD v2 via a *Feature
 
 Senders who can produce this new encryption mode can then opt to use it when encrypting to this recipient.
 
-(migration_s2k)=
+(migration-s2k)=
 ### S2K usage mode AEAD
 
 Another good example is the S2K mechanism for secret-key encryption.

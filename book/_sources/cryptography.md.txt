@@ -15,7 +15,7 @@ Cryptographic hash functions have two important properties:
 - [**Pre-image resistance**](https://en.wikipedia.org/wiki/Preimage_attack): Given a hash digest, it should be very difficult to determine any data that matches this hash digest (including, but not limited to, the original data the hash represents). This property embodies the concept of a [one-way function](https://en.wikipedia.org/wiki/One-way_function) – a calculation that is easy to perform, but very hard to reverse.
 - [**Collision resistance**](https://en.wikipedia.org/wiki/Collision_resistance): It should be very difficult to find two distinct pieces of data that map to the same hash digest.
 
-(message_authentication_codes)=
+(message-authentication-codes)=
 ## Message authentication codes
 
 A [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code) (MAC), also known as an {term}`authentication tag`, is a small piece of information used to verify the integrity and authenticity of a message.
@@ -31,9 +31,9 @@ One application of KDFs is to generate symmetric key material from a password by
 
 A notable KDF for the OpenPGP specification is the [HKDF](https://en.wikipedia.org/wiki/HKDF), which is a key derivation function based on the HMAC.
 
-For detailed information on KDFs and their role in the OpenPGP protocol, see the [encrypted secrets](encrypted_secrets) chapter and the [SEIPDv2](SEIPDv2) section of the encryption chapter.
+For detailed information on KDFs and their role in the OpenPGP protocol, see the [encrypted secrets](encrypted-secrets) chapter and the [SEIPDv2](SEIPDv2) section of the encryption chapter.
 
-(symmetric_key_cryptography)=
+(symmetric-key-cryptography)=
 ## Symmetric-key cryptography
 
 [Symmetric-key cryptography](https://en.wikipedia.org/wiki/Symmetric-key_algorithm) uses the same cryptographic key for both encryption and decryption, unlike asymmetric cryptography where a pair of keys is used: a public key for encryption and a corresponding private key for decryption. Symmetric-key cryptographic systems support *encryption/decryption* operations.
@@ -55,7 +55,7 @@ Symmetric-key cryptography has major benefits: It is much faster than public-key
 
 However, exchanging the required shared secret is a problem that needs to be solved separately.
 
-[Hybrid cryptosystems](hybrid_cryptosystems) combine the advantages of symmetric-key cryptography with a separate mechanism for managing the shared secret, using public-key cryptography.
+[Hybrid cryptosystems](hybrid-cryptosystems) combine the advantages of symmetric-key cryptography with a separate mechanism for managing the shared secret, using public-key cryptography.
 
 ### Symmetric-key cryptography in OpenPGP
 
@@ -81,14 +81,14 @@ By addressing the malleability problem, AEAD also counters a variation of the EF
 
 [^efail]: A variation of the [EFAIL](https://en.wikipedia.org/wiki/EFAIL) attack can be prevented by both the MDC and AEAD mechanisms. Also see ["No, PGP is not broken, not even with the Efail vulnerabilities,"](https://proton.me/blog/pgp-vulnerability-efail) especially the section "Malleability Gadget Exfiltration Channel Attack."
 
-(public_key_asymmetric_cryptography)=
+(public-key-asymmetric-cryptography)=
 ## Public-key (asymmetric) cryptography
 
 [Public-key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography) uses asymmetric pairs of related keys. Each pair consists of a public key and a private key. These systems support encryption, decryption, and digital signature operations.
 
 Unlike symmetric cryptography, participants are not required to pre-arrange a shared secret. In public-key cryptography, the public key material is shared openly for certain cryptographic operations, such as encryption and signature verification, while the private key, kept confidential, is used for operations like decryption and signature creation.
 
-(asymmetric_key_pair)=
+(asymmetric-key-pair)=
 ### Asymmetric cryptographic key pairs
 
 Throughout this document, we will frequently reference asymmetric cryptographic key pairs:
@@ -134,7 +134,7 @@ In OpenPGP, digital signatures have diverse applications, extending beyond mere 
 - [Data signatures](signing_data)
 - [Signatures on components](/signing_components)
 
-(hybrid_cryptosystems)=
+(hybrid-cryptosystems)=
 ## Hybrid cryptosystems
 
 [Hybrid cryptosystems](https://en.wikipedia.org/wiki/Hybrid_cryptosystem) combine the use of {term}`symmetric<Symmetric Cryptography>` and {term}`asymmetric (public-key)<Asymmetric Cryptography>` cryptography to capitalize on the strengths of each, namely {term}`symmetric cryptography`'s speed and efficiency and {term}`public-key cryptography<Asymmetric Cryptography>`'s mechanism for secure key exchange.

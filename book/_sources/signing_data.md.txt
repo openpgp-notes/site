@@ -16,10 +16,10 @@ it does not automatically signal if the expected party indeed controls the {term
 
 Note that {term}`data signatures<Data Signature>` are distinct from [](/signing_components), which are used to form and maintain {term}`certificates<OpenPGP Certificate>`, as well as to {term}`certify<Certification>` {term}`identities<Identity>` on {term}`certificates<OpenPGP Certificate>`.
 
-(data_signature_types)=
+(data-signature-types)=
 ## Signature types
 
-{term}`OpenPGP data signatures<Data Signature>` use one of two [signature types](signature_types):
+{term}`OpenPGP data signatures<Data Signature>` use one of two [signature types](signature-types):
 
 - [**Binary signature**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-binary) ({term}`type ID<Signature Type ID>` `0x00`): This is the standard {term}`signature type` for binary data and is typically used for files or data streams. {term}`Binary signatures<Binary Signature>` are calculated over the data without any modifications or transformations.
 - [**Text signature**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-of-a-canonical-te) ({term}`type ID<Signature Type ID>` `0x01`): Used for textual data, such as email bodies. When calculating a {term}`text signature`, the data is first normalized by converting line endings into a canonical form (`<CR><LF>`). This approach mitigates issues caused by platform-specific text encodings. This is especially important for detached and {term}`cleartext signatures<Cleartext Signature>`, where the  message file might undergo re-encoding between the creation and {term}`verification` of the {term}`signature<OpenPGP Signature Packet>`.
@@ -28,7 +28,7 @@ Note that {term}`data signatures<Data Signature>` are distinct from [](/signing_
 
 {term}`Data signature packets<Data Signature Packet>` manifest in three distinct forms, which will be detailed in the subsequent section.
 
-(forms_of_openpgp_data_signatures)=
+(forms-of-openpgp-data-signatures)=
 ## Forms of OpenPGP data signatures
 
 {term}`OpenPGP data signatures<Data Signature>` can be applied in three distinct forms[^sign-modes-gpg]:
@@ -45,7 +45,7 @@ A {term}`detached signature` is produced by calculating an {term}`OpenPGP signat
 
 This {term}`signature<OpenPGP Signature Packet>` format is especially useful for signing software releases and other files where it is imperative that the content remains unaltered during the signing process.
 
-(inline_signature)=
+(inline-signature)=
 ### Inline signatures
 
 An {term}`inline signature` joins the signed data and its corresponding {term}`data signature` into a single {term}`OpenPGP message`.
@@ -129,7 +129,7 @@ The {term}`cleartext signature framework` includes specific text normalization p
 
 - **Escaping dashes**: The framework implements a method of [dash-escaped text](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-dash-escaped-text) within the message. Dash-escaping ensures that the parser correctly distinguishes between the armor headers, which are part of the {term}`signature<OpenPGP Signature Packet>`'s structure, and any lines in the message that happen to start with a dash.
 
-- **Normalization of line endings**: Consistent with the approach for any other [text signature](data_signature_types), a {term}`cleartext signature` is calculated on the text with normalized line endings (`<CR><LF>`). This ensures that the {term}`signature<OpenPGP Signature Packet>` remains valid regardless of the text format of the receiving {term}`implementation<OpenPGP Implementation>`.
+- **Normalization of line endings**: Consistent with the approach for any other [text signature](data-signature-types), a {term}`cleartext signature` is calculated on the text with normalized line endings (`<CR><LF>`). This ensures that the {term}`signature<OpenPGP Signature Packet>` remains valid regardless of the text format of the receiving {term}`implementation<OpenPGP Implementation>`.
 
 #### Pitfalls
 

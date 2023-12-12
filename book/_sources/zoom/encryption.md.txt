@@ -9,7 +9,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 ### Encrypt
 
-We encrypt a short message to Alice, using a public certificate version of {ref}`alice_priv`:
+We encrypt a short message to Alice, using a public certificate version of {ref}`alice-priv`:
 
 ```text
 $ echo "hello world" | sq encrypt --recipient-file alice.pub

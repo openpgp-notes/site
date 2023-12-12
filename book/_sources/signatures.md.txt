@@ -33,7 +33,7 @@ An "{term}`OpenPGP Signature Packet`"
 
 In this document, "{term}`signature<OpenPGP Signature Packet>`" will refer to {term}`OpenPGP signature packets<OpenPGP signature packet>`.
 
-(signature_types)=
+(signature-types)=
 ## Signature types in OpenPGP
 
 The OpenPGP standard defines a set of [Signature types](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types), each identified by a numerical *{term}`signature type ID`*. {term}`Signature types<OpenPGP Signature Type>` define the purpose of a {term}`signature packet<OpenPGP Signature Packet>` and how it should be interpreted.
@@ -64,7 +64,7 @@ For more detail about specific {term}`types of signatures<OpenPGP Signature Type
 As outlined above, an {term}`OpenPGP signature<OpenPGP Signature Packet>` is a composite data structure, which combines:
 
 - **{term}`Signature type ID`**: specifies the {term}`signature<OpenPGP Signature Packet>`'s intended meaning, as detailed above
-- **{term}`Metadata`**: varies based, in part, on the {term}`signature type ID`; mostly encoded as "{term}`subpackets<OpenPGP Signature Subpacket>`" (see {ref}`signature_subpackets`)
+- **{term}`Metadata`**: varies based, in part, on the {term}`signature type ID`; mostly encoded as "{term}`subpackets<OpenPGP Signature Subpacket>`" (see {ref}`signature-subpackets`)
 - **Raw {term}`cryptographic signature`**
 
 ```{figure} plain_svg/OpenPGP_Signature_packet_2.svg
@@ -76,8 +76,8 @@ Structure and context of an {term}`OpenPGP signature packet`
 
 The input data packets differ between specific signature types. Also see {numref}`fig-signature-types`. For example:
 
-- for a [*binary data signature*](data_signature_types), the input data packet is a *literal data packet*, while
-- for a [*subkey binding signature*](bind_subkey), the input data packets consist of a primary and a subkey packet.
+- for a [*binary data signature*](data-signature-types), the input data packet is a *literal data packet*, while
+- for a [*subkey binding signature*](bind-subkey), the input data packets consist of a primary and a subkey packet.
 
 ### Creating an OpenPGP signature packet
 
@@ -122,7 +122,7 @@ After calculating the {term}`hash digest` from the input data, a {term}`signatur
 Verifying a {term}`signature<OpenPGP Signature Packet>` in OpenPGP
 ```
 
-(signature_subpackets)=
+(signature-subpackets)=
 ## Signature subpackets
 
 In the OpenPGP protocol, {term}`signature subpackets<OpenPGP Signature Subpacket>` enhance the expressiveness of a {term}`signature<OpenPGP Signature Packet>` beyond what is conveyed by just the bare {term}`cryptographic signature` and the {term}`signature type ID`. These {term}`subpackets<OpenPGP Signature Subpacket>`, introduced in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440), are essential for embedding additional {term}`metadata` within {term}`signature packets<OpenPGP Signature Packet>`.
@@ -134,7 +134,7 @@ They are formatted as key-value pairs, where the keys are defined as [subpacket 
 - The [*issuer fingerprint*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-fingerprint-subpacket) {term}`subpacket<OpenPGP Signature Subpacket>` encodes the {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`component key` that issued the {term}`signature<OpenPGP Signature Packet>`.
 - The [*key flags*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags) {term}`subpacket<OpenPGP Signature Subpacket>` defines the {term}`capabilities<capability>` that are assigned to a {term}`component key` within a {term}`certificate<OpenPGP Certificate>`.
 
-(hashed_and_unhashed_signature_subpackets)=
+(hashed-and-unhashed-signature-subpackets)=
 ### Hashed and unhashed signature subpackets
 
 {term}`Signature subpackets<OpenPGP Signature Subpacket>` within OpenPGP can reside in one of two distinct areas of a {term}`signature packet<OpenPGP Signature Packet>`, each serving a different purpose.
@@ -146,7 +146,7 @@ The majority of {term}`signature subpackets<OpenPGP Signature Subpacket>` are st
 
 For detailed information and specifications, refer to [Hashed vs. Unhashed Subpackets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hashed-vs-unhashed-subpacke) in the OpenPGP {term}`RFC`.
 
-(criticality_of_subpackets)=
+(criticality-of-subpackets)=
 ### Criticality of subpackets
 
 In the OpenPGP protocol, each {term}`signature subpacket<OpenPGP Signature Subpacket>` can be marked with a *{term}`criticality flag`*. This flag plays a pivotal role in the interpretation and {term}`validation` of the {term}`signature<OpenPGP Signature Packet>`. When set, it instructs any receiving {term}`implementation<OpenPGP Implementation>` encountering an unrecognized {term}`subpacket type<OpenPGP Signature Subpacket Type>` to treat this as a significant error and to {term}`invalidate<Validation>` the {term}`signature<OpenPGP Signature Packet>`. 

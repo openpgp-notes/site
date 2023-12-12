@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Appendix A: OpenPGP artifacts
 
-(alice_priv)=
+(alice-priv)=
 ## Alice's OpenPGP key
 
 ```text
@@ -46,7 +46,7 @@ FcsHp6K860qG87pDlk2saQIwzXPmQcQvLokbeQMB
 -----END PGP PRIVATE KEY BLOCK-----
 ```
 
-(bob_priv)=
+(bob-priv)=
 ## Bob's OpenPGP key
 
 Bob uses passphrase-protected secret key packets. His passphrase is `password`:

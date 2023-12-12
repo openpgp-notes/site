@@ -14,7 +14,7 @@ Typically, all \*ESK packets leading a SEIPD packet contain the same *session ke
 
 ```{note}
 
-Anonymous-recipient PKESK packets contain a recipient-Key ID of `0`, so if no suitable non-anonymous PKESK was found, any anonymous PKESKs are tried with any available decryption (sub-) keys (see [](decryption_anonymous_recipient)).
+Anonymous-recipient PKESK packets contain a recipient-Key ID of `0`, so if no suitable non-anonymous PKESK was found, any anonymous PKESKs are tried with any available decryption (sub-) keys (see [](decryption-anonymous-recipient)).
 ```
 
 If no suitable PKESK packets were found, SKESK packets are tried next, meaning the user is typically prompted to enter a decryption passphrase.
@@ -64,7 +64,7 @@ When the direct method is used, the symmetric cipher algorithm ID of the SKESK p
 
 Otherwise, the cipher algorithm ID to decrypt the SEIPD packet was prefixed to the decrypted session key.
 
-Sanitizing this algorithm ID of the decrypted session key acts as a very early quick check to verify that the used passphrase was correct. For further validation of the session key, see [](decryption_seipd_quick_check).
+Sanitizing this algorithm ID of the decrypted session key acts as a very early quick check to verify that the used passphrase was correct. For further validation of the session key, see [](decryption-seipd-quick-check).
 
 
 ### SKESK v6
@@ -92,7 +92,7 @@ More common than SKESK packets are PKESK packets which are used to protect the s
 ### PKESK v3
 
 With version 3 PKESKs, the recipient's secret encryption (sub-) key is directly used to decrypt the encrypted *session key*.
-The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A value of `0` indicates an anonymous recipient (see [](decryption_anonymous_recipient)).
+The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A value of `0` indicates an anonymous recipient (see [](decryption-anonymous-recipient)).
 
 To detect, which symmetric cipher is used to decrypt the SEIPDv1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections[^rsa-spec] [^elgamal-spec] [^ecdh-spec] [^x25519-spec] [^x448-spec] of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.
 

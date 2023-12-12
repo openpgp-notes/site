@@ -9,17 +9,17 @@ Now that we've established the concepts and components that make up OpenPGP cert
 
 ## A very minimal OpenPGP certificate
 
-In this section, we will examine a very minimal version of a "public key" variant of [Alice's OpenPGP key](alice_priv), specifically an OpenPGP certificate that excludes private key material.
+In this section, we will examine a very minimal version of a "public key" variant of [Alice's OpenPGP key](alice-priv), specifically an OpenPGP certificate that excludes private key material.
 
 To achieve this, we will use the Sequoia-PGP tool `sq` to handle and transform our example OpenPGP key, as well as to inspect internal OpenPGP packet data.
 
-Starting from [Alice's OpenPGP private key](alice_priv), we first produce the corresponding public key/certificate using the following command:
+Starting from [Alice's OpenPGP private key](alice-priv), we first produce the corresponding public key/certificate using the following command:
 
 ```text
 $ sq key extract-cert alice.priv > alice.pub
 ```
 
-(split_alice)=
+(split-alice)=
 ### Splitting the OpenPGP certificate into packets
 
 To create a very minimal version of Alice's certificate, we will split the data in `alice.pub` into its component packets and reassemble only the relevant ones back into a new variant.
@@ -119,7 +119,7 @@ $ sq packet dump --hex alice_minimal.pub
 
 This will allow us to gain a detailed understanding of the packet contents.
 
-(public_key)=
+(public-key)=
 ### Public-Key packet
 
 The output begins with a (primary) [Public-Key packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-packet-formats):
@@ -179,7 +179,7 @@ Note that the *Public-Key packet* contains only the public part of the key.
 Structure of a Public-Key packet.
 ```
 
-(zooming_in_dks)=
+(zooming-in-dks)=
 ### Direct Key Signature
 
 The next packet in the certificate is a [*Direct Key Signature*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-direct-key), which plays a crucial role in binding specific information to the primary key. This signature is contained within the file `alice.pub-1--Signature`.
@@ -371,7 +371,7 @@ The signature is calculated from this hash digest.
 Structure of a direct key signature packet.
 ```
 
-(zoom_enc_subkey)=
+(zoom-enc-subkey)=
 ## Encryption subkey
 
 Let's now look at a subkey in Alice's OpenPGP certificate. A subkey, when linked to an OpenPGP certificate via its primary key, consists of two elements:
@@ -388,7 +388,7 @@ It's common to look at a packet dump for a full OpenPGP certificate as shown bel
 $ sq packet dump --hex alice.pub
 ```
 
-This command shows the details for the full series of packets in an OpenPGP certificate (refer to the list of [packets of Alice's certificate](split_alice)). Finding a particular packet in that list can take a bit of focus and practice though.
+This command shows the details for the full series of packets in an OpenPGP certificate (refer to the list of [packets of Alice's certificate](split-alice)). Finding a particular packet in that list can take a bit of focus and practice though.
 
 In the following sections,we make it easier for ourselves by directly examining individual packets from the files we created with `sq packet split` above.
 ````
@@ -418,7 +418,7 @@ Public-Subkey Packet, new CTB, 2 header bytes + 42 bytes
   00000020  35 2a 46 01 f3 cc 00 f5  4a 09 3e 3f
 ```
 
-Notice that the structure of this *Public-Subkey packet* mirrors the primary key's [*Public-Key packet*](public_key) above. However, there are notable differences between the two packets:
+Notice that the structure of this *Public-Subkey packet* mirrors the primary key's [*Public-Key packet*](public-key) above. However, there are notable differences between the two packets:
 
 - The packet type ID (`CTB`) in this packet shows type 14 ([*Public-Subkey packet*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-subkey-packet-type-i)).
 
@@ -646,12 +646,12 @@ Signature Packet, new CTB, 3 header bytes + 325 bytes
     00000140  a6 73 c8 33 5a 9c d9 0a
 ```
 
-(zooming_in_user_id)=
+(zooming-in-user-id)=
 ## Adding an identity component
 
 In this section, we'll look at an identity associated with Alice's certificate.
 
-User IDs are a mechanism for connecting [identities](identity_components) with an OpenPGP certificate. Typically, a User ID is a string combining a name and an email address.
+User IDs are a mechanism for connecting [identities](identity-components) with an OpenPGP certificate. Typically, a User ID is a string combining a name and an email address.
 
 To understand the internal packet structure of this identity and its connection to the OpenPGP certificate, we'll examine two packets that constitute the identity component. One is the [User ID packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid), located in the file `alice.pub-2--UserID`, which contains identity information. The other is a  certifying self-signature, specifically a [Positive certification of a User ID and Public-Key packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-positive-certification-of-a) located in the file `alice.pub-3--Signature`. This certification, issued after substantial verification of the identity claim, validates the association between the User ID and the certificate's public key. These packets are snippets from Alice's full OpenPGP certificate.
 
@@ -680,7 +680,7 @@ Essentially, a User ID packet is just a string marked as a User ID by the packet
 
 ### Linking the User ID with a certification self-signature
 
-Similar to [linking a subkey](zoom_enc_subkey) to the OpenPGP certificate, a self-signature is used to connect this new component to the certificate.
+Similar to [linking a subkey](zoom-enc-subkey) to the OpenPGP certificate, a self-signature is used to connect this new component to the certificate.
 
 To bind identities to a certificate with a self-signature, signature types `0x10` - `0x13` can be used. Here, the signature type `0x13` (*positive certification*) is used.
 
@@ -757,7 +757,7 @@ Signature Packet, new CTB, 2 header bytes + 185 bytes
 ```
 
 
-Because this packet structure closely mirrors the [Direct Key Signature](zooming_in_dks) discussed above, we will cover this succinctly.
+Because this packet structure closely mirrors the [Direct Key Signature](zooming-in-dks) discussed above, we will cover this succinctly.
 
 We're again looking at a Signature packet. Its `type` is `0x13` ([corresponding to a *positive certification* signature](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types)).
 

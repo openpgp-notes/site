@@ -75,7 +75,7 @@ Understanding KO attacks is crucial due to their potential to compromise the int
 
 Private keys that are protected with [S2K usage mode 253 (AEAD)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption), are not vulnerable to KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields (including the algorithm field) as the *authentication tag* for integrity verification in the decryption process. When an attacker alters the unencrypted part of the packet, then decryption of the private key material will fail, and the user is prevented from e.g. accidentally using the key material with an altered attacker-controlled algorithm.
 
-Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (also see {ref}`migration_s2k`).
+Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (also see {ref}`migration-s2k`).
 
 #### Resources
 

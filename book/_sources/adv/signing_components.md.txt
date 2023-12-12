@@ -9,7 +9,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 Different {term}`signatures<OpenPGP Signature Packet>` in OpenPGP serve various specific purposes. This section provides practical guidance on creating these {term}`signatures<OpenPGP Signature Packet>`, illustrating each with concrete examples.
 
-(change_algorithm_preferences)=
+(change-algorithm-preferences)=
 ### Change algorithm preferences
 
 To modify the preferred {term}`symmetric<Symmetric Cryptography>`, compression, {term}`hash<Hash Function>`, or {term}`AEAD algorithms<Authenticated Encryption With Associated Data>` for a {term}`key<Transferable Secret Key>`, the {term}`key owner<Certificate Holder>` needs to issue a {term}`direct key signature` ({term}`type ID<Signature Type ID>` `0x1F`) on the {term}`primary key<OpenPGP Primary Key>`.
@@ -32,7 +32,7 @@ This {term}`signature<OpenPGP Signature Packet>` should have the following struc
 
 To adjust the {term}`expiration time` of an {term}`OpenPGP certificate`, a new *{term}`DirectKey<Direct Key Signature>`* {term}`signature<OpenPGP Signature Packet>` ({term}`type ID<Signature Type ID>` `0x1F`) with a modified {term}`Key Expiration Time subpacket` must be issued. The structure of this {term}`signature<OpenPGP Signature Packet>` is identical to the one outlined in the previous section on changing {term}`algorithm preferences`.
 
-Additionally, the {term}`expiration time` can be altered for individual {term}`User IDs<User ID>` (detailed below) or separate {term}`subkeys<OpenPGP Subkey>` (see {numref}`bind_subkey`).
+Additionally, the {term}`expiration time` can be altered for individual {term}`User IDs<User ID>` (detailed below) or separate {term}`subkeys<OpenPGP Subkey>` (see {numref}`bind-subkey`).
 
 ### Add User ID
 
@@ -73,7 +73,7 @@ For {term}`User ID` {term}`revocations<Revocation>`, the *{term}`Reason for Revo
 
 It is generally advisable to use reason code `32` for revoking {term}`User IDs<User ID>`.
 
-(binding_subkeys)=
+(binding-subkeys)=
 ### Add a subkey
 
 As part of {term}`life-cycle management`, users may need to add a new {term}`subkey<OpenPGP Subkey>` to their {term}`OpenPGP certificate`, often for reasons such as upgrading to a {term}`subkey<OpenPGP Subkey>` with more advanced cryptographic algorithms. The process involves creating a specific {term}`signature<OpenPGP Signature Packet>` structure:

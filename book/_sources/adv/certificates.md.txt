@@ -102,7 +102,7 @@ When thinking about edge cases, it's useful to "assume the worst." For example:
 
 Another way to think about this discussion is that different OpenPGP users may have a different view of any certificate. There is a notional "canonical" version of the certificate, but we cannot assume that every user has exactly this copy. Besides propagation of elements that the certificate holder has linked to a certificate, third-party certifications are by design a distributed mechanism. A third-party certification is issued by a third party, and may or may not be distributed widely by them, or by the certificate holder. Not distributing third-party certifications widely is a workflow that may be entirely appropriate for some use cases[^tpc-privacy].
 
-[^tpc-privacy]: The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see {ref}`metadata_graph`.
+[^tpc-privacy]: The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see {ref}`metadata-graph`.
 
 As a general tendency, it is desirable for OpenPGP users to have the most complete possible view of all certificates that they interact with.
 
@@ -290,7 +290,7 @@ Once the expiration time is reached, third parties, or ideally their OpenPGP sof
 
 After the update, the updated copy of the certificate will usually have a fresh expiration time. The same procedure will repeat once that new expiration time has been reached.
 
-(metadata_graph)=
+(metadata-graph)=
 ## Metadata leak of Social Graph
 
 Third-party certifications are signatures over identity components made by other users.
@@ -308,7 +308,7 @@ So, there is some tension between the goals of
 - a decentralized system where every participant can access certification information and perform analysis on it locally,
 - privacy related goals (also see {ref}`email-lookup`, for a comparison of certificate distribution mechanisms, which also touches on this theme).
 
-(unbound_user_ids)=
+(unbound-user-ids)=
 ## Adding unbound, local User IDs to a certificate
 
 Some OpenPGP software may add User IDs to a certificate, which are not bound to the primary key by the certificate's owner. This can be useful to store local identity information (e.g., Sequoia's public store attaches ["pet-names"][PET] to certificates, in this way).

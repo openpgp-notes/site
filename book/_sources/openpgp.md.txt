@@ -59,7 +59,7 @@ An extension for Elliptic Curve Cryptography was defined in [RFC 6637](https://w
 
 Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in the [rfc4880bis](https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#name-elliptic-curve-cryptography) document. These algorithms are widely used, even though rfc4880bis has never been finalized as a new version of the standard.
 
-(major_implementations)=
+(major-implementations)=
 ### Major implementations of OpenPGP
 
 Today, multiple implementations of OpenPGP play important roles:
@@ -69,10 +69,10 @@ Today, multiple implementations of OpenPGP play important roles:
 - Proton Mail, which provides email encryption services for a large number of users, uses and maintains [OpenPGP.js](https://openpgpjs.org/) as well as [GopenPGP](https://gopenpgp.org/), an OpenPGP wrapper library written in golang.
 - The RPM Package Manager software includes an OpenPGP backend based on [Sequoia PGP](https://sequoia-pgp.org/), a modern OpenPGP implementation written in Rust. The Fedora Linux operating system [uses Sequoia PGP in rpm](https://sequoia-pgp.org/blog/2023/04/27/rpm-sequoia/) since version 38.
 
-(interop_section)=
+(interop-section)=
 ### Interoperability
 
-OpenPGP was standardized in 1997 to encourage development of interoperable implementations. This has already been a success early on, but in recent years, there has been [much development of new implementations](major_implementations).
+OpenPGP was standardized in 1997 to encourage development of interoperable implementations. This has already been a success early on, but in recent years, there has been [much development of new implementations](major-implementations).
 
 Historically, interoperability has only been tested in an adhoc manner. Since 2019, the Sequoia project is maintaining and operating the ["OpenPGP interoperability test suite"](https://tests.sequoia-pgp.org/), for more rigorous and systematic testing. The test suite has identified numerous [issues](https://gitlab.com/sequoia-pgp/openpgp-interoperability-test-suite#hall-of-fame).
 

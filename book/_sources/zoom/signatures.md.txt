@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Zooming in: Packet structure of data signatures
 
-In this chapter, we'll create signatures using [Alice's private key](alice_priv) material, and inspect the packet structure of those signatures.
+In this chapter, we'll create signatures using [Alice's private key](alice-priv) material, and inspect the packet structure of those signatures.
 
 In some examples, we'll use a test-message that contains the string `hello world` followed by one line feed (`0x0a`) character:
 

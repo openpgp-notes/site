@@ -22,7 +22,7 @@ The series of OpenPGP packets inside the Compressed Data packet can be handled l
 
 ## Typical usage
 
-Compressed data packets are often used inside [encrypted data packets](/encryption), or wrapping the data of an [inline-signed message](inline_signature).
+Compressed data packets are often used inside [encrypted data packets](/encryption), or wrapping the data of an [inline-signed message](inline-signature).
 
 ---
 
