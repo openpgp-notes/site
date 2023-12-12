@@ -49,13 +49,7 @@ In addition to these {term}`subpackets<OpenPGP Signature Subpacket>`, {term}`sel
 
 ### Remove or revoke a User ID
 
-Since {term}`OpenPGP certificates<OpenPGP certificate>` are often distributed by the means of {term}`key servers<Key Server>`, new {term}`signatures<OpenPGP Signature Packet>` on a {term}`certificate<OpenPGP Certificate>` are often "merged" into existing copies of the {term}`certificate<OpenPGP Certificate>` locally by the recipient.
-
-```{admonition} TODO
-:class: warning
-
-Link to the "Merging" section in chapter 4, once merged.
-```
+Since {term}`OpenPGP certificates<OpenPGP certificate>` are often distributed by the means of {term}`key servers<Key Server>`, new {term}`signatures<OpenPGP Signature Packet>` on a {term}`certificate<OpenPGP Certificate>` are often "[merged](certificate-merging)" into existing copies of the {term}`certificate<OpenPGP Certificate>` locally by the recipient.
 
 This integration process means it is practically impossible to directly remove {term}`signatures<OpenPGP Signature Packet>` or {term}`User IDs<User ID>` from a {term}`certificate<OpenPGP Certificate>`, as there is no way to communicate the intention of {term}`packet<OpenPGP Signature Packet>` deletion to the recipient.
 
@@ -109,12 +103,6 @@ The structure of such a {term}`signature<OpenPGP Signature Packet>` is straightf
 In {term}`Subkey Revocation signatures<Subkey Revocation Signature Packet>`, the [reason for revocation](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation) {term}`subpacket<OpenPGP Signature Subpacket>` can only have values in the range of `0-3`. The values `1` ({term}`key<OpenPGP Subkey>` superseded) and `3` ({term}`key<OpenPGP Subkey>` retired and no longer used) indicate {term}`soft revocations<Soft Revocation>`, whereas values `0` (no reason) and `2` ({term}`key<OpenPGP Subkey>` compromised) indicate {term}`hard revocations<Hard Revocation>`.
 
 Note that a value of `32` is not applicable in these {term}`signatures<OpenPGP Signature Packet>`.
-
-```{admonition} TODO
-:class: warning
-
-Research and explain hardness in the context of subkey revocations. What does a hard subkey revocation express concretely?
-```
 
 ### Revoke a certificate
 

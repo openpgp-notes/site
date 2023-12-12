@@ -201,12 +201,6 @@ Common scenarios for using {term}`revocations<Revocation>` include marking {term
 {term}`Revocations<Revocation>` are used to mark {term}`components<Component>` or {term}`signatures<OpenPGP Signature Packet>` as {term}`invalid<Validation>`.
 ```
 
-```{admonition} TODO
-:class: warning
-
-Research, under what circumstances revocations revoke individual signatures, and when they instead "unbind" components.
-```
-
 Note: {term}`certification signatures<Certification>` [can be made irrevocable](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-revocable).
 
 (hard-vs-soft-revocations)=

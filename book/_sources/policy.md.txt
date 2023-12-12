@@ -5,10 +5,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Algorithms and Policy
 
-```{admonition} TODO
-:class: warning
+```{note}
 
-  - What algorithms are trustworthy? -> Depend on regulatory bodies like the BSI?
-  - How to decide, when to deprecate / reject algorithms (how to be competent)
-  - Transitioning from one set of algorithms to another (Interoperability)
+This section is still about to be written.
 ```

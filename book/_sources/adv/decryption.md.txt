@@ -27,9 +27,3 @@ This is done by creating a normal PKESK packet for the recipient, but setting th
 A recipient of such a message that does not find a PKESK addressed specifically to any of their keys, can then try to decrypt any anonymous PKESK packets using any of their encryption subkeys.
 
 To reduce the number of keys to try, the recipient can skip all secret keys which do not share the public-key algorithm stated in the PKESK packet.
-
-```{admonition} TODO
-:class: warning
-
-When did the decryption succeed? Describe quick check of the check sum and decryption of first few bytes of the SEIPD as test strategies.
-```

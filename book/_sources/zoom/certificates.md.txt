@@ -83,16 +83,6 @@ This is the shape of the packets we'll explore in the subsequent sections:
 A minimal OpenPGP certificate, visualized
 ```
 
-```{admonition} VISUAL
-:class: warning
-
-This diagram needs adjustments about
- - what exactly is signed
- - fix naming of fields?
- 
-We could show repeat-copies of the individual packet visualization again, below for each packet-related section.
-```
-
 In real-world scenarios, OpenPGP certificates are typically far more complex than this minimal example. However, this is indeed a valid OpenPGP certificate. In the following sections, we will introduce more components to this certificate, increasing its complexity and exploring their details.
 
 In ASCII-armored representation, this very minimal key appears as follows:
@@ -431,22 +421,6 @@ The aforementioned subkey packet is disconnected from the OpenPGP certificate to
 
 The type of signature is called a *subkey binding signature*, because it "binds" or connects the subkey to the rest of the key.
 
-```{admonition} VISUAL
-:class: warning
-
-Add detailed packet diagram analogous to 4.6.1
-```
-
-```{admonition} TODO
-:class: warning
-
-david points out: "The information on metadata in binding signatures may also make sense in other contexts (direct key signature)?"
-
-Should this text go elsewhere?
-- 4.2.3?
-- ch 6?
-```
-
 The signature does more than just bind the subkey; it also carries additional metadata about the subkey. This metadata is in the binding signature, and not in the subkey packet, because it may change over time, while the subkey packet itself remains unchanged. This evolving metadata is stored in self-signatures: if the key holder wants to modify the metadata (for example, to change the key's expiration time), a newer version of the same signature type can be issued. The recipient OpenPGP software will recognize that the newer self-signature supersedes the older one, and that the metadata in the newer signature reflects the most current intent of the key holder.
 
 Note that this subkey binding signature packet is quite similar to the Direct Key Signature discussed above. Both signatures serve a similar purpose in adding metadata to a component key, particularly as the hashed subpacket data contains much of the same metadata elements.
@@ -536,10 +510,9 @@ Refer to [Computing Signatures](https://www.ietf.org/archive/id/draft-ietf-openp
 
 ## Signing subkey
 
-```{admonition} TODO
-:class: warning
+```{note}
 
-write 
+This section is still about to be written.
 ```
 
 ```text
@@ -782,14 +755,6 @@ Historically, the self-signature that binds the primary User ID to the certifica
 Setting key expiration time and key flags on the primary User ID self-signature is one mechanism to configure the primary key.
 
 The interaction between metadata on direct key signatures and User ID binding self-signatures [is subtle](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-notes-on-self-signatures), with changes between version 6 and version 4.
-
-
-```{admonition} TODO
-:class: warning
-
-- link to a section that goes into more depth about "#name-notes-on-self-signatures"?
-```
-
 ````
 
 This section is followed, again, by the (informational) unhashed subpacket area.
@@ -807,4 +772,14 @@ Refer to [Computing Signatures](https://www.ietf.org/archive/id/draft-ietf-openp
 
 ## Certifications (Third Party Signatures)
 
+```{note}
+
+This section is still about to be written.
+```
+
 ## Revocations
+
+```{note}
+
+This section is still about to be written.
+```

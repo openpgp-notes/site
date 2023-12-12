@@ -26,8 +26,7 @@ If the lowest common denominator of symmetric encryption algorithms preferred by
 
 ## AEAD modes in v2 SEIPD: GCM
 
-```{admonition} TODO
-:class: warning
+```{note}
 
-Produce text around discussion: https://mailarchive.ietf.org/arch/msg/openpgp/ZTYD5VJsG1k2jJBbn5zIAf5o7d4/
+This section is still about to be written.
 ```

@@ -84,12 +84,6 @@ Also see https://flowcrypt.com/docs/guide/send-and-receive/send-password-protect
 As for protection of secret key material, it is important to choose appropriate S2K parameters when generating an SKESK packet.
 The specification currently recommends to use either *Iterated and Salted S2K* or *Argon2*.
 
-```{admonition} TODO:
-:class: warning
-
-Add further guidance for recommended S2K parameters, like iteration count or Argon2 configuration. Perhaps in a dedicated "S2K Parameters" section, which can be reused for the encryption chapter and when we talk about secret key encryption in TSKs.
-```
-
 ## Symmetric encryption of data, SEIPD
 
 *Symmetrically Encrypted Integrity Protected Data* (SEIPD) packets represent the symmetric aspect of OpenPGP's encryption mechanism. The function of these packets is entirely independent of (asymmetric) OpenPGP keys.
@@ -144,11 +138,3 @@ With SEIPDv2, the message key is derived from the session key in an extra step.
 ```
 
 This additional step introduces key-separation into the protocol, which protects against certain attacks, such as an [OpenPGP SEIP downgrade attack](https://www.metzdowd.com/pipermail/cryptography/2015-October/026685.html).
- 
-```{admonition} TODO
-:class: warning
-
-Explain, that with SEIPDv2, a session key can essentially protect more than one message by reusing the same session key and *ESK packets with a fresh, per-message salt.
-
-This might very well go into the advanced topics section though.
-```

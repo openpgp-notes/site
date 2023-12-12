@@ -66,15 +66,6 @@ Typically, all *ESK packets leading a SEIPD packet contain the same <em>session 
 </div>
 <p>If no suitable PKESK packets were found, SKESK packets are tried next, meaning the user is typically prompted to enter a decryption passphrase.</p>
 <p>Once any of these methods succeeded, the resulting <em>session key</em> is used to decrypt the SEIPD packet.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<ul class="simple">
-<li><p>using expired certificate?</p></li>
-<li><p>using revoked certificate?</p></li>
-<li><p>using expired subkey?</p></li>
-<li><p>using revoked subkey?</p></li>
-</ul>
-</div>
 <section id="passphrase-protected-session-key-skesk">
 <h2><span class="section-number">11.1. </span>Passphrase-protected session key (SKESK)<a class="headerlink" href="#passphrase-protected-session-key-skesk" title="Link to this heading">¶</a></h2>
 <p>Decrypting a SKESK packet to recover the <em>session key</em> is done by performing the encryption steps in reverse, based on a user-provided passphrase.</p>
@@ -153,10 +144,6 @@ Any other combinations are not allowed and MUST result in a broken message.</p>
 <p>To decrypt the contents of a version 1 SEIPD packet, the session key obtained in the previous step is used.
 The cipher algorithm is either extracted from the decrypted session key (the algorithm ID is typically prefixed to the decrypted session key), or - in case of a SKESK packet using the direct-method - taken from the SKESKs cipher algorithm field.</p>
 <p>Once the cipher is initialized, the whole encrypted data from the SEIPD packet is decrypted.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<p>Describe the MDC which is used for modification detection.</p>
-</div>
 <figure class="align-default" id="fig-decryption-seipd1">
 <img alt="Depicts how the session key is used directly to decrypt the contents of the SEIPD packet." src="_images/SEIPDv1-decryption.svg" /><figcaption>
 <p><span class="caption-number">Fig. 30 </span><span class="caption-text">The contents of the SEIPD packet are decrypted using the session key as message key.</span><a class="headerlink" href="#fig-decryption-seipd1" title="Link to this image">¶</a></p>

@@ -108,6 +108,7 @@ As a general tendency, it is desirable for OpenPGP users to have the most comple
 
 However, there are contexts in which it is preferable to only use a subset of the available elements of a certificate. We discuss this in the section {ref}`cert-mini`.
 
+(certificate-merging)=
 ## Merging
 
 As described above, OpenPGP certificates are effectively [append-only](append-only) data structures. As part of the practical realization of this fact, OpenPGP software needs to *merge* different copies of a certificate.

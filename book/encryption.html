@@ -145,10 +145,6 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>Also see https://flowcrypt.com/docs/guide/send-and-receive/send-password-protected-emails.html</p>
 <p>As for protection of secret key material, it is important to choose appropriate S2K parameters when generating an SKESK packet.
 The specification currently recommends to use either <em>Iterated and Salted S2K</em> or <em>Argon2</em>.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO:</p>
-<p>Add further guidance for recommended S2K parameters, like iteration count or Argon2 configuration. Perhaps in a dedicated “S2K Parameters” section, which can be reused for the encryption chapter and when we talk about secret key encryption in TSKs.</p>
-</div>
 </section>
 </section>
 <section id="symmetric-encryption-of-data-seipd">
@@ -190,11 +186,6 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
 </figcaption>
 </figure>
 <p>This additional step introduces key-separation into the protocol, which protects against certain attacks, such as an <a class="reference external" href="https://www.metzdowd.com/pipermail/cryptography/2015-October/026685.html">OpenPGP SEIP downgrade attack</a>.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<p>Explain, that with SEIPDv2, a session key can essentially protect more than one message by reusing the same session key and *ESK packets with a fresh, per-message salt.</p>
-<p>This might very well go into the advanced topics section though.</p>
-</div>
 </section>
 </section>
 </section>

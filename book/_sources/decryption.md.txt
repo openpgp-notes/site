@@ -21,15 +21,6 @@ If no suitable PKESK packets were found, SKESK packets are tried next, meaning t
 
 Once any of these methods succeeded, the resulting *session key* is used to decrypt the SEIPD packet.
 
-```{admonition} TODO
-:class: warning
-
-  - using expired certificate?
-  - using revoked certificate?
-  - using expired subkey?
-  - using revoked subkey?
-```
-
 ## Passphrase-protected session key (SKESK)
 
 Decrypting a SKESK packet to recover the *session key* is done by performing the encryption steps in reverse, based on a user-provided passphrase.
@@ -136,12 +127,6 @@ To decrypt the contents of a version 1 SEIPD packet, the session key obtained in
 The cipher algorithm is either extracted from the decrypted session key (the algorithm ID is typically prefixed to the decrypted session key), or - in case of a SKESK packet using the direct-method - taken from the SKESKs cipher algorithm field. 
 
 Once the cipher is initialized, the whole encrypted data from the SEIPD packet is decrypted.
-
-```{admonition} TODO
-:class: warning
-
-Describe the MDC which is used for modification detection.
-```
 
 ```{figure} plain_svg/SEIPDv1-decryption.svg
 :name: fig-decryption-seipd1

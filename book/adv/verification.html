@@ -120,10 +120,6 @@ This is called attribute shadowing, since direct key signature subpackets apply 
 <p>In general, for each category of signatures (categories such as binding signatures for one particular subkey), the signature with the latest creation time takes precedence, and only that signature is considered.</p>
 <p>Alternatively, there can be competing qualifying signatures of different types, e.g., a direct key signature and a self-certification signature on a primary User ID. Both of these contain metadata associated with the entire certificate. By default, the direct key signature is preferred<a class="footnote-reference brackets" href="#conflicting-prefs" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> in OpenPGP version 6.</p>
 <p>Depending on how a certificate is “located,” different metadata from possible candidate signatures “shadow” one another. The RFC <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-notes-on-self-signatures">states</a> that when a certificate is “located” by the OpenPGP software “via an identity”, then the metadata associated with that identity takes precedence over more global metadata, such as that associated with the certificate’s primary key, with a direct key signature.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<p>Replace hash algorithm preferences with AEAD preferences for a more realistic example.</p>
-</div>
 <p>For example, the latest direct key signature could list “SHA512, SHA384” as hash algorithm preferences, while the latest self-certification of the User ID “Bob” could list only “SHA256.”
 For yet another User ID “Bobby,” the self-signature could list no hash algorithm preferences at all.
 If the user wants to compose a signed message using the associated OpenPGP key they need to figure out which preferences to use.</p>
@@ -141,17 +137,9 @@ The same is true if the certificate is used without any User ID as sender.</p>
 <p>To complicate things further:
 Algorithm preferences can also be stated on subkey binding signatures, so if the certificate has a dedicated signing subkey, there is yet another signature which could take precedence.
 Preferences from the subkey binding signature take precedence over the direct key signature, but not over self-certifications on the User ID.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<p>Have a table that lists which signatures take precedence in which cases.</p>
-</div>
 <p>There can be more than one signature on a component. As an example, there are 3 direct key signatures (e.g., because the key’s expiry has been extended two times).
 In general, for each component, only the newest self-signature is “in effect,” and older signatures are “shadowed.”
 For each certificate, there is at most one “active” direct key signature, for each User ID at most one active self-certification and for each subkey exactly one subkey binding.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<p>direct key signatures can be revoked, <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.2.3.10-4">canceling them</a>, meaning an older direct-key signature might become active again? The text of the spec is confusing here.</p>
-</div>
 </section>
 <section id="complexity-of-the-packet-format">
 <h2><span class="section-number">23.4. </span>Complexity of the packet format<a class="headerlink" href="#complexity-of-the-packet-format" title="Link to this heading">¶</a></h2>

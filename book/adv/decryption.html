@@ -70,10 +70,6 @@ During decrypting, these 2 bytes can be compared to the 15th and 16th random byt
 This is done by creating a normal PKESK packet for the recipient, but setting the recipient key field to <code class="docutils literal notranslate"><span class="pre">0</span></code> (as well as omitting the version number of the key for v6 PKESKs).</p>
 <p>A recipient of such a message that does not find a PKESK addressed specifically to any of their keys, can then try to decrypt any anonymous PKESK packets using any of their encryption subkeys.</p>
 <p>To reduce the number of keys to try, the recipient can skip all secret keys which do not share the public-key algorithm stated in the PKESK packet.</p>
-<div class="warning admonition">
-<p class="admonition-title">TODO</p>
-<p>When did the decryption succeed? Describe quick check of the check sum and decryption of first few bytes of the SEIPD as test strategies.</p>
-</div>
 </section>
 </section>
 

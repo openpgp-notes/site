@@ -115,9 +115,3 @@ A signature can be *disqualified* by the presence of a revocation signature.
 
 Revocations can be limited in scope, e.g., a subkey-revocation signature only revokes a single subkey.
 Moreover, revocations can also be constrained to a certain validity period by including a soft revocation reason and expiration time in the revocation signature.
-
-```{admonition} TODO
-:class: warning
-
-Give guidance which revocations need to be considered for different types of signatures
-```
