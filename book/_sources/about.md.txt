@@ -11,7 +11,7 @@ This documentation project seeks to introduce all OpenPGP concepts and functiona
 
 ## What is OpenPGP?
 
-OpenPGP is an open standard for cryptographic operations. It is a system based on well-understood [cryptographic building blocks](/cryptography). OpenPGP supports the secure delivery of files and messages between a sender and a recipient. It also addresses identities and their verification. OpenPGP is an outgrowth of the ["Pretty Good Privacy (PGP)"](https://en.wikipedia.org/wiki/Pretty_Good_Privacy) encryption program and has many widely used and [interoperable implementations](interop-section).
+OpenPGP is an open standard for cryptographic operations. It is a system based on well-understood [cryptographic building blocks](/cryptography). OpenPGP supports the secure delivery of files and messages between a sender and a recipient. It also addresses identities and their verification. OpenPGP is an outgrowth of the ["Pretty Good Privacy (PGP)"](https://en.wikipedia.org/wiki/Pretty_Good_Privacy) encryption program and has many widely used and [interoperable implementations](interoperability).
 
 With OpenPGP, you can:
 

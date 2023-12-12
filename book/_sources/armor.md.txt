@@ -82,7 +82,7 @@ Both the binary and the ASCII armored format encode exactly the same information
 
 One noteworthy mechanism in OpenPGP that uses a specialized variant of ASCII armoring is the [*cleartext signature framework*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#cleartext-signature), which stores an ASCII-armored signature and a cleartext message as a combined text file.
 
-See our section on the [cleartext signature framework](cleartext-sig) for an example of that format.
+See our section on the [cleartext signature framework](cleartext-signature) for an example of that format.
 
 ## Advanced topics
 

@@ -104,7 +104,7 @@ The {term}`signature packet<OpenPGP Signature Packet>` consists of two parts:
 Creating a {term}`signature<OpenPGP Signature Packet>` in OpenPGP
 ```
 
-(sig-verify)=
+(signature-verify)=
 ### Verifying an OpenPGP signature packet
 
 Verifying an {term}`OpenPGP signature packet` is similar to its creation, with some crucial differences that facilitate the {term}`verification` by entities other than the {term}`signer`.
@@ -134,7 +134,7 @@ They are formatted as key-value pairs, where the keys are defined as [subpacket 
 - The [*issuer fingerprint*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-fingerprint-subpacket) {term}`subpacket<OpenPGP Signature Subpacket>` encodes the {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`component key` that issued the {term}`signature<OpenPGP Signature Packet>`.
 - The [*key flags*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags) {term}`subpacket<OpenPGP Signature Subpacket>` defines the {term}`capabilities<capability>` that are assigned to a {term}`component key` within a {term}`certificate<OpenPGP Certificate>`.
 
-(hashed-and-unhashed-signature-subpackets)=
+(subpacket-areas)=
 ### Hashed and unhashed signature subpackets
 
 {term}`Signature subpackets<OpenPGP Signature Subpacket>` within OpenPGP can reside in one of two distinct areas of a {term}`signature packet<OpenPGP Signature Packet>`, each serving a different purpose.

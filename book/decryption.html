@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/decryption.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Message decryption is the process of taking an encrypted message and recovering its plaintext. This involves multiple steps. Implementations typically first process the PKESK and SKESK packets lead..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Message decryption is the process of taking an encrypted message and recovering its plaintext. This involves multiple steps. Implementations typically first process the PKESK and SKESK packets lead..." />
 
@@ -94,7 +94,7 @@ However, the subsequent steps of the procedure are different, as described in th
 <p>With version 4 SKESK packets, which are only used with version 1 SEIPD packets, the <em>session key</em> is used as <em>message key</em> without an intermediate derivation.</p>
 <section id="direct-method">
 <span id="decryption-skesk4-direct-method"></span><h4><span class="section-number">11.1.1.1. </span>Direct-Method<a class="headerlink" href="#direct-method" title="Link to this heading">¶</a></h4>
-<p>In version 4 of the SKESK packet, the encrypted session key is optional. A missing encrypted session key signals the use of the “direct-method”, which means, the result of passing the passphrase through the S2K function is directly used as the session key/message key.</p>
+<p>In version 4 of the SKESK packet, the encrypted session key is optional. A missing encrypted session key signals the use of the “direct-method,” which means the result of passing the passphrase through the S2K function is directly used as the session key/message key.</p>
 <p>When the direct method is used, the symmetric cipher algorithm ID of the SKESK packet dictates the cipher algorithm used to decrypt the plaintext from the SEIPD packet.</p>
 <p>Otherwise, the cipher algorithm ID to decrypt the SEIPD packet was prefixed to the decrypted session key.</p>
 <p>Sanitizing this algorithm ID of the decrypted session key acts as a very early quick check to verify that the used passphrase was correct. For further validation of the session key, see <a class="reference internal" href="adv/decryption.html#decryption-seipd-quick-check"><span class="std std-ref">Verify successful session key decryption</span></a>.</p>
@@ -104,8 +104,8 @@ However, the subsequent steps of the procedure are different, as described in th
 <h3><span class="section-number">11.1.2. </span>SKESK v6<a class="headerlink" href="#skesk-v6" title="Link to this heading">¶</a></h3>
 <p>With version 6 SKESK packets, the result of the passing the passphrase through the S2K function is used as <em>initial keying material</em> (IKM) to derive a symmetric <em>key encryption key</em> using HKDF as a key derivation function. The HKDF function doesn’t use any salt in this step, and the <em>info</em> parameter is assembled from parameters of the SKESK packet.</p>
 <p>In the next step, this symmetric key is used to decrypt the <em>session key</em> using AEAD.
-The AEAD function uses information from the associated SEIPDv2 packet as <em>additional data</em>.
-The function is also salted using the SEIPDv2’s salt.
+The AEAD function uses information from the associated SEIPD v2 packet as <em>additional data</em>.
+The function is also salted using the SEIPD v2’s salt.
 The <em>AEAD Auth Tag</em> of the SKESK packet is used as authentication tag.</p>
 <p>The result is the <em>session key</em>.</p>
 <figure class="align-default" id="fig-skeskv6-decryption">
@@ -122,7 +122,7 @@ The <em>AEAD Auth Tag</em> of the SKESK packet is used as authentication tag.</p
 <h3><span class="section-number">11.2.1. </span>PKESK v3<a class="headerlink" href="#pkesk-v3" title="Link to this heading">¶</a></h3>
 <p>With version 3 PKESKs, the recipient’s secret encryption (sub-) key is directly used to decrypt the encrypted <em>session key</em>.
 The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> indicates an anonymous recipient (see <a class="reference internal" href="adv/decryption.html#decryption-anonymous-recipient"><span class="std std-ref">Anonymous recipients</span></a>).</p>
-<p>To detect, which symmetric cipher is used to decrypt the SEIPDv1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections<a class="footnote-reference brackets" href="#rsa-spec" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#elgamal-spec" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#ecdh-spec" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x25519-spec" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x448-spec" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.</p>
+<p>To detect, which symmetric cipher is used to decrypt the SEIPD v1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections<a class="footnote-reference brackets" href="#rsa-spec" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#elgamal-spec" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#ecdh-spec" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x25519-spec" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x448-spec" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.</p>
 <figure class="align-default" id="fig-decryption-pkesk3">
 <img alt="Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key." src="_images/PKESKv3-decryption.svg" /><figcaption>
 <p><span class="caption-number">Fig. 28 </span><span class="caption-text">Decrypting the session key from a version 3 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk3" title="Link to this image">¶</a></p>
@@ -138,7 +138,7 @@ The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A va
 </figcaption>
 </figure>
 <p>Contrary to the version 3 PKESK, the encrypted session key within the version 6 PKESK does not contain the symmetric cipher algorithm used to decrypt the SEIPD packet.
-Instead, this cipher algorithm ID is encoded inside the SEIPDv2 packet directly.</p>
+Instead, this cipher algorithm ID is encoded inside the SEIPD v2 packet directly.</p>
 </section>
 </section>
 <section id="seipd-v1">
@@ -182,7 +182,7 @@ For each chunk, the chunk index starting at <code class="docutils literal notran
 </section>
 <section id="sed">
 <h2><span class="section-number">11.5. </span>SED<a class="headerlink" href="#sed" title="Link to this heading">¶</a></h2>
-<p>Legacy mode, may be decrypted, but not produced.</p>
+<p>Legacy mode: may be decrypted, but not produced.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="rsa-spec" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>

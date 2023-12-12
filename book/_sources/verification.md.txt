@@ -15,7 +15,7 @@ Some signatures can be verified standalone, while others require the verificatio
 
 ## When are signatures valid?
 
-As a necessary condition, a valid signature must be [cryptographically correct](sig-verify). This means that both the signature and its signed input data must be intact.
+As a necessary condition, a valid signature must be [cryptographically correct](signature-verify). This means that both the signature and its signed input data must be intact.
 
 However, there is a difference between signature *correctness* and *validity*:
 

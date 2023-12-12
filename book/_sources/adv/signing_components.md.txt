@@ -9,7 +9,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 Different {term}`signatures<OpenPGP Signature Packet>` in OpenPGP serve various specific purposes. This section provides practical guidance on creating these {term}`signatures<OpenPGP Signature Packet>`, illustrating each with concrete examples.
 
-(change-algorithm-preferences)=
+(recipe-algorithm-preferences)=
 ### Change algorithm preferences
 
 To modify the preferred {term}`symmetric<Symmetric Cryptography>`, compression, {term}`hash<Hash Function>`, or {term}`AEAD algorithms<Authenticated Encryption With Associated Data>` for a {term}`key<Transferable Secret Key>`, the {term}`key owner<Certificate Holder>` needs to issue a {term}`direct key signature` ({term}`type ID<Signature Type ID>` `0x1F`) on the {term}`primary key<OpenPGP Primary Key>`.
@@ -67,7 +67,7 @@ For {term}`User ID` {term}`revocations<Revocation>`, the *{term}`Reason for Revo
 
 It is generally advisable to use reason code `32` for revoking {term}`User IDs<User ID>`.
 
-(binding-subkeys)=
+(recipe-binding-subkeys)=
 ### Add a subkey
 
 As part of {term}`life-cycle management`, users may need to add a new {term}`subkey<OpenPGP Subkey>` to their {term}`OpenPGP certificate`, often for reasons such as upgrading to a {term}`subkey<OpenPGP Subkey>` with more advanced cryptographic algorithms. The process involves creating a specific {term}`signature<OpenPGP Signature Packet>` structure:

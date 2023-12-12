@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/verification.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Signature verification in the OpenPGP protocol is a complex process. Many factors influence the validity of a signature. Firstly, its expiration time: A signature can be valid at one point in time ..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Signature verification in the OpenPGP protocol is a complex process. Many factors influence the validity of a signature. Firstly, its expiration time: A signature can be valid at one point in time ..." />
 
@@ -70,7 +70,7 @@ Many factors influence the validity of a signature.</p>
 Some signatures can be verified standalone, while others require the verification of a chain-like structure of signatures, mostly within the issuer’s certificate.</p>
 <section id="when-are-signatures-valid">
 <h2><span class="section-number">9.1. </span>When are signatures valid?<a class="headerlink" href="#when-are-signatures-valid" title="Link to this heading">¶</a></h2>
-<p>As a necessary condition, a valid signature must be <a class="reference internal" href="signatures.html#sig-verify"><span class="std std-ref">cryptographically correct</span></a>. This means that both the signature and its signed input data must be intact.</p>
+<p>As a necessary condition, a valid signature must be <a class="reference internal" href="signatures.html#signature-verify"><span class="std std-ref">cryptographically correct</span></a>. This means that both the signature and its signed input data must be intact.</p>
 <p>However, there is a difference between signature <em>correctness</em> and <em>validity</em>:</p>
 <p>A signature may be cryptographically correct, but still not qualify as a <em>valid</em> signature.
 Put mathematically, the set of valid signatures is a subset of the set of correct signatures.</p>

@@ -34,7 +34,7 @@ At its core, an OpenPGP private key subsystem performs operations requiring only
 
 However, the subsystem also supports operations that require additional access to the metadata of the component key. These operations, supplementary to the core keystore operations, do not involve the private key material.
 
-When implementing a keystore based on hardware cryptographic devices like [OpenPGP card](card-priv), its design will consist of two layers:
+When implementing a keystore based on hardware cryptographic devices like [OpenPGP card](openpgp-card), its design will consist of two layers:
 
 - **core layer**: directly handles private key material, and
 - **supplementary layer**: performs additional cryptographic operations that don't directly use the private key material, such as [AES key wrap](https://www.rfc-editor.org/rfc/rfc3394.html) for ECDH.

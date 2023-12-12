@@ -58,7 +58,7 @@ Secret-Key Packet, new CTB, 2 header bytes + 75 bytes
     00000040  bd 42 dd 4b e9 a3 36 81  3b a5 cc cf fb
 ```
 
-The Secret-Key packet consists in large part of the actual cryptographic key data. Notice that its content is almost entirely the same as the Public-Key packet [seen in the previous chapter](public-key). Let's look at the packet field by field:
+The Secret-Key packet consists in large part of the actual cryptographic key data. Notice that its content is almost entirely the same as the Public-Key packet [seen in the previous chapter](zoom-public-key). Let's look at the packet field by field:
 
 - `CTB: 0xc5`[^CTB]: The [packet type ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers) for this packet. The binary representation of the value `0xc5` is `11000101`. Bits 7 and 6 show that the packet is in *OpenPGP packet format* (as opposed to in *Legacy packet format*). The remaining 6 bits encode the type ID's value: "5". This is the value for a Secret-Key packet, as shown in the list of [packet type IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-types).
 - `length: 0x4b`: The remaining length of this packet.
@@ -90,7 +90,7 @@ Note that the *Secret-Key packet* contains both the private and the public part 
 
 ### Secret-Subkey packet
 
-Further down in the "packet dump" of Alice's key, we see the encryption subkey, which we already inspected in its Public-Subkey packet format, [above](zoom-enc-subkey):
+Further down in the "packet dump" of Alice's key, we see the encryption subkey, which we already inspected in its Public-Subkey packet format, [above](zoom-subkey-enc):
 
 ```text
 Secret-Subkey Packet, new CTB, 2 header bytes + 75 bytes

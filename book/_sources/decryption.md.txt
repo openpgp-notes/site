@@ -49,7 +49,7 @@ With version 4 SKESK packets, which are only used with version 1 SEIPD packets, 
 (decryption-skesk4-direct-method)=
 #### Direct-Method
 
-In version 4 of the SKESK packet, the encrypted session key is optional. A missing encrypted session key signals the use of the "direct-method", which means, the result of passing the passphrase through the S2K function is directly used as the session key/message key.
+In version 4 of the SKESK packet, the encrypted session key is optional. A missing encrypted session key signals the use of the "direct-method," which means the result of passing the passphrase through the S2K function is directly used as the session key/message key.
 
 When the direct method is used, the symmetric cipher algorithm ID of the SKESK packet dictates the cipher algorithm used to decrypt the plaintext from the SEIPD packet.
 
@@ -63,8 +63,8 @@ Sanitizing this algorithm ID of the decrypted session key acts as a very early q
 With version 6 SKESK packets, the result of the passing the passphrase through the S2K function is used as *initial keying material* (IKM) to derive a symmetric *key encryption key* using HKDF as a key derivation function. The HKDF function doesn't use any salt in this step, and the *info* parameter is assembled from parameters of the SKESK packet.
 
 In the next step, this symmetric key is used to decrypt the *session key* using AEAD.
-The AEAD function uses information from the associated SEIPDv2 packet as *additional data*.
-The function is also salted using the SEIPDv2's salt.
+The AEAD function uses information from the associated SEIPD v2 packet as *additional data*.
+The function is also salted using the SEIPD v2's salt.
 The *AEAD Auth Tag* of the SKESK packet is used as authentication tag.
 
 The result is the *session key*.
@@ -85,7 +85,7 @@ More common than SKESK packets are PKESK packets which are used to protect the s
 With version 3 PKESKs, the recipient's secret encryption (sub-) key is directly used to decrypt the encrypted *session key*.
 The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A value of `0` indicates an anonymous recipient (see [](decryption-anonymous-recipient)).
 
-To detect, which symmetric cipher is used to decrypt the SEIPDv1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections[^rsa-spec] [^elgamal-spec] [^ecdh-spec] [^x25519-spec] [^x448-spec] of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.
+To detect, which symmetric cipher is used to decrypt the SEIPD v1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections[^rsa-spec] [^elgamal-spec] [^ecdh-spec] [^x25519-spec] [^x448-spec] of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.
 
 [^rsa-spec]: [Algorithm-Specific Fields for RSA encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-f)
 [^elgamal-spec]: [Algorithm-Specific Fields for Elgamal encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-fo)
@@ -112,7 +112,7 @@ Decrypting the session key from a version 6 PKESK packet.
 ```
 
 Contrary to the version 3 PKESK, the encrypted session key within the version 6 PKESK does not contain the symmetric cipher algorithm used to decrypt the SEIPD packet.
-Instead, this cipher algorithm ID is encoded inside the SEIPDv2 packet directly.
+Instead, this cipher algorithm ID is encoded inside the SEIPD v2 packet directly.
 
 ## SEIPD (v1)
 
@@ -134,7 +134,6 @@ Once the cipher is initialized, the whole encrypted data from the SEIPD packet i
 
 The contents of the SEIPD packet are decrypted using the session key as message key.
 ```
-
 
 ## SEIPD w/ AEAD (v2)
 
@@ -167,7 +166,6 @@ After all blocks have been processed, in a final AEAD step, the total number of 
 Each chunk is decrypted using AEAD using the message key and an IV with appended chunk index.
 ```
 
-
 ## SED
 
-Legacy mode, may be decrypted, but not produced.
+Legacy mode: may be decrypted, but not produced.

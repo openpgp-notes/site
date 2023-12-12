@@ -37,7 +37,7 @@ In such cases, the issuer of that signature chooses the hash algorithm locally, 
 
 In contrast, when a message is created for a specific recipient, the sender can - and should - choose the hash algorithm for the signature packet [based on the recipient's hash algorithm preference](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithm-preferences).
 
-The recipient's hash algorithm preference is defined in metadata of their certificate, see {ref}`algo-pref` for more details.
+The recipient's hash algorithm preference is defined in metadata of their certificate, see {ref}`preferences-features` for more details.
 
 In this workflow, the signed hash digest is created with a hash algorithm that follows the recipient's preferences, and its intersection with the sender's capabilities and preferences.
 

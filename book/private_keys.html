@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/private_keys.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Overview of private keys: This chapter discusses the handling of private key material within OpenPGP. Private key material is associated with component keys, which are integral parts of OpenPGP cer..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Overview of private keys: This chapter discusses the handling of private key material within OpenPGP. Private key material is associated with component keys, which are integral parts of OpenPGP cer..." />
 
@@ -97,7 +97,7 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <p>Historically, the concept of TSKs, which combine all elements of an OpenPGP certificate with the associated private key material, has sometimes been conflated with OpenPGP private key operations. However, TSKs are primarily a format for storage and transport; it is generally considered inappropriate as a data structure for use in a private keystore. For further details, see <a class="reference internal" href="adv/private_keys.html#key-store-design"><span class="std std-ref">Private keystores</span></a>.</p>
 </section>
 <section id="protecting-keys-with-passphrases">
-<span id="encrypted-secrets"></span><h2><span class="section-number">5.4. </span>Protecting keys with passphrases<a class="headerlink" href="#protecting-keys-with-passphrases" title="Link to this heading">¶</a></h2>
+<span id="protected-private-keys"></span><h2><span class="section-number">5.4. </span>Protecting keys with passphrases<a class="headerlink" href="#protecting-keys-with-passphrases" title="Link to this heading">¶</a></h2>
 <p>In the OpenPGP format, private key material can be optionally protected with a <a class="reference external" href="https://en.wikipedia.org/wiki/Passphrase">passphrase</a>.</p>
 <p>This method proves effective in scenarios where an unauthorized party obtains the OpenPGP key data but does not know the passphrase. Such a safeguard renders the key unusable to the attacker, effectively protecting it against unauthorized access or use.</p>
 <section id="transforming-passphrases-into-symmetric-keys">
@@ -139,7 +139,7 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 </section>
 </section>
 <section id="openpgp-cards-for-private-keys">
-<span id="card-priv"></span><h2><span class="section-number">5.5. </span>OpenPGP cards for private keys<a class="headerlink" href="#openpgp-cards-for-private-keys" title="Link to this heading">¶</a></h2>
+<span id="openpgp-card"></span><h2><span class="section-number">5.5. </span>OpenPGP cards for private keys<a class="headerlink" href="#openpgp-cards-for-private-keys" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/OpenPGP_card">OpenPGP cards</a> represent a category of hardware security devices specifically designed to handle OpenPGP private key material. These cards offer an alternative to directly managing private key material on the user’s computer.</p>
 <p>Hardware security devices, such as OpenPGP cards, are designed to prevent the user’s computer from direct access to the private key material. The goal is to make it impossible to exfiltrate the key material, even when a remote attacker has fully compromised the user’s system.</p>
 <p>OpenPGP cards adhere to an open specification detailed in the <a class="reference external" href="https://gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.1.pdf">Functional Specification of the OpenPGP application on ISO Smart Card Operating Systems, Version 3.4.1</a>. This specification has been implemented by multiple vendors across various devices, with several Free Software versions available, some of which are compatible with open hardware designs.</p>

@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/encryption.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Encryption is one of the core facilities of OpenPGP. It provides confidentiality. For an in-depth, packet-level view of encrypted data in OpenPGP, see Zooming in: Packet structure of encrypted data..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Encryption is one of the core facilities of OpenPGP. It provides confidentiality. For an in-depth, packet-level view of encrypted data in OpenPGP, see Zooming in: Packet structure of encrypted data..." />
 
@@ -179,7 +179,7 @@ The specification currently recommends to use either <em>Iterated and Salted S2K
 </figure>
 </section>
 <section id="v2-seipd-based-on-aead">
-<span id="seipdv2"></span><h3><span class="section-number">10.5.2. </span>v2 SEIPD, based on AEAD<a class="headerlink" href="#v2-seipd-based-on-aead" title="Link to this heading">¶</a></h3>
+<span id="seipd-v2"></span><h3><span class="section-number">10.5.2. </span>v2 SEIPD, based on AEAD<a class="headerlink" href="#v2-seipd-based-on-aead" title="Link to this heading">¶</a></h3>
 <p>The <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-two-seipd">version 2 SEIPD</a> mechanism was introduced in OpenPGP version 6. Consequently, it can only be used for encryption when all recipients explicitly announce support for it using a <em>Feature</em> signature subpacket.
 It provides integrity protection of the ciphertext using <em>AEAD</em> (authenticated encryption with additional data).
 v2 SEIPD can only be combined with either <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v6-pkesk">version 6 PKESK</a> and/or <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#v6-skesk">version 6 SKESK</a> packets.</p>

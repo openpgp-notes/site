@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/adv/certificates.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="When are certificates valid?: Certificates are composites of components that are linked together using signatures. A certificate can be valid or invalid as a whole. However, even when a certificate..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="When are certificates valid?: Certificates are composites of components that are linked together using signatures. A certificate can be valid or invalid as a whole. However, even when a certificate..." />
 
@@ -130,7 +130,7 @@ To counteract this problem, it is reasonable to clearly mark compromised keys as
 <h3><span class="section-number">18.2.2. </span>Differing “views” of a certificate exist<a class="headerlink" href="#differing-views-of-a-certificate-exist" title="Link to this heading">¶</a></h3>
 <p>Another way to think about this discussion is that different OpenPGP users may have a different view of any certificate. There is a notional “canonical” version of the certificate, but we cannot assume that every user has exactly this copy. Besides propagation of elements that the certificate holder has linked to a certificate, third-party certifications are by design a distributed mechanism. A third-party certification is issued by a third party, and may or may not be distributed widely by them, or by the certificate holder. Not distributing third-party certifications widely is a workflow that may be entirely appropriate for some use cases<a class="footnote-reference brackets" href="#tpc-privacy" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
 <p>As a general tendency, it is desirable for OpenPGP users to have the most complete possible view of all certificates that they interact with.</p>
-<p>However, there are contexts in which it is preferable to only use a subset of the available elements of a certificate. We discuss this in the section <a class="reference internal" href="#cert-mini"><span class="std std-ref">Certificate minimization</span></a>.</p>
+<p>However, there are contexts in which it is preferable to only use a subset of the available elements of a certificate. We discuss this in the section <a class="reference internal" href="#minimization"><span class="std std-ref">Certificate minimization</span></a>.</p>
 </section>
 </section>
 <section id="merging">
@@ -148,7 +148,7 @@ To counteract this problem, it is reasonable to clearly mark compromised keys as
 </section>
 </section>
 <section id="certificate-minimization">
-<span id="cert-mini"></span><h2><span class="section-number">18.4. </span>Certificate minimization<a class="headerlink" href="#certificate-minimization" title="Link to this heading">¶</a></h2>
+<span id="minimization"></span><h2><span class="section-number">18.4. </span>Certificate minimization<a class="headerlink" href="#certificate-minimization" title="Link to this heading">¶</a></h2>
 <p>Certificate minimization is the practice of presenting a partial view of a certificate by filtering out some of its components.</p>
 <p>Filtering out some elements of a certificate can serve various purposes:</p>
 <ul class="simple">
@@ -262,7 +262,7 @@ To counteract this problem, it is reasonable to clearly mark compromised keys as
 <p>The historical 4-byte “short Key IDs” format should not be used anywhere, anymore (finding collisions in a 32-bit keyspace has been <a class="reference external" href="https://evil32.com/">trivial for a long time</a>).</p>
 </section>
 <section id="looking-up-certificates-by-email">
-<span id="email-lookup"></span><h3><span class="section-number">18.6.4. </span>Looking up certificates by email<a class="headerlink" href="#looking-up-certificates-by-email" title="Link to this heading">¶</a></h3>
+<span id="certificate-lookup-by-email"></span><h3><span class="section-number">18.6.4. </span>Looking up certificates by email<a class="headerlink" href="#looking-up-certificates-by-email" title="Link to this heading">¶</a></h3>
 <p>Searching OpenPGP certificates by email is a use case that often arises. For example, when composing an email to a new contact, the sender may want to find the OpenPGP certificate for that contact.</p>
 <p>Different mechanisms allow certificate lookup by email, for example:</p>
 <ul class="simple">
@@ -270,18 +270,18 @@ To counteract this problem, it is reasonable to clearly mark compromised keys as
 <li><p>The <a class="reference external" href="https://keys.openpgp.org/">keys.openpgp.org</a> “verifying keyserver” (also known as <a class="reference external" href="https://gitlab.com/keys.openpgp.org/hagrid">“hagrid”</a>, the name of the server software it runs)</p></li>
 <li><p>SKS-style OpenPGP keyservers (today, most of these run the <a class="reference external" href="https://github.com/hockeypuck/hockeypuck">Hockeypuck</a> software)</p></li>
 </ul>
-<p>Their properties differ, for more see <a class="reference internal" href="#distribution"><span class="std std-ref">Certificate distribution mechanisms</span></a>.</p>
+<p>Their properties differ, for more see <a class="reference internal" href="#certificate-distribution"><span class="std std-ref">Certificate distribution mechanisms</span></a>.</p>
 </section>
 </section>
 <section id="certificate-freshness-triggering-updates-with-an-expiration-time">
-<span id="cert-freshness"></span><h2><span class="section-number">18.7. </span>Certificate freshness: Triggering updates with an expiration time<a class="headerlink" href="#certificate-freshness-triggering-updates-with-an-expiration-time" title="Link to this heading">¶</a></h2>
+<span id="certificate-freshness"></span><h2><span class="section-number">18.7. </span>Certificate freshness: Triggering updates with an expiration time<a class="headerlink" href="#certificate-freshness-triggering-updates-with-an-expiration-time" title="Link to this heading">¶</a></h2>
 <p>For a certificate holder, one problem is that their communication partners may not regularly poll for updates of their certificate.</p>
 <p>A certificate holder usually prefers that everyone else regularly obtains updates for their certificate. This way, a third party will, for example, not mistakenly keep using the certificate indefinitely, after it gets revoked. Setting an expiration time on the certificate, ahead of time, limits the worst case scenario: communication partners will at most use a revoked certificate until its expiration time, even if they never learn of the revocation.</p>
 <p>Once the expiration time is reached, third parties, or ideally their OpenPGP software will have to stop using the certificate, and may attempt to obtain an update for it. For example, from a keyserver, or via WKD. Ideally, certificate updates are obtained automatically, by the user’s OpenPGP software, without any need for human intervention.</p>
 <p>After the update, the updated copy of the certificate will usually have a fresh expiration time. The same procedure will repeat once that new expiration time has been reached.</p>
 </section>
 <section id="metadata-leak-of-social-graph">
-<span id="metadata-graph"></span><h2><span class="section-number">18.8. </span>Metadata leak of Social Graph<a class="headerlink" href="#metadata-leak-of-social-graph" title="Link to this heading">¶</a></h2>
+<span id="social-graph-metadata-leak"></span><h2><span class="section-number">18.8. </span>Metadata leak of Social Graph<a class="headerlink" href="#metadata-leak-of-social-graph" title="Link to this heading">¶</a></h2>
 <p>Third-party certifications are signatures over identity components made by other users.</p>
 <p>These certifications form the back-bone of the OpenPGP trust-model called the Web of Trust. The name stems from the fact that the collection of certifications forms a unidirectional graph resembling a web. Each edge of the graph connects the signing certificate to the identity component associated with another certificate.</p>
 <p>OpenPGP software can inspect that graph. Based on the certification data in the graph and a set of trust anchors, it can infer whether a target certificate is legitimate.</p>
@@ -290,7 +290,7 @@ To counteract this problem, it is reasonable to clearly mark compromised keys as
 <p>So, there is some tension between the goals of</p>
 <ul class="simple">
 <li><p>a decentralized system where every participant can access certification information and perform analysis on it locally,</p></li>
-<li><p>privacy related goals (also see <a class="reference internal" href="#email-lookup"><span class="std std-ref">Looking up certificates by email</span></a>, for a comparison of certificate distribution mechanisms, which also touches on this theme).</p></li>
+<li><p>privacy related goals (also see <a class="reference internal" href="#certificate-lookup-by-email"><span class="std std-ref">Looking up certificates by email</span></a>, for a comparison of certificate distribution mechanisms, which also touches on this theme).</p></li>
 </ul>
 </section>
 <section id="adding-unbound-local-user-ids-to-a-certificate">
@@ -300,7 +300,7 @@ To counteract this problem, it is reasonable to clearly mark compromised keys as
 To prevent accidental publication of these local User IDs (e.g. to public keyservers), Sequoia marks these binding signatures as “local” artifacts using <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-exportable-certification">Exportable Certification</a> subpackets to mark them as non-exportable.</p>
 </section>
 <section id="certificate-distribution-mechanisms">
-<span id="distribution"></span><h2><span class="section-number">18.10. </span>Certificate distribution mechanisms<a class="headerlink" href="#certificate-distribution-mechanisms" title="Link to this heading">¶</a></h2>
+<span id="certificate-distribution"></span><h2><span class="section-number">18.10. </span>Certificate distribution mechanisms<a class="headerlink" href="#certificate-distribution-mechanisms" title="Link to this heading">¶</a></h2>
 <p>Different mechanisms for discovering certificates, and updating certificate data exist in the OpenPGP space:</p>
 <ul class="simple">
 <li><p>A <em>Web Key Directory</em> service is based on a well-known location on a webserver, serving certificates in a specific format. A WKD server is operated by the entity that controls the DNS domain of an email-based identity of a certificate. This means that WKD is inherently decentralized, and the reliability of OpenPGP certificates may vary depending on the organization that operates a particular WKD instance.</p></li>
@@ -310,8 +310,8 @@ To prevent accidental publication of these local User IDs (e.g. to public keyser
 <p>One central difference between hockeypuck and hagrid (the software that runs the <em>keys.openpgp.org</em> service) is that hockeypuck distributes identity packets and third-party certifications that have indeterminate validity, while hagrid does not.</p>
 </section>
 <section id="third-party-certification-flooding">
-<span id="cert-flooding"></span><h2><span class="section-number">18.11. </span>Third-party certification flooding<a class="headerlink" href="#third-party-certification-flooding" title="Link to this heading">¶</a></h2>
-<p>Traditional OpenPGP keyservers are one mechanism for <a class="reference internal" href="#distribution"><span class="std std-ref">collection and distribution</span></a> of certificate information. Their model revolves around receiving certificate information from sources that don’t identify themselves to the keyserver network. Traditionally, these keyservers have accepted both components bound to certificates by self-signatures, and third party identity certifications.</p>
+<span id="keyserver-flooding"></span><h2><span class="section-number">18.11. </span>Third-party certification flooding<a class="headerlink" href="#third-party-certification-flooding" title="Link to this heading">¶</a></h2>
+<p>Traditional OpenPGP keyservers are one mechanism for <a class="reference internal" href="#certificate-distribution"><span class="std std-ref">collection and distribution</span></a> of certificate information. Their model revolves around receiving certificate information from sources that don’t identify themselves to the keyserver network. Traditionally, these keyservers have accepted both components bound to certificates by self-signatures, and third party identity certifications.</p>
 <p>While a convenience for consumers, indiscriminately accepting and integrating third-party identity certifications comes with significant risks.</p>
 <p>Without any restrictions in place, malicious entities can flood a certificate with excessive certifications. Called “certificate flooding,” this form of digital vandalism grossly expands the certificate size, making the certificate cumbersome and impractical for users.</p>
 <p>It also opens the door to potential denial-of-service attacks, rendering the certificate non-functional or significantly impeding its operation.</p>
@@ -330,7 +330,7 @@ However, there are major differences in its design and tradeoffs.</p>
 <section id="hockeypuck-based-keyservers">
 <h3><span class="section-number">18.11.1. </span>Hockeypuck-based keyservers<a class="headerlink" href="#hockeypuck-based-keyservers" title="Link to this heading">¶</a></h3>
 <p>Currently, third-party certification flooding can be worked around by users or administrators requesting the removal/re-adding of a certificate. <a class="reference external" href="https://github.com/hockeypuck/hockeypuck/wiki/HIP-1:-Regaining-control-over-public-key-identity-with-authenticated-key-management">See here</a>.</p>
-<p>Additional mechanisms <a class="reference internal" href="#pc3pc-support"><span class="std std-ref">are upcoming</span></a>.</p>
+<p>Additional mechanisms <a class="reference internal" href="#support-for-1pa3pc"><span class="std std-ref">are upcoming</span></a>.</p>
 </section>
 </section>
 <section id="first-party-attested-third-party-certifications-in-openpgp-1pa3pc">
@@ -338,7 +338,7 @@ However, there are major differences in its design and tradeoffs.</p>
 <p><a class="reference external" href="https://datatracker.ietf.org/doc/draft-dkg-openpgp-1pa3pc/">First-Party attested third-party certifications in OpenPGP</a> are a “mechanism to allow the owner of a certificate to explicitly approve of specific third-party certifications”. 1pa3pc was designed to enable flooding-proof distribution of third-part certifications.</p>
 <p>This mechanism uses the <em>attested certifications</em> signature subpacket (type ID <code class="docutils literal notranslate"><span class="pre">37</span></code>), which currently only exists as a proposed feature in <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#table-3">draft-ietf-openpgp-rfc4880bis</a><a class="footnote-reference brackets" href="#ac-draft" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>.</p>
 <section id="support">
-<span id="pc3pc-support"></span><h3><span class="section-number">18.12.1. </span>Support<a class="headerlink" href="#support" title="Link to this heading">¶</a></h3>
+<span id="support-for-1pa3pc"></span><h3><span class="section-number">18.12.1. </span>Support<a class="headerlink" href="#support" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The <em>keys.openpgp.org</em> (KOO) keyserver <a class="reference external" href="https://gitlab.com/keys.openpgp.org/hagrid/-/commit/39c0e12ac64588220d36bada6497d8396f5915b3">supports <em>1pa3pc</em></a>.</p></li>
 <li><p>The Hockeypuck keyserver software <a class="reference external" href="https://github.com/hockeypuck/hockeypuck/issues/136#issuecomment-1812466084">plans to add support for <em>1pa3pc</em></a> in version 2.2.0.</p></li>
@@ -355,11 +355,11 @@ However, there are major differences in its design and tradeoffs.</p>
 </aside>
 <aside class="footnote brackets" id="tpc-privacy" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
-<p>The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see <a class="reference internal" href="#metadata-graph"><span class="std std-ref">Metadata leak of Social Graph</span></a>.</p>
+<p>The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see <a class="reference internal" href="#social-graph-metadata-leak"><span class="std std-ref">Metadata leak of Social Graph</span></a>.</p>
 </aside>
 <aside class="footnote brackets" id="gpg-default-strip" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
-<p>GnuPG’s changes in the default handling of third-party certifications on imports were prompted by the 2019 <a class="reference internal" href="#cert-flooding"><span class="std std-ref">keyserver flooding</span></a> event.</p>
+<p>GnuPG’s changes in the default handling of third-party certifications on imports were prompted by the 2019 <a class="reference internal" href="#keyserver-flooding"><span class="std std-ref">keyserver flooding</span></a> event.</p>
 </aside>
 <aside class="footnote brackets" id="primary-self-sig" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>

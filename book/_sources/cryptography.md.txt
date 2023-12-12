@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Cryptographic concepts and terms
 
-(crypto-hash)=
+(cryptographic-hash)=
 ## Cryptographic hash functions
 
 [Cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) take data strings of any length (like a text message or file) and output a fixed-size code, a "hash digest," which is often abbreviated as either "digest" or "hash." A hash digest is also sometimes called a "(cryptographic) checksum." A hash digest acts like a unique identifier for the original data.
@@ -15,7 +15,7 @@ Cryptographic hash functions have two important properties:
 - [**Pre-image resistance**](https://en.wikipedia.org/wiki/Preimage_attack): Given a hash digest, it should be very difficult to determine any data that matches this hash digest (including, but not limited to, the original data the hash represents). This property embodies the concept of a [one-way function](https://en.wikipedia.org/wiki/One-way_function) – a calculation that is easy to perform, but very hard to reverse.
 - [**Collision resistance**](https://en.wikipedia.org/wiki/Collision_resistance): It should be very difficult to find two distinct pieces of data that map to the same hash digest.
 
-(message-authentication-codes)=
+(message-authentication-code)=
 ## Message authentication codes
 
 A [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code) (MAC), also known as an {term}`authentication tag`, is a small piece of information used to verify the integrity and authenticity of a message.
@@ -31,7 +31,7 @@ One application of KDFs is to generate symmetric key material from a password by
 
 A notable KDF for the OpenPGP specification is the [HKDF](https://en.wikipedia.org/wiki/HKDF), which is a key derivation function based on the HMAC.
 
-For detailed information on KDFs and their role in the OpenPGP protocol, see the [encrypted secrets](encrypted-secrets) chapter and the [SEIPDv2](SEIPDv2) section of the encryption chapter.
+For detailed information on KDFs and their role in the OpenPGP protocol, see the [encrypted secrets](protected-private-keys) chapter and the [SEIPDv2](seipd-v2) section of the encryption chapter.
 
 (symmetric-key-cryptography)=
 ## Symmetric-key cryptography
@@ -81,7 +81,7 @@ By addressing the malleability problem, AEAD also counters a variation of the EF
 
 [^efail]: A variation of the [EFAIL](https://en.wikipedia.org/wiki/EFAIL) attack can be prevented by both the MDC and AEAD mechanisms. Also see ["No, PGP is not broken, not even with the Efail vulnerabilities,"](https://proton.me/blog/pgp-vulnerability-efail) especially the section "Malleability Gadget Exfiltration Channel Attack."
 
-(public-key-asymmetric-cryptography)=
+(public-key-cryptography)=
 ## Public-key (asymmetric) cryptography
 
 [Public-key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography) uses asymmetric pairs of related keys. Each pair consists of a public key and a private key. These systems support encryption, decryption, and digital signature operations.
@@ -137,7 +137,7 @@ In OpenPGP, digital signatures have diverse applications, extending beyond mere 
 (hybrid-cryptosystems)=
 ## Hybrid cryptosystems
 
-[Hybrid cryptosystems](https://en.wikipedia.org/wiki/Hybrid_cryptosystem) combine the use of {term}`symmetric<Symmetric Cryptography>` and {term}`asymmetric (public-key)<Asymmetric Cryptography>` cryptography to capitalize on the strengths of each, namely {term}`symmetric cryptography`'s speed and efficiency and {term}`public-key cryptography<Asymmetric Cryptography>`'s mechanism for secure key exchange.
+[Hybrid cryptosystems](https://en.wikipedia.org/wiki/Hybrid_cryptosystem) combine the use of {term}`symmetric<Symmetric Cryptography>` and {term}`asymmetric (zoom-public-key)<Asymmetric Cryptography>` cryptography to capitalize on the strengths of each, namely {term}`symmetric cryptography`'s speed and efficiency and {term}`public-key cryptography<Asymmetric Cryptography>`'s mechanism for secure key exchange.
 
 ### Usage and terminology in OpenPGP
 

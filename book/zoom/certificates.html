@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/zoom/certificates.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Now that we’ve established the concepts and components that make up OpenPGP certificates, let’s look at the internal details of an example certificate. A very minimal OpenPGP certificate: In this s..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Now that we’ve established the concepts and components that make up OpenPGP certificates, let’s look at the internal details of an example certificate. A very minimal OpenPGP certificate: In this s..." />
 
@@ -73,7 +73,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 </pre></div>
 </div>
 <section id="splitting-the-openpgp-certificate-into-packets">
-<span id="split-alice"></span><h3><span class="section-number">26.1.1. </span>Splitting the OpenPGP certificate into packets<a class="headerlink" href="#splitting-the-openpgp-certificate-into-packets" title="Link to this heading">¶</a></h3>
+<span id="zoom-split-alice"></span><h3><span class="section-number">26.1.1. </span>Splitting the OpenPGP certificate into packets<a class="headerlink" href="#splitting-the-openpgp-certificate-into-packets" title="Link to this heading">¶</a></h3>
 <p>To create a very minimal version of Alice’s certificate, we will split the data in <code class="docutils literal notranslate"><span class="pre">alice.pub</span></code> into its component packets and reassemble only the relevant ones back into a new variant.</p>
 <p>Execute the following command to achieve this:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet split alice.pub
@@ -142,7 +142,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <p>This will allow us to gain a detailed understanding of the packet contents.</p>
 </section>
 <section id="public-key-packet">
-<span id="public-key"></span><h3><span class="section-number">26.1.4. </span>Public-Key packet<a class="headerlink" href="#public-key-packet" title="Link to this heading">¶</a></h3>
+<span id="zoom-public-key"></span><h3><span class="section-number">26.1.4. </span>Public-Key packet<a class="headerlink" href="#public-key-packet" title="Link to this heading">¶</a></h3>
 <p>The output begins with a (primary) <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-packet-formats">Public-Key packet</a>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Public-Key Packet, new CTB, 2 header bytes + 42 bytes
     Version: 6
@@ -187,7 +187,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </figure>
 </section>
 <section id="direct-key-signature">
-<span id="zooming-in-dks"></span><h3><span class="section-number">26.1.5. </span>Direct Key Signature<a class="headerlink" href="#direct-key-signature" title="Link to this heading">¶</a></h3>
+<span id="zoom-dks"></span><h3><span class="section-number">26.1.5. </span>Direct Key Signature<a class="headerlink" href="#direct-key-signature" title="Link to this heading">¶</a></h3>
 <p>The next packet in the certificate is a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-direct-key"><em>Direct Key Signature</em></a>, which plays a crucial role in binding specific information to the primary key. This signature is contained within the file <code class="docutils literal notranslate"><span class="pre">alice.pub-1--Signature</span></code>.</p>
 <p>This packet binds the data within the signature subpackets with the primary key. Each entry under “Signature Packet -&gt; Hashed area” is one signature subpacket, providing essential information such as algorithm preferences, including <em>symmetric algorithm preference</em> and <em>hash algorithm preferences</em>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Signature Packet, new CTB, 2 header bytes + 182 bytes
@@ -377,7 +377,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </section>
 </section>
 <section id="encryption-subkey">
-<span id="zoom-enc-subkey"></span><h2><span class="section-number">26.2. </span>Encryption subkey<a class="headerlink" href="#encryption-subkey" title="Link to this heading">¶</a></h2>
+<span id="zoom-subkey-enc"></span><h2><span class="section-number">26.2. </span>Encryption subkey<a class="headerlink" href="#encryption-subkey" title="Link to this heading">¶</a></h2>
 <p>Let’s now look at a subkey in Alice’s OpenPGP certificate. A subkey, when linked to an OpenPGP certificate via its primary key, consists of two elements:</p>
 <ul class="simple">
 <li><p>a key packet that contains the component key itself, and</p></li>
@@ -390,7 +390,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex alice.pub
 </pre></div>
 </div>
-<p>This command shows the details for the full series of packets in an OpenPGP certificate (refer to the list of <a class="reference internal" href="#split-alice"><span class="std std-ref">packets of Alice’s certificate</span></a>). Finding a particular packet in that list can take a bit of focus and practice though.</p>
+<p>This command shows the details for the full series of packets in an OpenPGP certificate (refer to the list of <a class="reference internal" href="#zoom-split-alice"><span class="std std-ref">packets of Alice’s certificate</span></a>). Finding a particular packet in that list can take a bit of focus and practice though.</p>
 <p>In the following sections,we make it easier for ourselves by directly examining individual packets from the files we created with <code class="docutils literal notranslate"><span class="pre">sq</span> <span class="pre">packet</span> <span class="pre">split</span></code> above.</p>
 </div>
 <section id="public-subkey-packet">
@@ -416,7 +416,7 @@ Public-Subkey Packet, new CTB, 2 header bytes + 42 bytes
   00000020  35 2a 46 01 f3 cc 00 f5  4a 09 3e 3f
 </pre></div>
 </div>
-<p>Notice that the structure of this <em>Public-Subkey packet</em> mirrors the primary key’s <a class="reference internal" href="#public-key"><span class="std std-ref"><em>Public-Key packet</em></span></a> above. However, there are notable differences between the two packets:</p>
+<p>Notice that the structure of this <em>Public-Subkey packet</em> mirrors the primary key’s <a class="reference internal" href="#zoom-public-key"><span class="std std-ref"><em>Public-Key packet</em></span></a> above. However, there are notable differences between the two packets:</p>
 <ul class="simple">
 <li><p>The packet type ID (<code class="docutils literal notranslate"><span class="pre">CTB</span></code>) in this packet shows type 14 (<a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-subkey-packet-type-i"><em>Public-Subkey packet</em></a>).</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code> value is set to <code class="docutils literal notranslate"><span class="pre">0x19</span></code> (decimal 25), which <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms">corresponds to X25519</a>. Notably, though both the primary key and this subkey use a cryptographic mechanism based on Curve25519, the encryption key uses Curve 25519 in a different way: namely, X25519 is a Diffie–Hellman function constructed from Curve25519.</p></li>
@@ -620,7 +620,7 @@ Signature Packet, new CTB, 3 header bytes + 325 bytes
 </div>
 </section>
 <section id="adding-an-identity-component">
-<span id="zooming-in-user-id"></span><h2><span class="section-number">26.4. </span>Adding an identity component<a class="headerlink" href="#adding-an-identity-component" title="Link to this heading">¶</a></h2>
+<span id="zoom-user-id"></span><h2><span class="section-number">26.4. </span>Adding an identity component<a class="headerlink" href="#adding-an-identity-component" title="Link to this heading">¶</a></h2>
 <p>In this section, we’ll look at an identity associated with Alice’s certificate.</p>
 <p>User IDs are a mechanism for connecting <a class="reference internal" href="../certificates.html#identity-components"><span class="std std-ref">identities</span></a> with an OpenPGP certificate. Typically, a User ID is a string combining a name and an email address.</p>
 <p>To understand the internal packet structure of this identity and its connection to the OpenPGP certificate, we’ll examine two packets that constitute the identity component. One is the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid">User ID packet</a>, located in the file <code class="docutils literal notranslate"><span class="pre">alice.pub-2--UserID</span></code>, which contains identity information. The other is a  certifying self-signature, specifically a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-positive-certification-of-a">Positive certification of a User ID and Public-Key packet</a> located in the file <code class="docutils literal notranslate"><span class="pre">alice.pub-3--Signature</span></code>. This certification, issued after substantial verification of the identity claim, validates the association between the User ID and the certificate’s public key. These packets are snippets from Alice’s full OpenPGP certificate.</p>
@@ -646,7 +646,7 @@ User ID Packet, new CTB, 2 header bytes + 19 bytes
 </section>
 <section id="linking-the-user-id-with-a-certification-self-signature">
 <h3><span class="section-number">26.4.2. </span>Linking the User ID with a certification self-signature<a class="headerlink" href="#linking-the-user-id-with-a-certification-self-signature" title="Link to this heading">¶</a></h3>
-<p>Similar to <a class="reference internal" href="#zoom-enc-subkey"><span class="std std-ref">linking a subkey</span></a> to the OpenPGP certificate, a self-signature is used to connect this new component to the certificate.</p>
+<p>Similar to <a class="reference internal" href="#zoom-subkey-enc"><span class="std std-ref">linking a subkey</span></a> to the OpenPGP certificate, a self-signature is used to connect this new component to the certificate.</p>
 <p>To bind identities to a certificate with a self-signature, signature types <code class="docutils literal notranslate"><span class="pre">0x10</span></code> - <code class="docutils literal notranslate"><span class="pre">0x13</span></code> can be used. Here, the signature type <code class="docutils literal notranslate"><span class="pre">0x13</span></code> (<em>positive certification</em>) is used.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sq packet dump --hex alice.pub-3--Signature
 Signature Packet, new CTB, 2 header bytes + 185 bytes
@@ -719,7 +719,7 @@ Signature Packet, new CTB, 2 header bytes + 185 bytes
     000000b0  54 bf 43 19 04 ff 53 98  c0 d5 0b 
 </pre></div>
 </div>
-<p>Because this packet structure closely mirrors the <a class="reference internal" href="#zooming-in-dks"><span class="std std-ref">Direct Key Signature</span></a> discussed above, we will cover this succinctly.</p>
+<p>Because this packet structure closely mirrors the <a class="reference internal" href="#zoom-dks"><span class="std std-ref">Direct Key Signature</span></a> discussed above, we will cover this succinctly.</p>
 <p>We’re again looking at a Signature packet. Its <code class="docutils literal notranslate"><span class="pre">type</span></code> is <code class="docutils literal notranslate"><span class="pre">0x13</span></code> (<a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types">corresponding to a <em>positive certification</em> signature</a>).</p>
 <p>The designated public key algorithm and hash function for this signature are Ed25519 and SHA512, respectively.</p>
 <p>As shown in the text atop this packet dump, the hashed subpacket data contains the following metadata:</p>

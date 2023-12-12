@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/adv/private_keys.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Private keystores: This section examines the diverse architectures and operational mechanics of private keystores in OpenPGP. It focuses on the various design choices, their functional implications..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Private keystores: This section examines the diverse architectures and operational mechanics of private keystores in OpenPGP. It focuses on the various design choices, their functional implications..." />
 
@@ -86,7 +86,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <h3><span class="section-number">19.1.2. </span>Two-tier architecture<a class="headerlink" href="#two-tier-architecture" title="Link to this heading">¶</a></h3>
 <p>At its core, an OpenPGP private key subsystem performs operations requiring only the private cryptographic key material, akin to the “separate backend operations” model described above.</p>
 <p>However, the subsystem also supports operations that require additional access to the metadata of the component key. These operations, supplementary to the core keystore operations, do not involve the private key material.</p>
-<p>When implementing a keystore based on hardware cryptographic devices like <a class="reference internal" href="../private_keys.html#card-priv"><span class="std std-ref">OpenPGP card</span></a>, its design will consist of two layers:</p>
+<p>When implementing a keystore based on hardware cryptographic devices like <a class="reference internal" href="../private_keys.html#openpgp-card"><span class="std std-ref">OpenPGP card</span></a>, its design will consist of two layers:</p>
 <ul class="simple">
 <li><p><strong>core layer</strong>: directly handles private key material, and</p></li>
 <li><p><strong>supplementary layer</strong>: performs additional cryptographic operations that don’t directly use the private key material, such as <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc3394.html">AES key wrap</a> for ECDH.</p></li>

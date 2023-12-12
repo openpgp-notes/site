@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/adv/signing_components.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="Certification recipes: Different signatures in OpenPGP serve various specific purposes. This section provides practical guidance on creating these signatures, illustrating each with concrete exampl..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="Certification recipes: Different signatures in OpenPGP serve various specific purposes. This section provides practical guidance on creating these signatures, illustrating each with concrete exampl..." />
 
@@ -67,7 +67,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <h2><span class="section-number">22.1. </span>Certification recipes<a class="headerlink" href="#certification-recipes" title="Link to this heading">¶</a></h2>
 <p>Different <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signatures</span></a> in OpenPGP serve various specific purposes. This section provides practical guidance on creating these <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signatures</span></a>, illustrating each with concrete examples.</p>
 <section id="change-algorithm-preferences">
-<span id="id1"></span><h3><span class="section-number">22.1.1. </span>Change algorithm preferences<a class="headerlink" href="#change-algorithm-preferences" title="Link to this heading">¶</a></h3>
+<span id="recipe-algorithm-preferences"></span><h3><span class="section-number">22.1.1. </span>Change algorithm preferences<a class="headerlink" href="#change-algorithm-preferences" title="Link to this heading">¶</a></h3>
 <p>To modify the preferred <a class="reference internal" href="../glossary.html#term-Symmetric-Cryptography"><span class="xref std std-term">symmetric</span></a>, compression, <a class="reference internal" href="../glossary.html#term-Hash-Function"><span class="xref std std-term">hash</span></a>, or <a class="reference internal" href="../glossary.html#term-Authenticated-Encryption-With-Associated-Data"><span class="xref std std-term">AEAD algorithms</span></a> for a <a class="reference internal" href="../glossary.html#term-Transferable-Secret-Key"><span class="xref std std-term">key</span></a>, the <a class="reference internal" href="../glossary.html#term-Certificate-Holder"><span class="xref std std-term">key owner</span></a> needs to issue a <a class="reference internal" href="../glossary.html#term-Direct-Key-Signature"><span class="xref std std-term">direct key signature</span></a> (<a class="reference internal" href="../glossary.html#term-Signature-Type-ID"><span class="xref std std-term">type ID</span></a> <code class="docutils literal notranslate"><span class="pre">0x1F</span></code>) on the <a class="reference internal" href="../glossary.html#term-OpenPGP-Primary-Key"><span class="xref std std-term">primary key</span></a>.</p>
 <p>This <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> should have the following structure:</p>
 <table class="docutils align-default">
@@ -223,7 +223,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>It is generally advisable to use reason code <code class="docutils literal notranslate"><span class="pre">32</span></code> for revoking <a class="reference internal" href="../glossary.html#term-User-ID"><span class="xref std std-term">User IDs</span></a>.</p>
 </section>
 <section id="add-a-subkey">
-<span id="binding-subkeys"></span><h3><span class="section-number">22.1.5. </span>Add a subkey<a class="headerlink" href="#add-a-subkey" title="Link to this heading">¶</a></h3>
+<span id="recipe-binding-subkeys"></span><h3><span class="section-number">22.1.5. </span>Add a subkey<a class="headerlink" href="#add-a-subkey" title="Link to this heading">¶</a></h3>
 <p>As part of <a class="reference internal" href="../glossary.html#term-Life-cycle-Management"><span class="xref std std-term">life-cycle management</span></a>, users may need to add a new <a class="reference internal" href="../glossary.html#term-OpenPGP-Subkey"><span class="xref std std-term">subkey</span></a> to their <a class="reference internal" href="../glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">OpenPGP certificate</span></a>, often for reasons such as upgrading to a <a class="reference internal" href="../glossary.html#term-OpenPGP-Subkey"><span class="xref std std-term">subkey</span></a> with more advanced cryptographic algorithms. The process involves creating a specific <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> structure:</p>
 <table class="docutils align-default">
 <thead>

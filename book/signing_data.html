@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://openpgp.dev/book/signing_data.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
 <meta property="og:description" content="In OpenPGP, a data signature guarantees the authenticity and, implicitly, the integrity of certain data. Typical use cases of data signatures include the authentication of software packages and ema..." />
-<meta property="og:image" content="https://openpgp.dev/book/_static/logo.png" />
+<meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta name="description" content="In OpenPGP, a data signature guarantees the authenticity and, implicitly, the integrity of certain data. Typical use cases of data signatures include the authentication of software packages and ema..." />
 
@@ -79,8 +79,8 @@ it does not automatically signal if the expected party indeed controls the <a cl
 <p><a class="reference internal" href="glossary.html#term-Data-Signature-Packet"><span class="xref std std-term">Data signature packets</span></a> manifest in three distinct forms, which will be detailed in the subsequent section.</p>
 </section>
 <section id="forms-of-openpgp-data-signatures">
-<span id="id2"></span><h2><span class="section-number">7.2. </span>Forms of OpenPGP data signatures<a class="headerlink" href="#forms-of-openpgp-data-signatures" title="Link to this heading">¶</a></h2>
-<p><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">OpenPGP data signatures</span></a> can be applied in three distinct forms<a class="footnote-reference brackets" href="#sign-modes-gpg" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>:</p>
+<span id="forms-of-data-signatures"></span><h2><span class="section-number">7.2. </span>Forms of OpenPGP data signatures<a class="headerlink" href="#forms-of-openpgp-data-signatures" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="glossary.html#term-Data-Signature"><span class="xref std std-term">OpenPGP data signatures</span></a> can be applied in three distinct forms<a class="footnote-reference brackets" href="#sign-modes-gpg" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>:</p>
 <ul class="simple">
 <li><p><strong><a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">Detached</span></a></strong>: The OpenPGP signature exists as a separate entity, independent of the signed data.</p></li>
 <li><p><strong><a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">Inline</span></a></strong>: Both the original data and its corresponding <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature</span></a> are encapsulated within an <a class="reference internal" href="glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a>.</p></li>
@@ -122,7 +122,7 @@ it does not automatically signal if the expected party indeed controls the <a cl
 </section>
 </section>
 <section id="cleartext-signatures">
-<span id="cleartext-sig"></span><h3><span class="section-number">7.2.3. </span>Cleartext signatures<a class="headerlink" href="#cleartext-signatures" title="Link to this heading">¶</a></h3>
+<span id="cleartext-signature"></span><h3><span class="section-number">7.2.3. </span>Cleartext signatures<a class="headerlink" href="#cleartext-signatures" title="Link to this heading">¶</a></h3>
 <p>The <em><a class="reference internal" href="glossary.html#term-Cleartext-Signature-Framework"><span class="xref std std-term">Cleartext Signature Framework</span></a></em> (CSF) in OpenPGP accomplishes two primary objectives:</p>
 <ul class="simple">
 <li><p>maintaining the message in a human-readable cleartext format, accessible without OpenPGP-specific software</p></li>
@@ -154,7 +154,7 @@ r13/eqMN8kfCDw==
 <li><p><strong>Self-contained format</strong>: <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">Cleartext signatures</span></a> enable the message and its <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> to be stored as a single file.</p></li>
 <li><p><strong>Human readability</strong>: The message within a <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signature</span></a> remains accessible in a plain text format. This eliminates the need for specialized software to read the message content.</p></li>
 </ul>
-<p>These features are particularly beneficial in scenarios where signed messages are managed semi-manually and where existing system infrastructure offers limited or no native support for OpenPGP in the workflow<a class="footnote-reference brackets" href="#arch-certifications" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>These features are particularly beneficial in scenarios where signed messages are managed semi-manually and where existing system infrastructure offers limited or no native support for OpenPGP in the workflow<a class="footnote-reference brackets" href="#arch-certifications" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
 </section>
 <section id="text-transformations-for-cleartext-signatures">
 <h4><span class="section-number">7.2.3.3. </span>Text transformations for cleartext signatures<a class="headerlink" href="#text-transformations-for-cleartext-signatures" title="Link to this heading">¶</a></h4>
@@ -166,22 +166,22 @@ r13/eqMN8kfCDw==
 </section>
 <section id="pitfalls">
 <h4><span class="section-number">7.2.3.4. </span>Pitfalls<a class="headerlink" href="#pitfalls" title="Link to this heading">¶</a></h4>
-<p>Despite their widespread adoption, <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signatures</span></a> have their limitations and are sometimes viewed as a “legacy method”<a class="footnote-reference brackets" href="#csf-gnupg" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>. The <a class="reference internal" href="glossary.html#term-RFC"><span class="xref std std-term">RFC</span></a> details the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-issues-with-the-cleartext-s">pitfalls of cleartext signatures</a>, such as incompatibility with semantically meaningful whitespace, challenges with large messages, and security vulnerabilities related to misleading Hash header manipulations. Given these issues, safer alternatives like <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline</span></a> and <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> forms are advised.</p>
+<p>Despite their widespread adoption, <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signatures</span></a> have their limitations and are sometimes viewed as a “legacy method”<a class="footnote-reference brackets" href="#csf-gnupg" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>. The <a class="reference internal" href="glossary.html#term-RFC"><span class="xref std std-term">RFC</span></a> details the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-issues-with-the-cleartext-s">pitfalls of cleartext signatures</a>, such as incompatibility with semantically meaningful whitespace, challenges with large messages, and security vulnerabilities related to misleading Hash header manipulations. Given these issues, safer alternatives like <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline</span></a> and <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> forms are advised.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="sign-auth" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Other signing solutions, like <a class="reference external" href="https://flak.tedunangst.com/post/signify">signify</a>, focus on pure signing without strong <a class="reference internal" href="glossary.html#term-Authentication"><span class="xref std std-term">authentication</span></a> of the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>’s <a class="reference internal" href="glossary.html#term-Identity"><span class="xref std std-term">identity</span></a>.</p>
 </aside>
 <aside class="footnote brackets" id="sign-modes-gpg" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>These three forms of <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> application align with GnuPG’s <code class="docutils literal notranslate"><span class="pre">--detach-sign</span></code>, <code class="docutils literal notranslate"><span class="pre">--sign</span></code>, and <code class="docutils literal notranslate"><span class="pre">--clearsign</span></code> command options.</p>
 </aside>
 <aside class="footnote brackets" id="arch-certifications" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>An illustrative example is the workflow adopted by Arch Linux to <a class="reference internal" href="glossary.html#term-Certification"><span class="xref std std-term">certify</span></a> <a class="reference internal" href="glossary.html#term-User-ID"><span class="xref std std-term">User IDs</span></a> of new packagers. This process relies on <a class="reference external" href="https://gitlab.archlinux.org/archlinux/archlinux-keyring/-/blob/master/.gitlab/issue_templates/New%20Packager%20Key.md?ref_type=heads&amp;amp;plain=1#L33-46">cleartext signed statements from existing packagers</a>. These signed statements are stored as attachments in an issue tracking system for later inspection. The advantage of this approach lies in the convenience of having the message and signature in a single file, which simplifies manual handling. Based on the vouches in these <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signed</span></a> messages and an <a class="reference external" href="https://gitlab.archlinux.org/archlinux/archlinux-keyring/-/wikis/workflows/verify-a-packager-key">email confirmation from the new packager</a>, the main key operators can issue <a class="reference internal" href="glossary.html#term-Third-party-Identity-Certification"><span class="xref std std-term">OpenPGP third-party certifications</span></a>.</p>
 </aside>
 <aside class="footnote brackets" id="csf-gnupg" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
 <p>https://lists.gnupg.org/pipermail/gnupg-devel/2023-November/035428.html</p>
 </aside>
 </aside>

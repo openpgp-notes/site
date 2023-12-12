@@ -69,7 +69,7 @@ Today, multiple implementations of OpenPGP play important roles:
 - Proton Mail, which provides email encryption services for a large number of users, uses and maintains [OpenPGP.js](https://openpgpjs.org/) as well as [GopenPGP](https://gopenpgp.org/), an OpenPGP wrapper library written in golang.
 - The RPM Package Manager software includes an OpenPGP backend based on [Sequoia PGP](https://sequoia-pgp.org/), a modern OpenPGP implementation written in Rust. The Fedora Linux operating system [uses Sequoia PGP in rpm](https://sequoia-pgp.org/blog/2023/04/27/rpm-sequoia/) since version 38.
 
-(interop-section)=
+(interoperability)=
 ### Interoperability
 
 OpenPGP was standardized in 1997 to encourage development of interoperable implementations. This has already been a success early on, but in recent years, there has been [much development of new implementations](major-implementations).

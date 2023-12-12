@@ -98,7 +98,7 @@ For example, an OpenPGP version 4 {term}`certificate<OpenPGP Certificate>` with 
 Historically, even shorter 32-bit identifiers were used, like this: `2455 4239`, or `0x24554239`. Such identifiers still appear in very old documents about PGP. However, [32-bit identifiers have been long deemed unfit for purpose](https://evil32.com/). At one point, 32-bit identifiers were called "short {term}`Key ID`," while 64-bit identifiers were referred to as "long Key ID."
 
 ```{note}
-In practice, the {term}`fingerprint<OpenPGP Fingerprint>` of a {term}`component key<OpenPGP Component Key>`, while not theoretically unique, functions effectively as a unique identifier. The use of a [cryptographic hash algorithm](crypto-hash) in generating {term}`fingerprints<OpenPGP Fingerprint>` makes the occurrence of two different {term}`component keys<OpenPGP Component Key>` with the same {term}`fingerprint<OpenPGP Fingerprint>` extremely unlikely[^finger-unique].
+In practice, the {term}`fingerprint<OpenPGP Fingerprint>` of a {term}`component key<OpenPGP Component Key>`, while not theoretically unique, functions effectively as a unique identifier. The use of a [cryptographic hash algorithm](cryptographic-hash) in generating {term}`fingerprints<OpenPGP Fingerprint>` makes the occurrence of two different {term}`component keys<OpenPGP Component Key>` with the same {term}`fingerprint<OpenPGP Fingerprint>` extremely unlikely[^finger-unique].
  ```
 
 [^finger-unique]: For both {term}`OpenPGP version 6<RFC>` and version 4, the likelihood of accidental occurrence of duplicate {term}`fingerprints<OpenPGP Fingerprint>` is negligible when {term}`key material` is generated based on an acceptable source of entropy. A separate question is if an attacker can purposely craft a second key with the same {term}`fingerprint<OpenPGP Fingerprint>` as a given pre-existing {term}`component key<OpenPGP Component Key>`. With the current state of the art, this is not possible for OpenPGP version 6 and version 4 keys. However, at the time of this writing, the SHA-1-based {term}`fingerprints<OpenPGP Fingerprint>` of OpenPGP version 4 are considered insufficiently strong at protecting against the generation of pairs of {term}`key material` with the same {term}`fingerprint<OpenPGP Fingerprint>`.
@@ -122,7 +122,7 @@ In the {term}`RFC`, the {term}`OpenPGP primary key` is occasionally referred to 
 
 Modern {term}`OpenPGP certificates<OpenPGP Certificate>` typically include several {term}`subkeys<OpenPGP Subkey>` in addition to the {term}`primary key<OpenPGP Primary Key>`, although these {term}`subkeys<OpenPGP Subkey>` are optional.
 
-While {term}`subkeys<OpenPGP Subkey>` have the same structural attributes as the {term}`primary key<OpenPGP Primary Key>`, they fulfill  different roles. {term}`Subkeys<OpenPGP Subkey>` are cryptographically linked with the {term}`primary key<OpenPGP Primary Key>`, a relationship further discussed in {numref}`binding-subkeys`.
+While {term}`subkeys<OpenPGP Subkey>` have the same structural attributes as the {term}`primary key<OpenPGP Primary Key>`, they fulfill  different roles. {term}`Subkeys<OpenPGP Subkey>` are cryptographically linked with the {term}`primary key<OpenPGP Primary Key>`, a relationship further discussed in {numref}`bind-subkey`.
 
 ```{figure} plain_svg/Binding_Subkeys.svg
 :name: fig-subkeys
@@ -136,7 +136,7 @@ While {term}`subkeys<OpenPGP Subkey>` have the same structural attributes as the
 
 {term}`Identity components<Identity Component>` in an {term}`OpenPGP certificate` are used by the {term}`certificate holder` to state that they are known by a certain identifier (like a name, or an email address).
 
-(user-ids-in-openpgp-certificates)=
+(user-ids)=
 ### User IDs in OpenPGP certificates
 
 {term}`OpenPGP certificates<OpenPGP Certificate>` can contain multiple [User IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid). Each {term}`User ID` associates the {term}`certificate<OpenPGP Certificate>` with an {term}`identity`.
@@ -167,7 +167,7 @@ Consider this scenario: A third party is confident about the email-based {term}`
 
 Within a {term}`certificate<OpenPGP Certificate>`, a specific {term}`User ID` is designated as the [Primary User ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-primary-user-id).
 
-Each {term}`User ID` carries associated preference settings, such as preferred encryption algorithms, which is detailed in {numref}`zooming-in-user-id`). When a {term}`certificate<OpenPGP Certificate>` is used in the context of a specific {term}`identity`, then the preferences associated with that {term}`identity component` are used. When a {term}`certificate<OpenPGP Certificate>` is used without reference to a specific {term}`identity`, the preferences associated with the {term}`direct key signature`, or the {term}`primary User ID` take precedence by default.
+Each {term}`User ID` carries associated preference settings, such as preferred encryption algorithms, which is detailed in {numref}`zoom-user-id`). When a {term}`certificate<OpenPGP Certificate>` is used in the context of a specific {term}`identity`, then the preferences associated with that {term}`identity component` are used. When a {term}`certificate<OpenPGP Certificate>` is used without reference to a specific {term}`identity`, the preferences associated with the {term}`direct key signature`, or the {term}`primary User ID` take precedence by default.
 
 The {term}`primary User ID` was historically the main store for preferences that apply to the {term}`certificate<OpenPGP Certificate>` as a whole. For more on this, see {ref}`primary-metadata`.
 
@@ -198,9 +198,9 @@ Key attributes, such as {term}`capabilities<Capability>` (like *signing* or *enc
 
 - **{term}`Primary key<OpenPGP Primary Key>` {term}`metadata`** is defined either through a {term}`direct key signature` on the {term}`primary key<OpenPGP Primary Key>` (preferred in OpenPGP version 6), or by associating the {term}`metadata` with the [Primary User ID](primary-user-id).
 
-- **{term}`Subkey<OpenPGP Subkey>` {term}`metadata`** is defined within the [subkey binding signature](binding-subkeys) that links the {term}`subkey<OpenPGP Subkey>` to the {term}`certificate<OpenPGP Certificate>`.
+- **{term}`Subkey<OpenPGP Subkey>` {term}`metadata`** is defined within the [subkey binding signature](recipe-binding-subkeys) that links the {term}`subkey<OpenPGP Subkey>` to the {term}`certificate<OpenPGP Certificate>`.
 
-- **{term}`Identity component` {term}`metadata`** is associated via the [certifying self-signature](bind-ident) that links the {term}`identity` (usually in the form of a {term}`User ID`) to the {term}`certificate<OpenPGP Certificate>`.
+- **{term}`Identity component` {term}`metadata`** is associated via the [certifying self-signature](bind-identity) that links the {term}`identity` (usually in the form of a {term}`User ID`) to the {term}`certificate<OpenPGP Certificate>`.
 
 It is crucial to note that the {term}`components<Component>` of an {term}`OpenPGP certificate` remain static after their creation. The use of {term}`signatures<OpenPGP Signature Packet>` to store {term}`metadata` allows for subsequent modifications without altering the original {term}`component<Component>`. For instance, a {term}`certificate holder` can update the {term}`expiration time` of a {term}`component` by issuing a new, superseding {term}`signature<OpenPGP Signature Packet>`.
 
@@ -211,7 +211,7 @@ It is crucial to note that the {term}`components<Component>` of an {term}`OpenPG
 {term}`Metadata` can be associated with the {term}`primary key<OpenPGP Primary Key>` using a *{term}`direct key signature`*.
 ```
 
-(capabilities-key-flags)=
+(key-flags)=
 ### Defining operational capabilities of component keys with key flags
 
 Each {term}`component key` has a set of ["key flags"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-flags) that delineate the operations a key can perform.
@@ -233,7 +233,7 @@ Notably, in many algorithms, encryption and signing-related functionalities (i.e
 
 [^key-flag-sharing]: With ECC algorithms, it's impossible to combine {term}`encryption<Encryption Key Flag>` functions with those intended for {term}`signing<Signing Key Flag>`. For example,  ed25519 is specifically used for {term}`signing<Signing Key Flag>`; cv25519 is designated for {term}`encryption<Encryption Key Flag>`.
 
-(algo-pref)=
+(preferences-features)=
 ### Algorithm preferences and feature signaling
 
 OpenPGP incorporates significant ["cryptographic agility"](https://en.wikipedia.org/wiki/Cryptographic_agility). It doesn't rely on a single fixed set of algorithms. Instead, it defines a suite of cryptographic primitives from which users (or their applications) can choose.
@@ -291,4 +291,4 @@ Take, for instance, a scenario where Bob's OpenPGP software issues a {term}`cert
 
 This process assumes that Bob knows the person known as `Alice Adams` and is confident that `alice@example.org` is indeed Alice's email address. Bob also verifies that the {term}`certificate<OpenPGP Certificate>` his OpenPGP software associates with Alice matches the one Alice uses. In essence, both users must have a {term}`certificate<OpenPGP Certificate>` for Alice with an identical {term}`fingerprint<OpenPGP Fingerprint>`. In OpenPGP version 6, manual {term}`fingerprint<OpenPGP Fingerprint>` comparison by end-users is discouraged, with a replacement {term}`verification` mechanism still under development. The {term}`verification` process must occur over a sufficiently secure channel, such as an end-to-end encrypted video call or a face-to-face meeting.
 
-For more on third-party {term}`certifications<Certification>`, see {ref}`third-party-cert`.
+For more on third-party {term}`certifications<Certification>`, see {ref}`third-party-certifications`.

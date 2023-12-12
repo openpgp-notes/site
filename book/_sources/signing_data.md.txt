@@ -28,7 +28,7 @@ Note that {term}`data signatures<Data Signature>` are distinct from [](/signing_
 
 {term}`Data signature packets<Data Signature Packet>` manifest in three distinct forms, which will be detailed in the subsequent section.
 
-(forms-of-openpgp-data-signatures)=
+(forms-of-data-signatures)=
 ## Forms of OpenPGP data signatures
 
 {term}`OpenPGP data signatures<Data Signature>` can be applied in three distinct forms[^sign-modes-gpg]:
@@ -82,7 +82,7 @@ Strictly speaking, knowing just the hash algorithm would be sufficient to begin 
 
 Important to note, the {term}`signer`'s {term}`public key<OpenPGP Certificate>`, critical for the final {term}`verification` step, is not embedded in the message. Verifiers must acquire this {term}`key` externally (e.g., from a {term}`key server`) to authenticate the {term}`signature<OpenPGP Signature Packet>` successfully. 
 
-(cleartext-sig)=
+(cleartext-signature)=
 ### Cleartext signatures
 
 The *{term}`Cleartext Signature Framework`* (CSF) in OpenPGP accomplishes two primary objectives:

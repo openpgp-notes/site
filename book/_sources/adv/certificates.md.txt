@@ -102,11 +102,11 @@ When thinking about edge cases, it's useful to "assume the worst." For example:
 
 Another way to think about this discussion is that different OpenPGP users may have a different view of any certificate. There is a notional "canonical" version of the certificate, but we cannot assume that every user has exactly this copy. Besides propagation of elements that the certificate holder has linked to a certificate, third-party certifications are by design a distributed mechanism. A third-party certification is issued by a third party, and may or may not be distributed widely by them, or by the certificate holder. Not distributing third-party certifications widely is a workflow that may be entirely appropriate for some use cases[^tpc-privacy].
 
-[^tpc-privacy]: The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see {ref}`metadata-graph`.
+[^tpc-privacy]: The two parties to a certification (the issuer and the target of the certification) may prefer not to publish their mutual association. Also see {ref}`social-graph-metadata-leak`.
 
 As a general tendency, it is desirable for OpenPGP users to have the most complete possible view of all certificates that they interact with.
 
-However, there are contexts in which it is preferable to only use a subset of the available elements of a certificate. We discuss this in the section {ref}`cert-mini`.
+However, there are contexts in which it is preferable to only use a subset of the available elements of a certificate. We discuss this in the section {ref}`minimization`.
 
 (certificate-merging)=
 ## Merging
@@ -124,7 +124,7 @@ For information that *is* related to the certificate, but not bound to it by a s
 - Third-party certifications. These could be valuable information, where a third party attests that the association of an identity to a certificate is valid. On the other hand, they could also be a type of spam.
 - Subpackets in the unhashed area of a signature packet. Again, these could contain information that is useful to the recipient. However, the data could also be either useless, or even misleading/harmful.
 
-(cert-mini)=
+(minimization)=
 ## Certificate minimization
 
 Certificate minimization is the practice of presenting a partial view of a certificate by filtering out some of its components.
@@ -167,7 +167,7 @@ GnuPG offers two explicit methods for certificate minimization, described [in th
 
 Independently, GnuPG by default [strips some signatures on key import](https://dev.gnupg.org/T4607#127792)[^gpg-default-strip]. However, a number of Linux distributions change this default behavior, and continue to import signatures without minimization by default. e.g. [Debian](https://dev.gnupg.org/T4628#128513) and Arch Linux: stripping third-party certifications on import, by default, is problematic for users who want to leverage authentication based on the [Web of Trust mechanism](wot).
 
-[^gpg-default-strip]: GnuPG's changes in the default handling of third-party certifications on imports were prompted by the 2019 [keyserver flooding](cert-flooding) event.
+[^gpg-default-strip]: GnuPG's changes in the default handling of third-party certifications on imports were prompted by the 2019 [keyserver flooding](keyserver-flooding) event.
 
 ### Limitations that can result from stripping historical self-signatures
 
@@ -267,7 +267,7 @@ Note that regardless of the OpenPGP version, software that relies on 8-byte Key 
 
 The historical 4-byte "short Key IDs" format should not be used anywhere, anymore (finding collisions in a 32-bit keyspace has been [trivial for a long time](https://evil32.com/)).
 
-(email-lookup)=
+(certificate-lookup-by-email)=
 ### Looking up certificates by email
 
 Searching OpenPGP certificates by email is a use case that often arises. For example, when composing an email to a new contact, the sender may want to find the OpenPGP certificate for that contact.
@@ -278,9 +278,9 @@ Different mechanisms allow certificate lookup by email, for example:
 - The [keys.openpgp.org](https://keys.openpgp.org/) "verifying keyserver" (also known as ["hagrid"](https://gitlab.com/keys.openpgp.org/hagrid), the name of the server software it runs)
 - SKS-style OpenPGP keyservers (today, most of these run the [Hockeypuck](https://github.com/hockeypuck/hockeypuck) software)
 
-Their properties differ, for more see {ref}`distribution`.
+Their properties differ, for more see [](certificate-distribution).
 
-(cert-freshness)=
+(certificate-freshness)=
 ## Certificate freshness: Triggering updates with an expiration time
 
 For a certificate holder, one problem is that their communication partners may not regularly poll for updates of their certificate.
@@ -291,7 +291,7 @@ Once the expiration time is reached, third parties, or ideally their OpenPGP sof
 
 After the update, the updated copy of the certificate will usually have a fresh expiration time. The same procedure will repeat once that new expiration time has been reached.
 
-(metadata-graph)=
+(social-graph-metadata-leak)=
 ## Metadata leak of Social Graph
 
 Third-party certifications are signatures over identity components made by other users.
@@ -307,7 +307,7 @@ Third-party certifications can be published as part of the target certificate to
 So, there is some tension between the goals of
 
 - a decentralized system where every participant can access certification information and perform analysis on it locally,
-- privacy related goals (also see {ref}`email-lookup`, for a comparison of certificate distribution mechanisms, which also touches on this theme).
+- privacy related goals (also see {ref}`certificate-lookup-by-email`, for a comparison of certificate distribution mechanisms, which also touches on this theme).
 
 (unbound-user-ids)=
 ## Adding unbound, local User IDs to a certificate
@@ -319,7 +319,7 @@ Some OpenPGP software may add User IDs to a certificate, which are not bound to 
 Sequoia additionally certifies these "local, third party, User IDs" with a local trust anchor to facilitate local authentication decisions.
 To prevent accidental publication of these local User IDs (e.g. to public keyservers), Sequoia marks these binding signatures as "local" artifacts using [Exportable Certification](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-exportable-certification) subpackets to mark them as non-exportable.
 
-(distribution)=
+(certificate-distribution)=
 ## Certificate distribution mechanisms
 
 Different mechanisms for discovering certificates, and updating certificate data exist in the OpenPGP space:
@@ -332,10 +332,10 @@ Different mechanisms for discovering certificates, and updating certificate data
 
 One central difference between hockeypuck and hagrid (the software that runs the *keys.openpgp.org* service) is that hockeypuck distributes identity packets and third-party certifications that have indeterminate validity, while hagrid does not.
 
-(cert-flooding)=
+(keyserver-flooding)=
 ## Third-party certification flooding
 
-Traditional OpenPGP keyservers are one mechanism for [collection and distribution](distribution) of certificate information. Their model revolves around receiving certificate information from sources that don't identify themselves to the keyserver network. Traditionally, these keyservers have accepted both components bound to certificates by self-signatures, and third party identity certifications.
+Traditional OpenPGP keyservers are one mechanism for [collection and distribution](certificate-distribution) of certificate information. Their model revolves around receiving certificate information from sources that don't identify themselves to the keyserver network. Traditionally, these keyservers have accepted both components bound to certificates by self-signatures, and third party identity certifications.
 
 While a convenience for consumers, indiscriminately accepting and integrating third-party identity certifications comes with significant risks.
 
@@ -361,7 +361,7 @@ To achieve these goals, KOO does not serve identity components at all, unless an
 
 Currently, third-party certification flooding can be worked around by users or administrators requesting the removal/re-adding of a certificate. [See here](https://github.com/hockeypuck/hockeypuck/wiki/HIP-1:-Regaining-control-over-public-key-identity-with-authenticated-key-management).
 
-Additional mechanisms [are upcoming](1pc3pc-support).
+Additional mechanisms [are upcoming](support-for-1pa3pc).
 
 ## First-Party attested third-party certifications in OpenPGP (1pa3pc)
 
@@ -371,7 +371,7 @@ This mechanism uses the *attested certifications* signature subpacket (type ID `
 
 [^ac-draft]: Introducing the *attested certifications* signature subpacket (type ID `37`) was unfortunately not in scope of the chartered topics for the current "crypto-refresh" work of the OpenPGP working group. However, hopefully the working group can handle this feature in future rechartering.
 
-(1pc3pc-support)=
+(support-for-1pa3pc)=
 ### Support
 
 - The *keys.openpgp.org* (KOO) keyserver [supports *1pa3pc*](https://gitlab.com/keys.openpgp.org/hagrid/-/commit/39c0e12ac64588220d36bada6497d8396f5915b3).

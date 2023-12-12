@@ -117,7 +117,7 @@ When communicating with a mix of recipients, some of whose OpenPGP software only
 With SEIPDv1, the session key is directly used as message key to encrypt the payload
 ```
 
-(seipdv2)=
+(seipd-v2)=
 ### v2 SEIPD, based on AEAD
 
 The [version 2 SEIPD](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#version-two-seipd) mechanism was introduced in OpenPGP version 6. Consequently, it can only be used for encryption when all recipients explicitly announce support for it using a *Feature* signature subpacket.
