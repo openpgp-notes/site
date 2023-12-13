@@ -4,3 +4,54 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 # Acknowledgements
+
+OpenPGP is a manifestation of [the political vision of Phil Zimmermann](https://philzimmermann.com/EN/background/peace.html), reflecting his commitment to human rights and the peace movement. Therefore, we foremost acknowledge Phil, who, alongside early PGP developers,  worked with dedication and courage to introduce one of the first sophisticated cryptographic tools to the world, despite substantial personal risk. 
+
+All subsequent projects in the OpenPGP space are indebted to the foundational ideas and principles of those early days[^puzzle], including the pivotal decision to standardize the OpenPGP format through the IETF.
+
+[^puzzle]: These ideas and principles include some ongoing challenges, such as the puzzle of how to develop a scalable distributed PKI and trust model.
+
+In the intervening three decades, many have contributed to the OpenPGP space. We recognize the civic-oriented work of those who have helped evolve the OpenPGP ecosystem into a tool for digital empowerment.
+
+## Team
+
+The "Notes on OpenPGP" project is a collective endeavor, with contributions from a wide-ranging community.
+
+The principal authors of this work, "OpenPGP for application developers," are:
+
+- Tammi Coles (editor)
+- Sabrina Kurtz (illustrator)
+- Wiktor Kwapisiewicz
+- David Runge
+- Paul Schaub
+- Heiko Schäfer
+
+## Expert advisors, readers, supporters
+
+Andrew Gallagher provided input and discussions, particularly regarding the SKS Keyserver network.
+
+Daniel Huigens was instrumental in shaping the early direction of this project.
+
+Daniel Kahn Gillmor provided valuable input and encouragement.
+
+Dennis Schmolk thoroughly reviewed the initial draft, offering detailed critiques.
+
+Lance Vick contributed strategic communication advice.
+
+Lars Wirzenius provided extensive feedback on early drafts.
+
+Levente Polyak shared insights from the vantage point of an organization extensively using OpenPGP and developing custom OpenPGP applications.
+
+Ryan Heywood gave early feedback on our binding signature visualizations.
+
+## Extended hat tips
+
+Werner Koch for his enduring work on [GnuPG](https://gnupg.org/) and for fostering an interoperable ecosystem.
+
+[Sequoia-PGP](https://sequoia-pgp.org/), for bringing OpenPGP to the Rust language and developing an essential interoperability test suite.
+
+ProtonMail for maintaining two crucial modern implementations of OpenPGP: [OpenPGP.js](https://openpgpjs.org/) and [GopenPGP](https://gopenpgp.org/).
+
+## Funding
+
+The [Sovereign Tech Fund](https://sovereigntechfund.de/) commissioned the initial development of this project from September to December 2023. We are extremely grateful for their support.
