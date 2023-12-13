@@ -66,6 +66,9 @@ Cover
 */
 
 div.cover-img {
-  margin: auto;
-  width: 50%;
+  text-align: center;
+}
+
+div.cover-img span img {
+  height: 100%;
 }
