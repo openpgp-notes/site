@@ -201,7 +201,7 @@ For example, we might consider minimizing a certificate for distribution via WKD
 
 Many certificates can be significantly pruned if the only goal of distributing them is to enable encryption and signature verification. For such cases, many components can be dropped, including invalid subkeys and their binding signatures, authentication subkeys (which are irrelevant to email), shadowed self-signatures, and third-party certifications. With many real-world certificates, the space savings of such a minimization are significant[^space-example].
 
-Such minimization might be appropriate and convenient to enable encrypted communication with a ProtonMail client, which automatically fetches OpenPGP certificates via WKD while composing a message. The ProtonMail use case requires only component keys, not third-party certifications, and it doesn't require historical component keys or self-signatures.
+Such minimization might be appropriate and convenient to enable encrypted communication with a Proton Mail client, which automatically fetches OpenPGP certificates via WKD while composing a message. The Proton Mail use case requires only component keys, not third-party certifications, and it doesn't require historical component keys or self-signatures.
 
 However, in a different context, the same certificate might be fetched to verify the authenticity of a signature. In that case, third-party certifications may be crucial for the client. Stripping them could prevent the client from performing Web of Trust calculations and validating the authenticity of the certificate.
 

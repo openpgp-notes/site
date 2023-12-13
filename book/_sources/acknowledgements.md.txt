@@ -50,7 +50,7 @@ Werner Koch for his enduring work on [GnuPG](https://gnupg.org/) and for fosteri
 
 [Sequoia-PGP](https://sequoia-pgp.org/), for bringing OpenPGP to the Rust language and developing an essential interoperability test suite.
 
-ProtonMail for maintaining two crucial modern implementations of OpenPGP: [OpenPGP.js](https://openpgpjs.org/) and [GopenPGP](https://gopenpgp.org/).
+Proton Mail for maintaining two crucial modern implementations of OpenPGP: [OpenPGP.js](https://openpgpjs.org/) and [GopenPGP](https://gopenpgp.org/).
 
 ## Funding
 
