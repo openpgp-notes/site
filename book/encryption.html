@@ -180,6 +180,21 @@ The specification currently recommends to use either <em>Iterated and Salted S2K
 <p><span class="caption-number">Fig. 24 </span><span class="caption-text">With SEIPDv1, the session key is directly used as message key to encrypt the payload</span><a class="headerlink" href="#fig-encryption-seipdv1-pkesk" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
+<section id="preparing-the-plaintext-with-quick-check-and-modification-detection-code">
+<span id="quick-check-and-mdc"></span><h4><span class="section-number">10.5.1.1. </span>Preparing the plaintext with quick check and modification detection code<a class="headerlink" href="#preparing-the-plaintext-with-quick-check-and-modification-detection-code" title="Link to this heading">¶</a></h4>
+<p>Before encrypting the plaintext, the data is modified by adding both a prepended “quick check”, as well as an appended modification detection code.</p>
+<p>The quick check comprises of 16 randomly chosen bytes plus 2 bytes which are the last two of the 16 random bytes repeated.
+This mechanism is useful to quickly check, whether the correct session key was used when decrypting the message.
+These quick-check bytes are prepended to the plaintext.</p>
+<p>The modification detection code on the other hand is added to allow detection of unwanted modification of the ciphertext.
+First, the two marker bytes <code class="docutils literal notranslate"><span class="pre">0xD3</span></code> and <code class="docutils literal notranslate"><span class="pre">0x14</span></code> are appended to the plaintext. Then, the SHA1 checksum of the entire plaintext including quick check and marker bytes is calculated and appended to the plaintext.</p>
+<figure class="align-default" id="fig-encryption-mdc">
+<img alt="Depicts, how the prior to encryption, the plaintext bytes are prepended with 18 quick check bytes and appended with 22 bytes of modification detection code. The quick check comprises of 16 random bytes plus 2 repeated bytes. The modification detection code starts with the marker bytes 0xD314, followed by the SHA1 checksum of the entire plaintext including quick check and marker bytes." src="_images/mdc.svg" /><figcaption>
+<p><span class="caption-number">Fig. 25 </span><span class="caption-text">The plaintext inside of a SEIPDv1 packet contains quick check bytes, the actual plaintext and modification detection code</span><a class="headerlink" href="#fig-encryption-mdc" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Lastly, the whole prepared plaintext is encrypted symmetrically.</p>
+</section>
 </section>
 <section id="v2-seipd-based-on-aead">
 <span id="seipd-v2"></span><h3><span class="section-number">10.5.2. </span>v2 SEIPD, based on AEAD<a class="headerlink" href="#v2-seipd-based-on-aead" title="Link to this heading">¶</a></h3>
@@ -193,7 +208,7 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
 </div>
 <figure class="align-default" id="fig-encryption-seipdv2-pkesk">
 <img alt="TODO" src="_images/SEIPDv2-PKESK.svg" /><figcaption>
-<p><span class="caption-number">Fig. 25 </span><span class="caption-text">With SEIPDv2, the message key is derived from the session key in an extra step.</span><a class="headerlink" href="#fig-encryption-seipdv2-pkesk" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 26 </span><span class="caption-text">With SEIPDv2, the message key is derived from the session key in an extra step.</span><a class="headerlink" href="#fig-encryption-seipdv2-pkesk" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>This additional step introduces key-separation into the protocol, which protects against certain attacks, such as an <a class="reference external" href="https://www.metzdowd.com/pipermail/cryptography/2015-October/026685.html">OpenPGP SEIP downgrade attack</a>.</p>

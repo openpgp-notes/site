@@ -91,7 +91,7 @@ However, the subsequent steps of the procedure are different, as described in th
 </div>
 <figure class="align-default" id="fig-skeskv4-decryption">
 <img alt="Diagram depicting how the S2K function is used to derive key symmetric key from the user-provided passphrase. This key is then either used directly as session key, or used to decrypt the encrypted session key." src="_images/SKESKv4-decryption.svg" /><figcaption>
-<p><span class="caption-number">Fig. 26 </span><span class="caption-text">Decrypting the session key from a version 4 SKESK packet.</span><a class="headerlink" href="#fig-skeskv4-decryption" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 27 </span><span class="caption-text">Decrypting the session key from a version 4 SKESK packet.</span><a class="headerlink" href="#fig-skeskv4-decryption" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>With version 4 SKESK packets, which are only used with version 1 SEIPD packets, the <em>session key</em> is used as <em>message key</em> without an intermediate derivation.</p>
@@ -113,7 +113,7 @@ The <em>AEAD Auth Tag</em> of the SKESK packet is used as authentication tag.</p
 <p>The result is the <em>session key</em>.</p>
 <figure class="align-default" id="fig-skeskv6-decryption">
 <img alt="Diagram depicting the complicated process of deriving the session key from a SKESK version 6 packet." src="_images/SKESKv6-decryption.svg" /><figcaption>
-<p><span class="caption-number">Fig. 27 </span><span class="caption-text">Decrypting the session key from a version 6 SKESK packet.</span><a class="headerlink" href="#fig-skeskv6-decryption" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 28 </span><span class="caption-text">Decrypting the session key from a version 6 SKESK packet.</span><a class="headerlink" href="#fig-skeskv6-decryption" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -128,7 +128,7 @@ The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A va
 <p>To detect, which symmetric cipher is used to decrypt the SEIPD v1 packet later on, each public key algorithm uses a slightly different encoding to unpack the symmetric algorithm tag from the decrypted session key. See the respective sections<a class="footnote-reference brackets" href="#rsa-spec" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#elgamal-spec" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#ecdh-spec" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x25519-spec" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#x448-spec" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> of the standard. Typically, the cipher algorithm ID is prefixed to the actual session key.</p>
 <figure class="align-default" id="fig-decryption-pkesk3">
 <img alt="Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key." src="_images/PKESKv3-decryption.svg" /><figcaption>
-<p><span class="caption-number">Fig. 28 </span><span class="caption-text">Decrypting the session key from a version 3 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk3" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 29 </span><span class="caption-text">Decrypting the session key from a version 3 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -137,7 +137,7 @@ The Key ID of the subkey to be used is recorded in the PKESKs key-id field. A va
 <p>The decryption of version 6 PKESK packets works quite similarly to version 3.</p>
 <figure class="align-default" id="fig-decryption-pkesk6">
 <img alt="Depicts, how the secret-key component of the users encryption subkey is directly used to decrypt the encrypted session key." src="_images/PKESKv6-decryption.svg" /><figcaption>
-<p><span class="caption-number">Fig. 29 </span><span class="caption-text">Decrypting the session key from a version 6 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk6" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 30 </span><span class="caption-text">Decrypting the session key from a version 6 PKESK packet.</span><a class="headerlink" href="#fig-decryption-pkesk6" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Contrary to the version 3 PKESK, the encrypted session key within the version 6 PKESK does not contain the symmetric cipher algorithm used to decrypt the SEIPD packet.
@@ -155,11 +155,23 @@ Any other combinations are not allowed and MUST result in a broken message.</p>
 <p>To decrypt the contents of a version 1 SEIPD packet, the session key obtained in the previous step is used.
 The cipher algorithm is either extracted from the decrypted session key (the algorithm ID is typically prefixed to the decrypted session key), or - in case of a SKESK packet using the direct-method - taken from the SKESKs cipher algorithm field.</p>
 <p>Once the cipher is initialized, the whole encrypted data from the SEIPD packet is decrypted.</p>
+<section id="verifying-the-quick-check-bytes">
+<h3><span class="section-number">11.3.1. </span>Verifying the quick-check bytes<a class="headerlink" href="#verifying-the-quick-check-bytes" title="Link to this heading">¶</a></h3>
+<p>To quickly verify that the correct session-key was used during decryption, bytes with index 14 and 15 are compared to those with index 16 and 17 (zero-indexed).
+A mismatch of those pairs of bytes indicates that the wrong session-key was used and decryption is aborted.</p>
+</section>
+<section id="verifying-the-modification-detection-code-mdc">
+<h3><span class="section-number">11.3.2. </span>Verifying the modification detection code (mdc)<a class="headerlink" href="#verifying-the-modification-detection-code-mdc" title="Link to this heading">¶</a></h3>
+<p>The contents of a SEIPDv1 packet are protected against unnoticed modification via the addition of a modification detection code.
+This is done by calculating the SHA1 checksum of the entire decrypted plaintext, but excluding the last 20 bytes, which are the actual checksum computed by the sender.
+Compare figure <a class="reference internal" href="encryption.html#fig-encryption-mdc"><span class="std std-numref">Fig. 25</span></a>.</p>
+<p>The result is then compared to those last 20 bytes to detect modifications of the ciphertext.</p>
 <figure class="align-default" id="fig-decryption-seipd1">
 <img alt="Depicts how the session key is used directly to decrypt the contents of the SEIPD packet." src="_images/SEIPDv1-decryption.svg" /><figcaption>
-<p><span class="caption-number">Fig. 30 </span><span class="caption-text">The contents of the SEIPD packet are decrypted using the session key as message key.</span><a class="headerlink" href="#fig-decryption-seipd1" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 31 </span><span class="caption-text">The contents of the SEIPD packet are decrypted using the session key as message key.</span><a class="headerlink" href="#fig-decryption-seipd1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
+</section>
 </section>
 <section id="seipd-w-aead-v2">
 <h2><span class="section-number">11.4. </span>SEIPD w/ AEAD (v2)<a class="headerlink" href="#seipd-w-aead-v2" title="Link to this heading">¶</a></h2>
@@ -170,7 +182,7 @@ Any other combinations are not allowed and MUST result in a broken message.</p>
 <p>The result is split into the message key and first half of the IV.</p>
 <figure class="align-default" id="fig-decryption-seipd2-mk-derivation">
 <img alt="Depicts how the session key is fed into a salted HKDF to derive both the message key and the first half of an IV." src="_images/SEIPDv2-decryption-mk-derivation.svg" /><figcaption>
-<p><span class="caption-number">Fig. 31 </span><span class="caption-text">In a first step, a message key and half of an IV is derived from the session key.</span><a class="headerlink" href="#fig-decryption-seipd2-mk-derivation" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 32 </span><span class="caption-text">In a first step, a message key and half of an IV is derived from the session key.</span><a class="headerlink" href="#fig-decryption-seipd2-mk-derivation" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Then, the contents of the SEIPDs encrypted data are split into chunks, which are processed sequentially. Each chunk is decrypted using AEAD with parameters from the SEIPD packet as <em>additional data</em>.
@@ -179,7 +191,7 @@ For each chunk, the chunk index starting at <code class="docutils literal notran
 <p>After all blocks have been processed, in a final AEAD step, the total number of plaintext octets gets appended to the <em>additional data</em> and the final AEAD auth tag from the SEIPD packet is processed.</p>
 <figure class="align-default" id="fig-decryption-seipd2-chunks">
 <img alt="Depicts, how the message key and index-postfixed IV are used to decrypt each individual chunk of plaintext." src="_images/SEIPDv2-decryption-chunks.svg" /><figcaption>
-<p><span class="caption-number">Fig. 32 </span><span class="caption-text">Each chunk is decrypted using AEAD using the message key and an IV with appended chunk index.</span><a class="headerlink" href="#fig-decryption-seipd2-chunks" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 33 </span><span class="caption-text">Each chunk is decrypted using AEAD using the message key and an IV with appended chunk index.</span><a class="headerlink" href="#fig-decryption-seipd2-chunks" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>

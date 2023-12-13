@@ -128,6 +128,19 @@ The cipher algorithm is either extracted from the decrypted session key (the alg
 
 Once the cipher is initialized, the whole encrypted data from the SEIPD packet is decrypted.
 
+### Verifying the quick-check bytes
+
+To quickly verify that the correct session-key was used during decryption, bytes with index 14 and 15 are compared to those with index 16 and 17 (zero-indexed).
+A mismatch of those pairs of bytes indicates that the wrong session-key was used and decryption is aborted.
+
+### Verifying the modification detection code (mdc)
+
+The contents of a SEIPDv1 packet are protected against unnoticed modification via the addition of a modification detection code.
+This is done by calculating the SHA1 checksum of the entire decrypted plaintext, but excluding the last 20 bytes, which are the actual checksum computed by the sender.
+Compare figure {numref}`fig-encryption-mdc`.
+
+The result is then compared to those last 20 bytes to detect modifications of the ciphertext.
+
 ```{figure} plain_svg/SEIPDv1-decryption.svg
 :name: fig-decryption-seipd1
 :alt: Depicts how the session key is used directly to decrypt the contents of the SEIPD packet.

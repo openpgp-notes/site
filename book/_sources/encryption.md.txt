@@ -117,6 +117,27 @@ When communicating with a mix of recipients, some of whose OpenPGP software only
 With SEIPDv1, the session key is directly used as message key to encrypt the payload
 ```
 
+(quick-check-and-mdc)=
+#### Preparing the plaintext with quick check and modification detection code
+
+Before encrypting the plaintext, the data is modified by adding both a prepended "quick check", as well as an appended modification detection code.
+
+The quick check comprises of 16 randomly chosen bytes plus 2 bytes which are the last two of the 16 random bytes repeated.
+This mechanism is useful to quickly check, whether the correct session key was used when decrypting the message.
+These quick-check bytes are prepended to the plaintext.
+
+The modification detection code on the other hand is added to allow detection of unwanted modification of the ciphertext.
+First, the two marker bytes `0xD3` and `0x14` are appended to the plaintext. Then, the SHA1 checksum of the entire plaintext including quick check and marker bytes is calculated and appended to the plaintext.
+
+```{figure} plain_svg/mdc.svg
+:name: fig-encryption-mdc
+:alt: Depicts, how the prior to encryption, the plaintext bytes are prepended with 18 quick check bytes and appended with 22 bytes of modification detection code. The quick check comprises of 16 random bytes plus 2 repeated bytes. The modification detection code starts with the marker bytes 0xD314, followed by the SHA1 checksum of the entire plaintext including quick check and marker bytes.
+
+The plaintext inside of a SEIPDv1 packet contains quick check bytes, the actual plaintext and modification detection code
+```
+
+Lastly, the whole prepared plaintext is encrypted symmetrically.
+
 (seipd-v2)=
 ### v2 SEIPD, based on AEAD
 

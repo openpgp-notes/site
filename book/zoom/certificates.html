@@ -97,7 +97,7 @@ alice.pub-9--Signature
 </div>
 <figure class="align-default" id="fig-certificate-packet-list">
 <img alt="Depicts a box with white background and the title &quot;Certificate packet list&quot;. Inside, a list of several boxes on white background and varying frame colors represent a list of OpenPGP packets from top to bottom. The first box, with green frame, represents the &quot;Public-Key packet&quot;, and includes the green public key symbol. The second box, with yellow frame, represents a &quot;Signature packet&quot; (&quot;Direct Key Signature&quot;) and includes the green cryptographic signature symbol. The third box, with black frame, represents a &quot;User ID packet&quot;, and includes the black User ID symbol. The fourth box, with yellow frame, represents a &quot;Signature packet&quot; (&quot;Certifying self-signature for User ID&quot;), and includes the green cryptographic signature symbol. The fifth box, with green frame, represents a &quot;Public-Subkey packet&quot; and includes the green public key symbol. The sixth box, with yellow frame, represents a &quot;Signature packet&quot; (&quot;Subkey binding signature&quot;) and includes the green cryptographic signature symbol. The seventh box, with green frame, represents a &quot;Public-Subkey packet&quot; and includes the green public key symbol. The eighth box, with yellow frame, represents a &quot;Signature packet&quot; (&quot;Subkey binding signature&quot;) and includes the green cryptographic signature symbol. The ninth box, with green frame, represents a &quot;Public-Subkey packet&quot; and includes the green public key symbol. The tenth box, with yellow frame, represents a &quot;Signature packet&quot; (&quot;Subkey binding signature&quot;) and includes the green cryptographic signature symbol." src="../_images/certificate_packet_list.svg" /><figcaption>
-<p><span class="caption-number">Fig. 37 </span><span class="caption-text">Overview of the packets in Alice’s OpenPGP certificate</span><a class="headerlink" href="#fig-certificate-packet-list" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 38 </span><span class="caption-text">Overview of the packets in Alice’s OpenPGP certificate</span><a class="headerlink" href="#fig-certificate-packet-list" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>This process allows us to focus on the specific packets within Alice’s OpenPGP certificate.</p>
@@ -121,7 +121,7 @@ alice.pub-9--Signature
 <p>This is the shape of the packets we’ll explore in the subsequent sections:</p>
 <figure class="align-default" id="fig-public-certificate-minimal">
 <img alt="TODO" src="../_images/Minimal_OpenPGP_certificate.svg" /><figcaption>
-<p><span class="caption-number">Fig. 38 </span><span class="caption-text">A minimal OpenPGP certificate, visualized</span><a class="headerlink" href="#fig-public-certificate-minimal" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 39 </span><span class="caption-text">A minimal OpenPGP certificate, visualized</span><a class="headerlink" href="#fig-public-certificate-minimal" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>In real-world scenarios, OpenPGP certificates are typically far more complex than this minimal example. However, this is indeed a valid OpenPGP certificate. In the following sections, we will introduce more components to this certificate, increasing its complexity and exploring their details.</p>
@@ -185,7 +185,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <p>Note that the <em>Public-Key packet</em> contains only the public part of the key.</p>
 <figure class="align-default" id="fig-public-key-packet">
 <img alt="Depicts a box with white background and title &quot;Public-Key packet&quot;. In the center a box with white background and green frame is shown. Inside it several items are listed, separated by green dotted horizontal lines. The first three are &quot;Version&quot;, &quot;Creation Time&quot;, &quot;Public-Key Algorithm&quot; written in black. The last one is written in green and reads &quot;Public Key Material&quot; and has the green public key symbol at its right side." src="../_images/public-key_packet.svg" /><figcaption>
-<p><span class="caption-number">Fig. 39 </span><span class="caption-text">Structure of a Public-Key packet.</span><a class="headerlink" href="#fig-public-key-packet" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 40 </span><span class="caption-text">Structure of a Public-Key packet.</span><a class="headerlink" href="#fig-public-key-packet" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -374,7 +374,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <p>The signature is calculated from this hash digest.</p>
 <figure class="align-default" id="fig-direct-key-signature-packet">
 <img alt="Depicts a box with white background, title &quot;Signature packet&quot; and subtitle &quot;Direct Key Signature (type ID 0x1F)&quot;. In the center a box with white background and yellow frame is shown. Inside it several items are listed, separated by yellow dotted horizontal lines. The first three are &quot;Version&quot;, &quot;Public-Key Algorithm&quot; and &quot;Hash Algorithm&quot;. The fourth item is called &quot;Hashed area&quot; and confines further sub-items by a light-yellow frame on the top and left side. The sub-items are &quot;Signature Creation Time&quot;, &quot;Key Expiration Time&quot;, &quot;Preferred Symmetric Ciphers for v1 SEIPD&quot;, &quot;Preferred Hash Algorithms&quot;, &quot;Key Flags&quot;, &quot;Features&quot; and &quot;Issuer Fingerprint&quot;. The fifth item is named &quot;Unhashed area&quot; and again introduces an area for sub-items, this time using a light-gray border on the top and left side. The unhashed area has no sub-items though. The last item is called &quot;Cryptographic Signature&quot;, with the subtitle &quot;by the primary key over primary key, subkey and signature metadata&quot; and includes the green cryptographic signature symbol on the right side." src="../_images/direct_key_signature_packet.svg" /><figcaption>
-<p><span class="caption-number">Fig. 40 </span><span class="caption-text">Structure of a direct key signature packet.</span><a class="headerlink" href="#fig-direct-key-signature-packet" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 41 </span><span class="caption-text">Structure of a direct key signature packet.</span><a class="headerlink" href="#fig-direct-key-signature-packet" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
