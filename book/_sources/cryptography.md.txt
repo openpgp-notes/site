@@ -137,7 +137,7 @@ In OpenPGP, digital signatures have diverse applications, extending beyond mere 
 (hybrid-cryptosystems)=
 ## Hybrid cryptosystems
 
-[Hybrid cryptosystems](https://en.wikipedia.org/wiki/Hybrid_cryptosystem) combine the use of {term}`symmetric<Symmetric Cryptography>` and {term}`asymmetric (zoom-public-key)<Asymmetric Cryptography>` cryptography to capitalize on the strengths of each, namely {term}`symmetric cryptography`'s speed and efficiency and {term}`public-key cryptography<Asymmetric Cryptography>`'s mechanism for secure key exchange.
+[Hybrid cryptosystems](https://en.wikipedia.org/wiki/Hybrid_cryptosystem) combine the use of {term}`symmetric<Symmetric Cryptography>` and {term}`asymmetric (public-key)<Asymmetric Cryptography>` cryptography to capitalize on the strengths of each, namely {term}`symmetric cryptography`'s speed and efficiency and {term}`public-key cryptography<Asymmetric Cryptography>`'s mechanism for secure key exchange.
 
 ### Usage and terminology in OpenPGP
 
