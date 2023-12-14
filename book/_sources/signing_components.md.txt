@@ -29,7 +29,7 @@ This chapter expands on topics introduced in the [](certificates) chapter.
 {term}`Life-cycle management` operations include:
 
 - {term}`binding<Binding Signature>` additional {term}`components<Component>` to a {term}`certificate<OpenPGP Certificate>`
-- modifying {term}`expiration time` or other {term}`metadata` of `components<Component>`
+- modifying {term}`expiration time` or other {term}`metadata` of {term}`components<Component>`
 - revoking, and thus invalidating, {term}`components<Component>` or existing {term}`self-signatures<Self-signature>`
 
 {term}`Self-signatures<Self-signature>` are issued by the {term}`certificate's owner<Certificate Holder>` using the {term}`certificate<OpenPGP Certificate>`'s {term}`primary key<OpenPGP Primary Key>`.
@@ -266,7 +266,7 @@ With this mechanism, for example, it is possible to {term}`delegate<Delegation>`
 (wot)=
 ### Web of Trust: Decentralized trust decisions
 
-The {term}`Web of Trust` in OpenPGP is a {term}`trust model` that facilitates {term}`authentication` decisions through a network of {term}`certifications<Certification>` and {term}`delegations<Delegation>`. It is characterized by a so-called [strong set](https://en.wikipedia.org/wiki/Web_of_trust#Strong_set), which refers to a group of {term}`certificates<OpenPGP Certificate>` that are robustly interconnected via `third-party certifications<Third-party Identity Certification>`.
+The {term}`Web of Trust` in OpenPGP is a {term}`trust model` that facilitates {term}`authentication` decisions through a network of {term}`certifications<Certification>` and {term}`delegations<Delegation>`. It is characterized by a so-called [strong set](https://en.wikipedia.org/wiki/Web_of_trust#Strong_set), which refers to a group of {term}`certificates<OpenPGP Certificate>` that are robustly interconnected via {term}`third-party certifications<Third-party Identity Certification>`.
 
 In this model, users independently {term}`delegate<Delegation>` {term}`authentication` decisions, choosing whose {term}`certification` to rely on. This {term}`delegation` is based on the {term}`certificates<OpenPGP Certificate>` and {term}`third-party signatures<Third-party Signature>` available to them, with their {term}`OpenPGP software<OpenPGP Implementation>` applying the {term}`Web of Trust` mechanism to discern the reliability of each {term}`certificate<OpenPGP Certificate>` for an {term}`identity`.
 
