@@ -67,15 +67,17 @@ In addition to key management, a keystore often involves various supplementary f
 
 OpenPGP is subject to specific vulnerabilities known as key overwriting (KO) attacks. These attacks exploit weaknesses in how encrypted private keys or their metadata are handled, potentially leading to the leakage of secret data when the key is used. The core issue lies in OpenPGP's handling of Secret-Key packets, where corruption of the non-encrypted fields can cause the unaltered private key material to be used with altered parameters. This mismatch can result in private key leakage.
 
-Importantly, KO attacks are particularly relevant when an attacker is responsible for storing a user's encrypted private key. By altering the algorithm field in the Secret-Key packet, the attacker may cause the user to perform a cryptographic operation with a different algorithm. E.g., performing a DSA operation with ECC private key material. By observing the output of that attacker-corrupted operation, the attacker can recover the user's unencrypted private key material, even though the attacker had no direct access to it.
+Importantly, KO attacks are particularly relevant in scenarios where an attacker has control over the storage of a user's encrypted private key. By manipulating the algorithm field in the Secret-Key packet, the attacker may lead the user to perform a cryptographic operation with a different algorithm. For example, the user might unknowingly perform a DSA operation with ECC private key material. Although the attacker does not have direct access to the encrypted private key material, the attacker can deduce and recover the user's unencrypted private key material by observing the output of this compromised operation.
 
 ### Mitigation
 
-Understanding KO attacks is crucial due to their potential to compromise the integrity and confidentiality of encrypted communications, and the risk of complete private key material compromise. KO attacks highlight the necessity for robust key validation procedures and the dangers of storing keys in insecure environments. OpenPGP application developers should consider if this attack class is a concern in their applications.
+Understanding KO attacks is crucial due to their potential to compromise the integrity and confidentiality of encrypted communications, and the risk of complete private key material compromise. KO attacks highlight the necessity for robust key validation procedures and the dangers of storing keys in insecure environments. OpenPGP application developers should conduct a risk assessment to determine the relevance of KO attacks to their applications.
 
-Private keys that are protected with [S2K usage mode 253 (AEAD)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption), are not vulnerable to KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields (including the algorithm field) as the *authentication tag* for integrity verification in the decryption process. When an attacker alters the unencrypted part of the packet, then decryption of the private key material will fail, and the user is prevented from e.g. accidentally using the key material with an altered attacker-controlled algorithm.
+Private keys secured with [S2K usage mode 253 (AEAD)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption) are safeguarded against KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields, including the algorithm field, as the *authentication tag* for integrity verification in the decryption process. 
 
-Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (also see {ref}`migration-s2k`).
+When an attacker alters the unencrypted part of the Secret-Key packet, then decryption of the private key material will fail. This effectively prevents the user from unknowingly using the key material with an altered attacker-controlled algorithm.
+
+Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (see {ref}`migration-s2k`).
 
 #### Resources
 
