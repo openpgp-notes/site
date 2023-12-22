@@ -20,10 +20,10 @@ Algorithm Preferences
     See [](recipe-algorithm-preferences).
 
 Asymmetric Cryptography
-    Asymmetric cryptography is used in OpenPGP. For a more detailed discussion see [](public-key-cryptography).
+    Asymmetric cryptography (also known as public-key cryptography) is used in OpenPGP to send messages without using a prior shared secret. For a more detailed discussion see [](public-key-cryptography).
 
 Authenticated Encryption With Associated Data
-    Short AEAD, refers to an encryption scheme that ensures confidentiality of a message. Additionally, additional data, which is not confidential, may be associated with the message.
+    Short AEAD, refers to an encryption scheme that ensures confidentiality of a message. Additionally, additional data, which is not confidential, may be associated with the message, ensuring integrity of both the confidential part of the message, as well as the additional data.
 
     See Wikipedia on [Authenticated Encryption](https://en.wikipedia.org/wiki/Authenticated_encryption).
 
@@ -32,7 +32,9 @@ Authentication
     The term "authentication" here is semantically different from the one used in {term}`Authentication Key Flag`.
 
 Authentication Key Flag
-    A {term}`Key Flag`, which indicates that a {term}`Component Key` can be used to confirm control over {term}`private key material` against a remote system. The term "authentication" here is semantically different from {term}`Authentication`. See [](key-flags).
+    A {term}`Key Flag` which indicates that a {term}`Component Key` can be used to prove control over {term}`private key material` with a challenge-response mechanism. This is typically done to log into a remote system, often using the OpenSSH protocol.
+
+    Note that the term "authentication" is used in a different context here than {term}`Authentication` of {term}`identity claims<identity claim>` that are associated with a {term}`certificate`. See [](key-flags).
 
 Authentication Tag
     See {term}`Message Authentication Code`.
@@ -49,12 +51,12 @@ Binary Signature
 Binding
     The process of creating a {term}`Binding Signature` for a {term}`Component`, or the resulting {term}`Binding Signature`.
     
-    See {ref}`binding-signatures` for more.
+    See [](binding-signatures) for more.
 
 Binding Signature
     A {term}`self-signature` on a {term}`component` which associates that {term}`component` to the issuing {term}`component key` in a {term}`certificate<OpenPGP Certificate>`.
     
-    See {ref}`binding-signatures` for more.
+    See [](binding-signatures) for more.
 
 CA
     See {term}`Certification Authority`.
@@ -69,7 +71,7 @@ Certificate Authority
     See {term}`Certification Authority`
 
 Certificate Holder
-    A person or other entity, that holds an {term}`Transferable Secret Key` and thus is able to modify the accompanying {term}`OpenPGP Certificate`.
+    A person or other entity, that holds an {term}`Transferable Secret Key` and thus is able to modify the accompanying {term}`OpenPGP Certificate`. Typically this is the owner of {term}`OpenPGP key`.
 
 Certification
     A certification, in OpenPGP, is a signature that makes a statement about an {term}`identity` in a {term}`certificate<OpenPGP Certificate>`, or an entire {term}`certificate<OpenPGP Certificate>`.
@@ -90,7 +92,7 @@ Certification Revocation Signature Packet
 Certification Signature
     See {term}`Certification`.
 
-Certifying Self-signature
+Certifying Self-Signature
     An {term}`OpenPGP Signature Packet` by the {term}`Certificate Holder` on an {term}`Identity Component` of their own {term}`Certificate`.
 
 Certifying Signature
@@ -112,23 +114,26 @@ Component
 Component Key
     See {term}`OpenPGP Component Key`.
 
+Compressed Data Packet
+    A packet containing a compressed {term}`OpenPGP Message` (typically a {term}`Literal Data Packet`).
+
 Compression
     See {term}`Data Compression`.
 
 Creation Time
-    The point in time at which e.g. an {term}`OpenPGP Certificate`, or one of its {term}`component<Component>` is created.
+    The point in time at which e.g. an {term}`OpenPGP Signature`, an {term}`OpenPGP Certificate`, or one of its {term}`component<Component>` is created.
 
 Creator
     See {term}`Issuer`.
 
 Criticality Flag
-    A flag on {term}`Subpacket`s, that defines their criticality, which is used for validation. See [](criticality-of-subpackets).
+    A flag on {term}`Subpacket`s, that can mark them as critical or non-critical, which is has an influence on signature validation. See [](criticality-of-subpackets).
 
 Cryptographic Key
-    A {term}`symmetric<Symmetric Cryptography>` or {term}`asymmetric<Asymmetric Cryptography>` cryptographic key is used for signing and encryption operations. See [](cryptography).
+    A {term}`symmetric<Symmetric Cryptography>` or {term}`asymmetric<Asymmetric Cryptography>` cryptographic key. See [](cryptography).
 
 Cryptographic Signature
-    A raw cryptographic signature is a sequence of bytes created by a {term}`Cryptographic Key`.
+    A raw cryptographic signature is an algorithm-specific sequence of bytes created by a {term}`Cryptographic Key`.
 
 CTB
     See {term}`Cipher Type Byte`.
@@ -151,18 +156,27 @@ Delegation
     This kind of delegation involves {term}`certifications<Certification>` that include the {term}`trust signature` subpacket.
 
 Detached Signature
-    A {term}`Data Signature` which exists as a separate file to the file it was created for. See [](forms-of-data-signatures).
+    A {term}`Data Signature` which exists separately to the data it was created for. See [](forms-of-data-signatures).
 
 Direct Key Signature
-    A {term}`Signature` that sets preferences and advertises {term}`features<Features Subpacket>` applicable to an entire {term}`Certificate`. See [](direct-key-signature).
+    Describes both a {term}`Signature Type ID`, as well as an according {term}`OpenPGP Signature` over a {term}`Primary Key`.
+
+    Issued as a {term}`Self-Signature` it sets preferences and advertises {term}`features<Features Subpacket>` applicable to an entire {term}`Certificate`. See [](direct-key-signature).
 
 Embedded Signature Subpacket
     An {term}`OpenPGP Signature Subpacket` which contains a complete {term}`OpenPGP Signature Packet`.
 
     See [RFC 5.2.3.34](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-embedded-signature)
 
+Encrypted Data
+    Data that is encrypted.
+
+    See [](/encryption).
+
 Encryption Key Flag
     A {term}`Key Flag`, indicating that a {term}`Component Key` can be used for encrypting data. See [](key-flags).
+
+    There are two distinct encryption key flags, indicating that the key can encrypt communications, or data in long-term storage respectively.
 
 Expiration
     A mechanism by which a {term}`Component` is invalidated due to the {term}`Expiration Time` of its {term}`binding signature` being older than the {term}`Reference Time` by which it is validated.
@@ -171,7 +185,7 @@ Expiration Time
     The time of expiry of an {term}`OpenPGP Signature Packet`.
 
 Features Subpacket
-    A {term}`OpenPGP Signature Subpacket`, which denotes advanced OpenPGP features an {term}`implementation<OpenPGP Implementation>` supports.
+    An {term}`OpenPGP Signature Subpacket`, which denotes advanced OpenPGP features an {term}`implementation<OpenPGP Implementation>` supports.
 
     For an in-depth view on these {term}`subpackets<OpenPGP Signature Subpacket>` see [](zoom-dks).
 
@@ -196,6 +210,9 @@ Hash Digest
 Hash Function
     A function used to map data of arbitrary size to fixed-size values (see {term}`Hash Digest`).
 
+Hash Value
+    See {term}`Hash Digest`.
+
 Hashed Area
     An area in an {term}`OpenPGP Signature Packet` containing {term}`OpenPGP Signature Subpacket`s, that is covered by the {term}`Hash Digest` a {term}`Cryptographic Signature` is created for. See [](subpacket-areas).
 
@@ -206,10 +223,14 @@ Hybrid Cryptosystem
     A cryptographic system that employs both {term}`Asymmetric Cryptography` and {term}`Symmetric Cryptography`. See [](hybrid-cryptosystems).
 
 Identity
-    An identity of a {term}`Certificate Holder`. It is represented by an {term}`Identity Component`, which may be certified using {term}`third-party identity certifications<Third-party Identity Certification>`, or by a {term}`Notation`.
+    An identity of a {term}`Certificate Holder`. It is represented by an {term}`Identity Component`, which may be certified using {term}`identity certifications<Identity Certification>`, or by a {term}`Notation`.
 
 Identity Certification
     An {term}`OpenPGP Signature Packet` on an {term}`Identity Component` which {term}`certifies<Certification>` its {term}`authenticity<Authentication>`.
+    
+    Identity certifications can be issued either:
+    - by the certificate holder, as a {term}`self-signature`, or
+    - by a third party, as a {term}`third-party identity certifications<Third-party Identity Certification>`.
 
 Identity Claim
     A {term}`Certificate Holder` may use {term}`Identity Components<Identity Component>` or {term}`Notations<Notation>` to state a claim about their {term}`Identity`.
@@ -227,7 +248,7 @@ Inline Signature
     A {term}`Data Signature` which exists encapsulated alongside the data it was created for in an OpenPGP container. See [](forms-of-data-signatures).
 
 Issuer
-    An entity, that created an {term}`OpenPGP Signature Packet` using an {term}`Transferable Secret Key`.
+    An entity, that created an {term}`OpenPGP Signature Packet` using a {term}`Transferable Secret Key`.
 
 Issuer Fingerprint Subpacket
     A {term}`Subpacket` specifying the {term}`Fingerprint` of an {term}`Issuer Key`.
@@ -253,7 +274,7 @@ Key
     - {term}`OpenPGP key` (which in turn refers to either an {term}`OpenPGP Certificate` or a {term}`Transferable Secret Key`
 
 Key Expiration Time Subpacket
-    An {term}`OpenPGP Signature Subpacket Type` which defines the {term}`Expiration Time` for an {term}`OpenPGP Signature Packet` on a {term}`key<Component Key>`.
+    An {term}`OpenPGP Signature Subpacket Type` which defines the {term}`Expiration Time` for a {term}`key<Component Key>`.
 
     See [RFC 5.2.3.13](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-expiration-time)
 
@@ -277,7 +298,7 @@ Key Revocation Signature Packet
     A {term}`Revocation Self-signature` for an entire {term}`OpenPGP Certificate`.
 
 Key Server
-    A piece of software available over the network, which provides access to {term}`OpenPGP Certificates<OpenPGP Certificate>` e.g., by searching for an {term}`OpenPGP Fingerprint` or {term}`User ID`, via the `HKP` and/ or `HKPS` protocols.
+    A service available over the network, which provides access to {term}`OpenPGP Certificates<OpenPGP Certificate>` e.g., by searching for an {term}`OpenPGP Fingerprint` or {term}`User ID`, via the `HKP` and/ or `HKPS` protocols.
     Several implementations such as [hagrid](https://gitlab.com/keys.openpgp.org/hagrid/), or [hockeypuck](https://github.com/hockeypuck/hockeypuck) exist.
 
 Life-cycle Management
@@ -286,7 +307,7 @@ Life-cycle Management
     See [](self-signatures).
 
 Literal Data Packet
-    A {term}`packet<OpenPGP Signature Packet>` in a {term}`Data Signature` which contains data, that has been signed using a {term}`cryptographic signature`. See [RFC 5.9](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit) for more details.
+    A {term}`packet` which contains the plaintext data of an encrypted and/or signed message. See [RFC 5.9](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit) for more details.
 
 MAC
     See {term}`Message Authentication Code`.
@@ -297,8 +318,10 @@ Master Key
 Message Authentication Code
     A piece of information used for integrity and {term}`authenticity<Authentication>` verification of a message. See [](message-authentication-code).
 
-Meta-Introducer
-    An {term}`OpenPGP Certificate` with a {term}`Trust Depth` greater than one.
+Meta Introducer
+    An {term}`OpenPGP Certificate` that acts as a {term}`Trusted introducer` and has a {term}`Trust Depth` greater than one.
+
+    A meta introducer can introduce other (meta-) {term}`introducers<Trusted introducer>`.
 
 Metadata
     Data related to preferences of an {term}`OpenPGP Certificate` or its {term}`Certificate Holder`, that can be found in {term}`signature` {term}`packets<Packet>`. See [](metadata-in-certificates).
@@ -333,7 +356,7 @@ OpenPGP Key
     Used either for an {term}`OpenPGP Certificate` (containing public key material and metadata), or for an {term}`OpenPGP Private Key`. See [](/certificates) for an in-depth discussion.
 
 OpenPGP Message
-    A data structure, which contains OpenPGP components such as {term}`OpenPGP Certificate` or {term}`OpenPGP Signature Packet` and plaintext or encrypted data.
+    A data structure, which contains OpenPGP packets, such as {term}`literal<Literal Data Packet>`, {term}`compressed<Compressed Data Packet>`, {term}`encrypted<Encrypted Data>` or {term}`signed<Data Signature>` data.
 
 OpenPGP Public Key
     See {term}`OpenPGP Certificate`.
@@ -369,7 +392,7 @@ Owner
     See {term}`Certificate Holder`.
 
 Packet
-    An element in an {term}`OpenPGP Certificate`, which represents {term}`components<Component>` or {term}`signatures<OpenPGP Signature Packet>`.
+    An element in an {term}`OpenPGP Certificate` or {term}`OpenPGP Message`.
 
 Packet Header
     A section of variable length at the beginning of a {term}`Packet`, which encodes for example the {term}`Packet Type ID`. See the relevant [section in the RFC](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers), which explains this section in more detail.
@@ -386,22 +409,22 @@ Positive Certification
     See [](bind-identity).
 
 Preferred Compression Algorithms Subpacket
-    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred {term}`compression algorithms<Data Compression>` for an {term}`OpenPGP Signature Packet`. This defines which {term}`algorithms<Data Compression>` the {term}`key holder<Certificate Holder>` prefers to use.
+    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred {term}`compression algorithms<Data Compression>` for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which {term}`algorithms<Data Compression>` the {term}`key holder<Certificate Holder>` prefers to receive.
 
     See [RFC 5.2.3.17](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-compression-algor).
 
 Preferred Hash Algorithms Subpacket
-    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred {term}`hash algorithm<Hash Function>` for an {term}`OpenPGP Signature Packet`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive.
+    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred {term}`hash algorithm<Hash Function>` for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive.
 
     See [RFC 5.2.3.16](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-hash-algorithms).
 
 Preferred Symmetric Ciphers for v1 SEIPD Subpacket
-    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred version 1 {term}`SEIPD<Symmetrically Encrypted Integrity Protected Data>` algorithms for an {term}`OpenPGP Signature Packet`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive and implicitly signifies the supported algorithms of the {term}`key holder<Certificate Holder>`'s {term}`implementation<OpenPGP Implementation>`.
+    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred version 1 {term}`SEIPD<Symmetrically Encrypted Integrity Protected Data>` algorithms for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive and implicitly signifies the supported algorithms of the {term}`key holder<Certificate Holder>`'s {term}`implementation<OpenPGP Implementation>`.
 
     See [RFC 5.2.3.14](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-symmetric-ciphers).
 
 Preferred AEAD Ciphersuites Subpacket
-    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred version 2 {term}`SEIPD<Symmetrically Encrypted Integrity Protected Data>` algorithms for an {term}`OpenPGP Signature Packet`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive and implicitly signifies the supported algorithms of the {term}`key holder<Certificate Holder>`'s {term}`implementation<OpenPGP Implementation>`.
+    An {term}`OpenPGP Signature Subpacket Type` which defines the preferred version 2 {term}`SEIPD<Symmetrically Encrypted Integrity Protected Data>` algorithms for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive and implicitly signifies the supported algorithms of the {term}`key holder<Certificate Holder>`'s {term}`implementation<OpenPGP Implementation>`.
 
     See [RFC 5.2.3.15](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-aead-ciphersuites)
 
@@ -461,7 +484,7 @@ Reason For Revocation Subpacket
     See [RFC 5.2.3.31](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation)
 
 Reference Time
-    A point in time at which an {term}`OpenPGP Certificate` is evaluated.
+    A point in time at which an {term}`OpenPGP Certificate` or {term}`OpenPGP Signature` is evaluated.
 
 Regular Expression Subpacket
     An {term}`OpenPGP Signature Subpacket` which allows for limiting {term}`delegations<Delegation>` to {term}`identities<Identity>` matching a regular expression.
@@ -551,7 +574,7 @@ Signature Type
     See {term}`OpenPGP Signature Type`.
 
 Signature Type ID
-    A numerical identifier for a {term}`Signature Type`.
+    A numerical identifier for a {term}`Signature Type<OpenPGP Signature Type>`.
 
 Signature Verification
     In cryptography the mechanism of verification relates to a process in which a claim (i.e., a {term}`signature`) is tested (i.e., using the relevant {term}`components<Component>` of a {term}`certificate`).
@@ -609,7 +632,7 @@ Text Signature
     A {term}`signature packet<OpenPGP signature packet>` with the {term}`Signature Type ID` `0x01`, which is used for textual data.
 
 Third-party Identity Certification
-    {term}`Certification` by third-parties to confirm ownership of an {term}`OpenPGP Certificate` by a {term}`Certificate Holder`. See [](third-party-identity-certifications).
+    {term}`Certification` by third-parties to confirm ownership of an {term}`OpenPGP Certificate` ({term}`Identity Claim`) by a {term}`Certificate Holder`. See [](third-party-identity-certifications).
 
 Third-party Signature
     A {term}`Signature` by a third-party on a {term}`Component` of a {term}`Certificate`.
@@ -649,7 +672,7 @@ Trust Signature
 Trusted introducer
     OpenPGP users can choose to rely on {term}`certifications<Certification>` issued by a third party. The remote party of such a {term}`delegation` is called a "trusted introducer".
      
-     See {ref}`delegation` for more details. 
+     See [](delegation) for more details. 
 
 TSK
     See {term}`Transferable Secret Key`.
@@ -667,7 +690,7 @@ Unhashed Subpacket
     A {term}`Signature Subpacket` residing in the {term}`Unhashed Area` of a {term}`Signature Packet`.
 
 User Attribute
-    An {term}`Identity Component`, which may hold a single JPEG image. See [](user-attributes).
+    An {term}`Identity Component`, which may hold complex attribute data, e.g. a single JPEG image. See [](user-attributes).
 
 User ID
     An {term}`Identity Component`, which describes an {term}`Identity` of a {term}`Certificate Holder`. See [](user-ids).

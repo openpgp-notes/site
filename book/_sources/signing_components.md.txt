@@ -241,7 +241,7 @@ OpenPGP uses [*trust signature*](https://www.ietf.org/archive/id/draft-ietf-open
 (trust-level)=
 #### Trust depth/level
 
-The "{term}`trust depth`" (or {term}`level<Trust Depth>`) in OpenPGP signifies the extent of transitive {term}`delegation` within the {term}`authentication` process. It determines how far a {term}`delegation` can be extended from the original {term}`trusted introducer` to subsequent intermediaries. Essentially, a {term}`certificate<OpenPGP Certificate>` with a {term}`trust depth` of more than one acts as a "{term}`meta-introducer`," facilitating {term}`authentication` decisions across multiple levels in the network.
+The "{term}`trust depth`" (or {term}`level<Trust Depth>`) in OpenPGP signifies the extent of transitive {term}`delegation` within the {term}`authentication` process. It determines how far a {term}`delegation` can be extended from the original {term}`trusted introducer` to subsequent intermediaries. Essentially, a {term}`certificate<OpenPGP Certificate>` with a {term}`trust depth` of more than one acts as a "{term}`meta introducer`," facilitating {term}`authentication` decisions across multiple levels in the network.
 
 A {term}`trust depth` of 1 means relying on {term}`certifications<Certification>` made directly by the {term}`trusted introducer`. The user's OpenPGP software will accept {term}`certifications<Certification>` made directly by the {term}`introducer<Trusted Introducer>` for {term}`authenticating<Authentication>` identities. 
 
