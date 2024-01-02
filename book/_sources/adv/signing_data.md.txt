@@ -146,7 +146,7 @@ By contrast, a message, where the signer attests an already signed message has t
 
 A {term}`prefixed signed message` consists of {term}`signature packet(s)<signature packet>` followed by the message. For the verifier, processing one-pass signed and prefixed signed messages are equally convenient. However, on the signer's side, it takes more resources to generate a {term}`prefixed signed message`.
 
-This is a legacy format. Not all modern implementations support. However, for example, GnuPG 2.4.x can validate messages with this signature format.
+This is a legacy format. Not all modern implementations support it. However, for example, GnuPG 2.4.x can validate messages with this signature format.
 
 #### Structure
 

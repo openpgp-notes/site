@@ -187,7 +187,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <section id="prefixed-signed-message">
 <span id="prefixed-signature"></span><h3><span class="section-number">21.1.2. </span>Prefixed signed message<a class="headerlink" href="#prefixed-signed-message" title="Link to this heading">¶</a></h3>
 <p>A <a class="reference internal" href="../glossary.html#term-Prefixed-signed-Message"><span class="xref std std-term">prefixed signed message</span></a> consists of <a class="reference internal" href="../glossary.html#term-Signature-Packet"><span class="xref std std-term">signature packet(s)</span></a> followed by the message. For the verifier, processing one-pass signed and prefixed signed messages are equally convenient. However, on the signer’s side, it takes more resources to generate a <a class="reference internal" href="../glossary.html#term-Prefixed-signed-Message"><span class="xref std std-term">prefixed signed message</span></a>.</p>
-<p>This is a legacy format. Not all modern implementations support. However, for example, GnuPG 2.4.x can validate messages with this signature format.</p>
+<p>This is a legacy format. Not all modern implementations support it. However, for example, GnuPG 2.4.x can validate messages with this signature format.</p>
 <section id="id3">
 <h4><span class="section-number">21.1.2.1. </span>Structure<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
 <p>In this format, the signature packets are stored ahead of the message itself:</p>
