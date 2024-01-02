@@ -11,7 +11,7 @@
 <meta property="og:type" content="book" />
 <meta property="og:url" content="https://openpgp.dev/book/index.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
-<meta property="og:description" content="2023-12-29 Introducing OpenPGP- What is OpenPGP?, Who is the audience for this document?, Why not just use the OpenPGP RFC?, Which version of OpenPGP does this address?., A high-level view- Why Ope..." />
+<meta property="og:description" content="2024-01-02 Introducing OpenPGP- What is OpenPGP?, Who is the audience for this document?, Why not just use the OpenPGP RFC?, Which version of OpenPGP does this address?., A high-level view- Why Ope..." />
 <meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
@@ -62,7 +62,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 <section id="openpgp-for-application-developers">
 <h1>OpenPGP for application developers<a class="headerlink" href="#openpgp-for-application-developers" title="Link to this heading">¶</a></h1>
-<p><strong>2023-12-29</strong></p>
+<p><strong>2024-01-02</strong></p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a><ul>
@@ -119,6 +119,9 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <li class="toctree-l1"><a class="reference internal" href="signing_data.html">7. Signatures over data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="signing_data.html#signature-types">7.1. Signature types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signing_data.html#forms-of-openpgp-data-signatures">7.2. Forms of OpenPGP data signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signing_data.html#detached-signatures">7.3. Detached signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signing_data.html#inline-signatures">7.4. Inline signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signing_data.html#cleartext-signatures">7.5. Cleartext signatures</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="signing_components.html">8. Signatures on components</a><ul>
@@ -207,7 +210,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adv/signing_data.html">21. Advanced material: Signatures over data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="adv/signing_data.html#nesting-of-one-pass-signatures">21.1. Nesting of one-pass signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adv/signing_data.html#internals-of-inline-signed-messages">21.1. Internals of inline signed messages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adv/signing_components.html">22. Advanced material: Signatures on components</a><ul>
@@ -380,7 +383,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &copy;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

@@ -77,7 +77,7 @@ This is called attribute shadowing, since direct key signature subpackets apply 
 <figure class="align-default" id="fig-signature-verification-attribute-shadowing">
 <img alt="Depicts a certificate with to dedicated signing subkeys and a subkey binding signature each. The primary key carries a direct-key signature, which specifies SHA-512 and SHA-256 as hash algorithm preferences. The binding signature of the first signing subkey does not specify preferences, while the binding signature of the second subkey defines SHA-384. Signatures made using the first subkey source the hash algorithm preferences from the direct-key signature, due to the absence of a preference subpacket on the binding signature, while for signature made using the second subkey the direct-key signature's preferences are shadowed by the subkey signatures preferences subpacket." src="../_images/attribute-shadowing.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 34 </span><span class="caption-text">Inheritance and Shadowing of Attributes</span><a class="headerlink" href="#fig-signature-verification-attribute-shadowing" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 36 </span><span class="caption-text">Inheritance and Shadowing of Attributes</span><a class="headerlink" href="#fig-signature-verification-attribute-shadowing" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -109,7 +109,7 @@ This is called attribute shadowing, since direct key signature subpackets apply 
 <figure class="align-default" id="fig-signature-verification-subkey-validity">
 <img alt="Depicts a gantt-style diagram visualizing how the validity of a certificates components changes over time, depending on component signatures." src="../_images/cert-validity-subkey.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 35 </span><span class="caption-text">An example for how certificate validity can change with time.</span><a class="headerlink" href="#fig-signature-verification-subkey-validity" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 37 </span><span class="caption-text">An example for how certificate validity can change with time.</span><a class="headerlink" href="#fig-signature-verification-subkey-validity" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
@@ -120,7 +120,7 @@ This is called attribute shadowing, since direct key signature subpackets apply 
 <figure class="align-default" id="fig-signature-verification-signature-shadowing">
 <img alt="Depicts a certificate with a subkey, whose capabilities change over time, due to signature shadowing another." src="../_images/dk-attributes-and-shadowing.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 36 </span><span class="caption-text">Signatures shadow one another, based on reference time.</span><a class="headerlink" href="#fig-signature-verification-signature-shadowing" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 38 </span><span class="caption-text">Signatures shadow one another, based on reference time.</span><a class="headerlink" href="#fig-signature-verification-signature-shadowing" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -139,7 +139,7 @@ If the user wants to compose a signed message using the associated OpenPGP key t
 <figure class="align-default" id="id2">
 <img alt="../_images/narrow-interpretation.png" src="../_images/narrow-interpretation.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 37 </span><span class="caption-text">Preferences are sourced from signatures on different components, depending on how the key is addressed.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Fig. 39 </span><span class="caption-text">Preferences are sourced from signatures on different components, depending on how the key is addressed.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>If the user wants to write an email as “Bob,” it should consider the signature on “Bob,” so SHA256 should be used as hash algorithm.
@@ -286,7 +286,7 @@ Clients might apply different heuristics to figure out which User ID actually qu
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &copy;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

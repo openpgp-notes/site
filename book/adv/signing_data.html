@@ -11,7 +11,7 @@
 <meta property="og:type" content="book" />
 <meta property="og:url" content="https://openpgp.dev/book/adv/signing_data.html" />
 <meta property="og:site_name" content="OpenPGP for application developers" />
-<meta property="og:description" content="Nesting of one-pass signatures: Signing a message using the one-pass mechanism involves prepending a One-Pass-Signature(OPS) packet to the message and appending the corresponding signature, sandwic..." />
+<meta property="og:description" content="Internals of inline signed messages: Inline signed messages are one of the forms of OpenPGP data signatures. An inline signed message joins the signed data and its corresponding data signature into..." />
 <meta property="og:image" content="https://openpgp.dev/book/_static/html/img/logo.png" />
 <meta property="og:image:alt" content="OpenPGP for application developers" />
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
@@ -67,46 +67,176 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 <section id="advanced-material-signatures-over-data">
 <h1><span class="section-number">21. </span>Advanced material: Signatures over data<a class="headerlink" href="#advanced-material-signatures-over-data" title="Link to this heading">¶</a></h1>
+<section id="internals-of-inline-signed-messages">
+<span id="adv-inline-signature"></span><h2><span class="section-number">21.1. </span>Internals of inline signed messages<a class="headerlink" href="#internals-of-inline-signed-messages" title="Link to this heading">¶</a></h2>
+<p>Inline signed messages are one of the forms of <a class="reference internal" href="../signing_data.html#forms-of-data-signatures"><span class="std std-ref">OpenPGP data signatures</span></a>. An <a class="reference internal" href="../glossary.html#term-Inline-Signature"><span class="xref std std-term">inline signed message</span></a> joins the signed data and its corresponding <a class="reference internal" href="../glossary.html#term-Data-Signature"><span class="xref std std-term">data signature</span></a> into a single <a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a>.</p>
+<p>OpenPGP defines two variant forms of inline signed messages:</p>
+<ol class="arabic simple">
+<li><p><strong><a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">One-pass signed messages</span></a></strong> This is the commonly used format for inline signed messages. A signer can produce and a verifier can verify this format in one pass.</p></li>
+<li><p><strong><a class="reference internal" href="../glossary.html#term-Prefixed-signed-Message"><span class="xref std std-term">Prefixed signed messages</span></a></strong> This format predates<a class="footnote-reference brackets" href="#inline-signature-formats" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">one-pass signed messages</span></a> and is conceptually slightly simpler. However, it is now rarely used and can be considered a legacy format.</p></li>
+</ol>
+<section id="one-pass-signed-message">
+<span id="one-pass-signature"></span><h3><span class="section-number">21.1.1. </span>One-pass signed message<a class="headerlink" href="#one-pass-signed-message" title="Link to this heading">¶</a></h3>
+<p>This is the commonly used format for inline signed messages.</p>
+<section id="structure">
+<h4><span class="section-number">21.1.1.1. </span>Structure<a class="headerlink" href="#structure" title="Link to this heading">¶</a></h4>
+<p>A <a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">one-pass signed</span></a> <a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a> consists of three segments:</p>
+<ol class="arabic simple">
+<li><p><strong><a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">One-pass signature packets</span></a></strong>: These one or more <a class="reference internal" href="../glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> precede the signed data and enable <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> computation (both creation and verification) in a single pass.</p></li>
+<li><p><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a></strong>: This contains the original payload data (e.g., the body of a message), which is signed without additional interpretation or conversion. Internally, a signed <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages">message</a> consists of one or more OpenPGP packets. This payload is typically stored as either a <a class="reference internal" href="../glossary.html#term-Literal-Data-Packet"><span class="xref std std-term">Literal Data Packet</span></a>, or a <a class="reference internal" href="../glossary.html#term-Compressed-Data-Packet"><span class="xref std std-term">Compressed Data Packet</span></a>.</p></li>
+<li><p><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">Data signature packets</span></a></strong>: These contain the <a class="reference internal" href="../glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> corresponding to the signed data.</p></li>
+</ol>
+<figure class="align-default" id="fig-ops-signed-message">
+<img alt="Depicts the structure of a one-pass signed message. Two one-pass signatures lead a literal data packet, followed by two signature packets. Arrows show, how the hash-algorithm field of the one-pass signatures is inspected in order to initiate the hashing procedure." src="../_images/ops-signed-message.svg" /><figcaption>
+<p><span class="caption-number">Fig. 34 </span><span class="caption-text">The structure of a one-pass signed message.</span><a class="headerlink" href="#fig-ops-signed-message" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Despite its name, a <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packet</span></a> is not a type of <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packet</span></a>.</p>
+<p>Instead, it’s a type of auxiliary packet that can be used in conjunction with <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packets</span></a>, to enable efficient generation and checking of inline signed messages.</p>
+<p>The structure of a <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packet</span></a> closely mirrors an <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature packet</span></a>. However, it does not contain a cryptographic signature.</p>
+</div>
+</section>
+<section id="the-function-of-the-one-pass-signature-packet">
+<span id="one-pass-signature-packet"></span><h4><span class="section-number">21.1.1.2. </span>The function of the one-pass signature packet<a class="headerlink" href="#the-function-of-the-one-pass-signature-packet" title="Link to this heading">¶</a></h4>
+<p>The purpose of this packet is efficient handling of inline signed messages in <em>stream processing</em> mode. This is particularly important when the signed message is large and exceeds available memory in size.</p>
+<p>Without this packet, the position of signature packets within an inline signed OpenPGP message constitutes a trade-off:</p>
+<ul class="simple">
+<li><p>The producer of a signed OpenPGP message wants to streamline the signature calculation process in such a way that allows to emit a copy of the signed data while calculating the cryptographic signature. On the signer’s side, the signature packet is therefore easy to store after the signed data.</p></li>
+<li><p>The verifier, on the other hand, needs some information from the signature packet to perform the signature verification process. In particular, the verifier needs to know which hash algorithm was used to calculate the signature, to perform the same hashing operation on the message data.</p></li>
+</ul>
+<p>As a consequence, without a <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packet</span></a>, either:</p>
+<ul class="simple">
+<li><p>The producer would need to process the input data twice:</p>
+<ul>
+<li><p>once to calculate the cryptographic signature, and</p></li>
+<li><p>a second time to emit the signed data (this format result is a <a class="reference internal" href="#prefixed-signature"><span class="std std-ref">Prefixed signed message</span></a>), or</p></li>
+</ul>
+</li>
+<li><p>The verifier would need to process the OpenPGP message twice:</p>
+<ul>
+<li><p>once to read the signature packets at the end to determine the hash algorithm, and</p></li>
+<li><p>a second time to process the body of the message, and calculate the hash verifying the signature.</p></li>
+</ul>
+</li>
+</ul>
+<p>The one-pass signature packet solves this issue by allowing both the <em>creation</em> and <em>verification</em> of a signed message in a single pass. The one-pass signature packet effectively contains an advance copy of the data in the signature packet, but without the cryptographic signature data.</p>
+<p>The signer can easily emit the metadata in the one-pass signature packet before processing the full message. For the verifier, availability of this metadata at the start of the signed message enables processing of the message body.</p>
+<p>Even in stream processing mode, signers can efficiently generate one-pass signed messages, and verifiers can efficiently check them.</p>
+</section>
+<section id="creation">
+<h4><span class="section-number">21.1.1.3. </span>Creation<a class="headerlink" href="#creation" title="Link to this heading">¶</a></h4>
+<p>To produce a <a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">one-pass inline signature</span></a>, the <a class="reference internal" href="../glossary.html#term-Signer"><span class="xref std std-term">signer</span></a> decides on a hash algorithm and emits a <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packet</span></a> into the destination <a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a>. This contains essential information such as the <a class="reference internal" href="../glossary.html#term-OpenPGP-Fingerprint"><span class="xref std std-term">fingerprint</span></a> of the <a class="reference internal" href="../glossary.html#term-OpenPGP-Component-Key"><span class="xref std std-term">signing key</span></a> and the <a class="reference internal" href="../glossary.html#term-Hash-Digest"><span class="xref std std-term">hash</span></a> algorithm used for computing the <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a>’s <a class="reference internal" href="../glossary.html#term-Hash-Digest"><span class="xref std std-term">hash digest</span></a>. The signer then processes the entirety of the signed message, emitting it as a series of one or more <a class="reference internal" href="../glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> into the message as well. Once the data is processed, the <a class="reference internal" href="../glossary.html#term-Signer"><span class="xref std std-term">signer</span></a> calculates a <a class="reference internal" href="../glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> using the calculated hash value. Lastly, the result is emitted as a <a class="reference internal" href="../glossary.html#term-Data-Signature-Packet"><span class="xref std std-term">data signature packet</span></a> to the output message, and the whole packet sequence can be efficiently stored or transmitted.</p>
+</section>
+<section id="verification">
+<h4><span class="section-number">21.1.1.4. </span>Verification<a class="headerlink" href="#verification" title="Link to this heading">¶</a></h4>
+<p>For efficient <a class="reference internal" href="../glossary.html#term-Verification"><span class="xref std std-term">verification</span></a>, an application must understand how to handle the <a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a> prior to reading from it. This requirement is addressed by the <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packets</span></a> located at the beginning of <a class="reference internal" href="../glossary.html#term-Inline-Signature"><span class="xref std std-term">inline signed</span></a> messages. This setup enables the verifier to process the data correctly and efficiently in a single pass.</p>
+<p>Strictly speaking, knowing just the hash algorithm would be sufficient to begin the verification process. However, having efficient access to the signer’s fingerprint or key ID upfront allows OpenPGP software to fetch the signer’s certificate(s) before processing the entirety of the - potentially large - signed data. This may involve downloading the certificate from a keyserver. In case fetching the signer’s certificate(s) fails, or requires additional input from the user, it is better to signal the user about this before processing the data.</p>
+<p><a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">one-pass inline signed messages</span></a> enable efficient <a class="reference internal" href="../glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> in <em>one pass</em>, structured as follows:</p>
+<ol class="arabic simple">
+<li><p><strong>Initiation with <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packets</span></a></strong>: These <a class="reference internal" href="../glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> begin the <a class="reference internal" href="../glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> process. They include the <a class="reference internal" href="../glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>’s <a class="reference internal" href="../glossary.html#term-Key-ID"><span class="xref std std-term">key ID</span></a>/<a class="reference internal" href="../glossary.html#term-OpenPGP-Fingerprint"><span class="xref std std-term">fingerprint</span></a>, essential for identifying the appropriate <a class="reference internal" href="../glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> for signature <a class="reference internal" href="../glossary.html#term-Validation"><span class="xref std std-term">validation</span></a>.</p></li>
+<li><p><strong>Processing the <a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a></strong>: This step involves <a class="reference internal" href="../glossary.html#term-Hash-Digest"><span class="xref std std-term">hashing</span></a> its data, preparing it for <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> <a class="reference internal" href="../glossary.html#term-Verification"><span class="xref std std-term">verification</span></a>.</p></li>
+<li><p><strong><a class="reference internal" href="../glossary.html#term-Verification"><span class="xref std std-term">Verifying</span></a> <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packets</span></a></strong>: Located at the end of the message, these <a class="reference internal" href="../glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> are checked against the previously calculated <a class="reference internal" href="../glossary.html#term-Hash-Digest"><span class="xref std std-term">hash digest</span></a>.</p></li>
+</ol>
+<p>Important to note, the <a class="reference internal" href="../glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>’s <a class="reference internal" href="../glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a>, critical for the final <a class="reference internal" href="../glossary.html#term-Verification"><span class="xref std std-term">verification</span></a> step, is not embedded in the message. Verifiers must acquire this <a class="reference internal" href="../glossary.html#term-Key"><span class="xref std std-term">key</span></a> externally (e.g., from a <a class="reference internal" href="../glossary.html#term-Key-Server"><span class="xref std std-term">key server</span></a>) to authenticate the <a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> successfully.</p>
+</section>
 <section id="nesting-of-one-pass-signatures">
-<h2><span class="section-number">21.1. </span>Nesting of one-pass signatures<a class="headerlink" href="#nesting-of-one-pass-signatures" title="Link to this heading">¶</a></h2>
-<p>Signing a message using the one-pass mechanism involves prepending a <em>One-Pass-Signature</em> (OPS) packet to the message and appending the corresponding signature, sandwiching the signed content.</p>
-<p>An OpenPGP message can contain multiple signatures added that way.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>One-Pass-Signatures are nested, meaning the outermost One-Pass-Signature packet corresponds to the outermost signature packet.</p>
-</div>
-<p>When a message is signed, the signature is always calculated over the contents of the literal data packet, not the literal data packet itself.
-This means, that if a message, which is compressed using a compressed data packet is wrapped using a one-pass-signature, the signature is still being calculated over the plaintext inside the literal data packet.</p>
-<p>There is one exception though.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Of course there is.</p>
-</div>
-<p>The OPS packet has a “nested” flag<a class="footnote-reference brackets" href="#nested-flag" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, which can either be <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>.
-If this flag is set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, it indicates that further OPSs will follow this packet, which are calculated over the same plaintext data as this OPS is. A value of <code class="docutils literal notranslate"><span class="pre">1</span></code> indicates, that either no further OPS packets will follow (this OPS is the last), or that this OPS is calculated over the the usual plaintext data, but wrapped inside any OPS+Signature combinations that follow this OPS.</p>
-<p>This mechanism enables attested signatures, where the signer signs an already one-pass-signed message including the already contained signature.</p>
+<h4><span class="section-number">21.1.1.5. </span>Nesting of one-pass signatures<a class="headerlink" href="#nesting-of-one-pass-signatures" title="Link to this heading">¶</a></h4>
+<p>A <a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">one-pass signed message</span></a> can actually contain multiple, nested, signatures.</p>
+<p>Formally, this is the case because in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages">OpenPGP message grammar</a> when an input OpenPGP message is one-pass signed, the resulting sequence of packets is in turn also considered an OpenPGP message.</p>
+<p>Thus, this signed message can be one-pass signed yet again. This construction means that all signature packet pairs bracket the innermost message, and the outermost one-pass signature packet corresponds to the outermost signature packet.</p>
+<section id="two-semantics-of-nested-signatures">
+<h5><span class="section-number">21.1.1.5.1. </span>Two semantics of nested signatures<a class="headerlink" href="#two-semantics-of-nested-signatures" title="Link to this heading">¶</a></h5>
+<p>There are two different use cases and semantics for nested one-pass signatures:</p>
+<ul class="simple">
+<li><p>Multiple signers issue independent cryptographic signatures that are stored in one shared (and thus space-efficient) inline signed message. In this case, each signer makes a cryptographic statement about just the signed message. The signatures are independent of each other.</p></li>
+<li><p>Alternatively, a signer can sign not just the input message, but also include previous signatures in their signature. In this case, the signer makes a cryptographic statement about the pre-existing signature(s) combined with the signed message. This means that the new signer attests the previous signature(s)<a class="footnote-reference brackets" href="#but-why" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></li>
+</ul>
+</section>
+<section id="how-to-pick-one">
+<h5><span class="section-number">21.1.1.5.2. </span>How to pick one<a class="headerlink" href="#how-to-pick-one" title="Link to this heading">¶</a></h5>
+<p>When nesting one-pass signatures, the default expectation would be that each enclosing signature makes a statement about the complete message it contains, including any one-pass signatures within the inner message.</p>
+<p>Issuers of signatures can choose the semantics of their signature, using the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1">“nested” flag</a> in the <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packet</span></a>. The “nested” flag has a value of either <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Meaning of the “nested” flag:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> means that the one-pass signature that this signature encloses is <em>not</em> signed/attested. The new signature doesn’t make a cryptographic statement about the directly enclosed signature. If the directly enclosed one-pass signature also has its “nested” flag set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, the enclosing signature also doesn’t include the subsequent inner signature in its hashing, and so on.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> means that this one-pass signature makes a cryptographic statement about the full message that it encloses, including all enclosed signatures, if any.</p></li>
+</ul>
+<p>A typical pattern of use is to set the “nested” flag to <code class="docutils literal notranslate"><span class="pre">1</span></code> on the innermost signature and to <code class="docutils literal notranslate"><span class="pre">0</span></code> on all enclosing signatures. With this pattern, all signatures are independent of each other. Each signature makes a statement about just the innermost message payload (which is stored in a literal data packet).</p>
+</section>
+<section id="examples">
+<h5><span class="section-number">21.1.1.5.3. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h5>
 <p>As a practical example, consider the following notation:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span></code> represents a literal data packet with the content <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">COMP(XYZ)</span></code> represents a compressed data packet over some other packet <code class="docutils literal notranslate"><span class="pre">XYZ</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">OPS₁</span></code> represents a one-pass-signature packet with the nested flag set to <code class="docutils literal notranslate"><span class="pre">1</span></code>. Analogous, <code class="docutils literal notranslate"><span class="pre">OPS₀</span></code> has the nested flag set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OPS₁</span></code> represents a one-pass signature packet with the nested flag set to <code class="docutils literal notranslate"><span class="pre">1</span></code>. Analogous, <code class="docutils literal notranslate"><span class="pre">OPS₀</span></code> has the nested flag set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIG</span></code> represents a signature packet.</p></li>
 </ul>
-<p>A normal, one-pass-signed message looks like this:
+<p>A normal, one-pass signed message looks like this:
 <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span></code></p>
-<p>Here, the signature is calculated over the plaintext <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>, as is it in a message that has the following form: <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">COMP(LIT(&quot;Hello</span> <span class="pre">World&quot;))</span> <span class="pre">SIG</span></code>.</p>
-<p>A message, where multiple one-pass-signatures are calculated over the same plaintext looks the following:
-<code class="docutils literal notranslate"><span class="pre">OPS₀</span> <span class="pre">OPS₀</span> <span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span> <span class="pre">SIG</span> <span class="pre">SIG</span></code></p>
-<p>All three signatures are calculated over the same plaintext <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>.</p>
-<p>Now, a message, where the signer attests an already signed message has the following format:
-<code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span> <span class="pre">SIG</span></code></p>
-<p>While the inner signature is calculated over the usual plaintext <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>, the outer signature is instead calculated over <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">Hello</span> <span class="pre">World</span> <span class="pre">SIG</span></code>.</p>
+<p>Here, the signature is calculated over the payload <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>. The signature doesn’t change if the signed message is instead stored as: <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">COMP(LIT(&quot;Hello</span> <span class="pre">World&quot;))</span> <span class="pre">SIG</span></code> (also see <a class="reference internal" href="#hashing-inline-data"><span class="std std-ref">Hashing the signed payload of an inline signature</span></a>).</p>
+<p>A message, where multiple independent one-pass signatures are calculated over the same payload looks the following:
+<code class="docutils literal notranslate"><span class="pre">OPS₀</span> <span class="pre">OPS₀</span> <span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span> <span class="pre">SIG</span> <span class="pre">SIG</span></code> - all three signatures are calculated over the same payload <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>.</p>
+<p>By contrast, a message, where the signer attests an already signed message has the following format:
+<code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">OPS₁</span> <span class="pre">LIT(&quot;Hello</span> <span class="pre">World&quot;)</span> <span class="pre">SIG</span> <span class="pre">SIG</span></code>. While the inner signature is calculated over the usual payload <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World</span></code>, the outer signature is instead calculated over <code class="docutils literal notranslate"><span class="pre">OPS₁</span> <span class="pre">Hello</span> <span class="pre">World</span> <span class="pre">SIG</span></code>.</p>
+</section>
+</section>
+</section>
+<section id="prefixed-signed-message">
+<span id="prefixed-signature"></span><h3><span class="section-number">21.1.2. </span>Prefixed signed message<a class="headerlink" href="#prefixed-signed-message" title="Link to this heading">¶</a></h3>
+<p>A <a class="reference internal" href="../glossary.html#term-Prefixed-signed-Message"><span class="xref std std-term">prefixed signed message</span></a> consists of <a class="reference internal" href="../glossary.html#term-Signature-Packet"><span class="xref std std-term">signature packet(s)</span></a> followed by the message. For the verifier, processing one-pass signed and prefixed signed messages are equally convenient. However, on the signer’s side, it takes more resources to generate a <a class="reference internal" href="../glossary.html#term-Prefixed-signed-Message"><span class="xref std std-term">prefixed signed message</span></a>.</p>
+<p>This is a legacy format. Not all modern implementations support. However, for example, GnuPG 2.4.x can validate messages with this signature format.</p>
+<section id="id3">
+<h4><span class="section-number">21.1.2.1. </span>Structure<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
+<p>In this format, the signature packets are stored ahead of the message itself:</p>
+<ol class="arabic simple">
+<li><p><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">Data signature packets</span></a></strong>: These one or more packets contain the <a class="reference internal" href="../glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> corresponding to the original data.</p></li>
+<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit"><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a></strong></a>: This contains the original data (e.g., the body of a message), without additional interpretation or conversion.</p></li>
+</ol>
+<figure class="align-default" id="fig-prefixed-signed-message">
+<img alt="Depicts the structure of a prefixed signed message. As an example, two signature packets lead a literal data packet. Arrows show, how the signatures hash algorithm field is inspected to start the hashing procedure." src="../_images/prefixed-signed-message.svg" /><figcaption>
+<p><span class="caption-number">Fig. 35 </span><span class="caption-text">Structure of a prefixed signed message.</span><a class="headerlink" href="#fig-prefixed-signed-message" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Compared to a <a class="reference internal" href="../glossary.html#term-One-pass-signed-Message"><span class="xref std std-term">one-pass signed message</span></a>, there are no <a class="reference internal" href="../glossary.html#term-One-pass-Signature-Packet"><span class="xref std std-term">one-pass signature packets</span></a> in this format, and the (otherwise equivalent) <a class="reference internal" href="../glossary.html#term-Signature-Packet"><span class="xref std std-term">signature packet(s)</span></a> are stored ahead of the signed data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Even when a prefixed signed message contains multiple signature packets, each signature packet contains an independent signature of just the message payload. Signatures do not include subsequent signatures in their hashes, every signature is only over the raw payload data of the message.</p>
+</div>
+</section>
+<section id="format-is-inefficient-for-the-signer">
+<h4><span class="section-number">21.1.2.2. </span>Format is inefficient for the signer<a class="headerlink" href="#format-is-inefficient-for-the-signer" title="Link to this heading">¶</a></h4>
+<p>For verification, this format is equally convenient as the one-pass signed message form.</p>
+<p>However, when a signer creates a <a class="reference internal" href="../glossary.html#term-Prefixed-signed-Message"><span class="xref std std-term">prefixed signed message</span></a>, the signed data must be processed twice:</p>
+<ul class="simple">
+<li><p>once reading it to calculate the cryptographic signature, and</p></li>
+<li><p>once more to store the data in the generated OpenPGP message, after the signature packet(s).</p></li>
+</ul>
+</section>
+</section>
+<section id="hashing-the-signed-payload-of-an-inline-signature">
+<span id="hashing-inline-data"></span><h3><span class="section-number">21.1.3. </span>Hashing the signed payload of an inline signature<a class="headerlink" href="#hashing-the-signed-payload-of-an-inline-signature" title="Link to this heading">¶</a></h3>
+<p>When inline signing a message, the hash for the signed content is calculated over just the raw payload contained in a literal data packet. No metadata of the literal data packet is included in the signed hash. Even if a compressed data packet wraps the literal data packet, the inline signature is still calculated over the uncompressed content of the literal data packet.</p>
+<p>The calculation of inline data signatures is unusual in two regards:</p>
+<ul class="simple">
+<li><p>Most OpenPGP signature calculations include packet metadata, but for literal data packets, only the payload is hashed.</p></li>
+<li><p>Packets are usually hashed without transforming the packet content for hashing. Decompressing the content of a compressed data packet for hashing is an exception to this pattern.</p></li>
+</ul>
+<p>However, this approach means that detached signatures and inline signatures are calculated on exactly the same data.</p>
+<p>One format can be transformed into the other, after the fact, without requiring the private key material of the signer. A compression layer can be inserted or removed without disturbing the validity of an existing signature.</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="nested-flag" role="doc-footnote">
+<aside class="footnote brackets" id="inline-signature-formats" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>See <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1">description of the nested flag</a>.</p>
+<p>One-pass signing was <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc2440.html#section-5.4">first specified in RFC 2440</a>. The format was not supported in PGP 2.6.x. For one discussion of the feature in the lead-up to the standardization of RFC 2440, see <a class="reference external" href="https://mailarchive.ietf.org/arch/msg/openpgp/U4Qg3Z9bj-RDgpwW5nmRNetOZKY/">here</a>.</p>
+</aside>
+<aside class="footnote brackets" id="but-why" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>It’s unclear to the authors of this text if any real-world use case for signatures that notarize inner signatures exists.</p>
 </aside>
 </aside>
+</section>
 </section>
 </section>
 
@@ -167,7 +297,7 @@ If this flag is set to <code class="docutils literal notranslate"><span class="p
 <li class="toctree-l1"><a class="reference internal" href="private_keys.html">19. Advanced material: Private keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signatures.html">20. Advanced material: Signatures</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">21. Advanced material: Signatures over data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#nesting-of-one-pass-signatures">21.1. Nesting of one-pass signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#internals-of-inline-signed-messages">21.1. Internals of inline signed messages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="signing_components.html">22. Advanced material: Signatures on components</a></li>
@@ -224,7 +354,7 @@ If this flag is set to <code class="docutils literal notranslate"><span class="p
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &copy;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

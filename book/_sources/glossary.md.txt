@@ -115,7 +115,7 @@ Component Key
     See {term}`OpenPGP Component Key`.
 
 Compressed Data Packet
-    A packet containing a compressed {term}`OpenPGP Message` (typically a {term}`Literal Data Packet`).
+    A {term}`packet` that contains a compressed {term}`OpenPGP Message` (typically a {term}`Literal Data Packet`). A Compressed Data Packet represents a "compressed message".
 
 Compression
     See {term}`Data Compression`.
@@ -245,7 +245,14 @@ Initial Introducer
     An {term}`OpenPGP Certificate` explicitly {term}`delegated<Delegation>` to from a {term}`Trust Anchor`.
 
 Inline Signature
-    A {term}`Data Signature` which exists encapsulated alongside the data it was created for in an OpenPGP container. See [](forms-of-data-signatures).
+    An [inline signature](inline-signature) is a type of {term}`OpenPGP message` which stores a {term}`Data Signature` alongside the message it signs. Both the message and the signature are stored in a shared OpenPGP container.
+     
+    The standard defines two variant formats for inline signatures:
+     
+    - {term}`One-pass signed Message`: This format is now commonly used.
+    - {term}`Prefixed signed Message`: This is a historical format. It is still supported, but rarely used.
+      
+    For more context, see [](forms-of-data-signatures).
 
 Issuer
     An entity, that created an {term}`OpenPGP Signature Packet` using a {term}`Transferable Secret Key`.
@@ -307,7 +314,11 @@ Life-cycle Management
     See [](self-signatures).
 
 Literal Data Packet
-    A {term}`packet` which contains the plaintext data of an encrypted and/or signed message. See [RFC 5.9](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit) for more details.
+    A {term}`packet` that contains a payload of data. It represents a "literal message".
+     
+    A literal data packet typically stores the paintext data of an encrypted message, and/or the data of an inline signed message.
+     
+     See [RFC 5.9](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit).
 
 MAC
     See {term}`Message Authentication Code`.
@@ -336,13 +347,24 @@ Notation Tag
     Part of a {term}`Notation` name.
 
 One-pass Signature Packet
-    One or more {term}`packets<OpenPGP Signature Packet>` before the actual data in a {term}`Data Signature` which contain information to allow a receiving {term}`implementation<OpenPGP Implementation>` to create {term}`hashes<Hash Digest>` required for signature verification. See [RFC 5.4](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#one-pass-sig) for more details.
+    One or more {term}`packets<Packet>` before the actual data in a {term}`Data Signature` which contain information to allow a receiving {term}`implementation<OpenPGP Implementation>` to create {term}`hashes<Hash Digest>` required for signature verification.
+     
+     See [](one-pass-signature-packet).
+     Also see [RFC 5.4](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#one-pass-sig).
+
+One-pass signed Message
+    The commonly used form of an OpenPGP {term}`Inline Signature`. It combines an {term}`OpenPGP Message` with {term}`signature packets<OpenPGP Signature Packet>` and accompanying auxiliary {term}`One-pass signatures<One-pass Signature Packet>`.
+    
+    For details see [](one-pass-signature).
 
 OpenPGP Certificate
     An OpenPGP certificate contains public key material, identity claims and third party certifications (but no private key material)
 
 OpenPGP Component Key
     An {term}`OpenPGP Primary Key` or {term}`OpenPGP Subkey`. For an in-depth discussion see [](component-keys).
+
+OpenPGP data
+    Any data in OpenPGP format, represented as a series of OpenPGP packets. The data could for example represent an {term}`OpenPGP Certificate`, or an {term}`OpenPGP Signature Packet` combined with plaintext or encrypted data.
 
 OpenPGP Fingerprint
     An OpenPGP Fingerprint is a shorthand representation of an {term}`OpenPGP Component Key`. Fingerprints effectively act as unique identifiers. See [](fingerprint).
@@ -356,7 +378,14 @@ OpenPGP Key
     Used either for an {term}`OpenPGP Certificate` (containing public key material and metadata), or for an {term}`OpenPGP Private Key`. See [](/certificates) for an in-depth discussion.
 
 OpenPGP Message
-    A data structure, which contains OpenPGP packets, such as {term}`literal<Literal Data Packet>`, {term}`compressed<Compressed Data Packet>`, {term}`encrypted<Encrypted Data>` or {term}`signed<Data Signature>` data.
+    A series of OpenPGP packets that represents one of the following formats:
+    
+    - an encrypted message
+    - a signed message
+    - a {term}`compressed message<compressed data packet>`
+    - a {term}`literal message<literal data packet>`
+
+    Also see [RFC 10.3](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages).
 
 OpenPGP Public Key
     See {term}`OpenPGP Certificate`.
@@ -428,6 +457,10 @@ Preferred AEAD Ciphersuites Subpacket
 
     See [RFC 5.2.3.15](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-aead-ciphersuites)
 
+Prefixed signed Message
+    A type of {term}`Inline Signature`. This form of {term}`Inline Signature` is historical and now rarely used. Superseded by {term}`One-pass signed Message`.
+     
+     For details see [](prefixed-signature).
 
 Primary Component Key
     See {term}`OpenPGP Primary Key`.

@@ -5,48 +5,189 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Advanced material: Signatures over data
 
-## Nesting of one-pass signatures
+(adv-inline-signature)=
+## Internals of inline signed messages
 
-Signing a message using the one-pass mechanism involves prepending a *One-Pass-Signature* (OPS) packet to the message and appending the corresponding signature, sandwiching the signed content.
+Inline signed messages are one of the forms of [OpenPGP data signatures](forms-of-data-signatures). An {term}`inline signed message <inline signature>` joins the signed data and its corresponding {term}`data signature` into a single {term}`OpenPGP message`.
 
-An OpenPGP message can contain multiple signatures added that way.
+OpenPGP defines two variant forms of inline signed messages:
 
-```{note}
-One-Pass-Signatures are nested, meaning the outermost One-Pass-Signature packet corresponds to the outermost signature packet.
-``` 
+1. **{term}`One-pass signed messages<One-pass signed Message>`** This is the commonly used format for inline signed messages. A signer can produce and a verifier can verify this format in one pass.
+2. **{term}`Prefixed signed messages<Prefixed signed Message>`** This format predates[^inline-signature-formats] {term}`one-pass signed messages<One-pass signed Message>` and is conceptually slightly simpler. However, it is now rarely used and can be considered a legacy format.
 
-When a message is signed, the signature is always calculated over the contents of the literal data packet, not the literal data packet itself.
-This means, that if a message, which is compressed using a compressed data packet is wrapped using a one-pass-signature, the signature is still being calculated over the plaintext inside the literal data packet.
+[^inline-signature-formats]: One-pass signing was [first specified in RFC 2440](https://www.rfc-editor.org/rfc/rfc2440.html#section-5.4). The format was not supported in PGP 2.6.x. For one discussion of the feature in the lead-up to the standardization of RFC 2440, see [here](https://mailarchive.ietf.org/arch/msg/openpgp/U4Qg3Z9bj-RDgpwW5nmRNetOZKY/).
 
-There is one exception though.
-```{note}
-Of course there is.
+(one-pass-signature)=
+### One-pass signed message
+
+This is the commonly used format for inline signed messages.
+
+#### Structure
+
+A {term}`one-pass signed<One-pass signed Message>` {term}`OpenPGP message` consists of three segments:
+
+1. **{term}`One-pass signature packets<One-pass signature packet>`**: These one or more {term}`packets<Packet>` precede the signed data and enable {term}`signature<OpenPGP Signature Packet>` computation (both creation and verification) in a single pass.
+
+2. **{term}`OpenPGP message`**: This contains the original payload data (e.g., the body of a message), which is signed without additional interpretation or conversion. Internally, a signed [message](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages) consists of one or more OpenPGP packets. This payload is typically stored as either a {term}`Literal Data Packet`, or a {term}`Compressed Data Packet`.
+
+3. **{term}`Data signature packets<OpenPGP Signature Packet>`**: These contain the {term}`cryptographic signature` corresponding to the signed data.
+
+```{figure} ../plain_svg/ops-signed-message.svg
+:name: fig-ops-signed-message
+:alt: Depicts the structure of a one-pass signed message. Two one-pass signatures lead a literal data packet, followed by two signature packets. Arrows show, how the hash-algorithm field of the one-pass signatures is inspected in order to initiate the hashing procedure.
+
+The structure of a one-pass signed message.
 ```
 
-The OPS packet has a "nested" flag[^nested-flag], which can either be `1` or `0`.
-If this flag is set to `0`, it indicates that further OPSs will follow this packet, which are calculated over the same plaintext data as this OPS is. A value of `1` indicates, that either no further OPS packets will follow (this OPS is the last), or that this OPS is calculated over the the usual plaintext data, but wrapped inside any OPS+Signature combinations that follow this OPS.
+```{note}
+Despite its name, a {term}`one-pass signature packet` is not a type of {term}`signature packet<OpenPGP Signature Packet>`.
 
-[^nested-flag]: See [description of the nested flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1).
+Instead, it's a type of auxiliary packet that can be used in conjunction with {term}`signature packets<OpenPGP Signature Packet>`, to enable efficient generation and checking of inline signed messages.
+ 
+The structure of a {term}`one-pass signature packet` closely mirrors an {term}`OpenPGP signature packet`. However, it does not contain a cryptographic signature.
+```
 
-This mechanism enables attested signatures, where the signer signs an already one-pass-signed message including the already contained signature.
+(one-pass-signature-packet)=
+#### The function of the one-pass signature packet
+
+The purpose of this packet is efficient handling of inline signed messages in *stream processing* mode. This is particularly important when the signed message is large and exceeds available memory in size.
+
+Without this packet, the position of signature packets within an inline signed OpenPGP message constitutes a trade-off:
+
+- The producer of a signed OpenPGP message wants to streamline the signature calculation process in such a way that allows to emit a copy of the signed data while calculating the cryptographic signature. On the signer's side, the signature packet is therefore easy to store after the signed data.
+- The verifier, on the other hand, needs some information from the signature packet to perform the signature verification process. In particular, the verifier needs to know which hash algorithm was used to calculate the signature, to perform the same hashing operation on the message data.
+
+As a consequence, without a {term}`one-pass signature packet`, either:
+
+- The producer would need to process the input data twice:
+    - once to calculate the cryptographic signature, and
+    - a second time to emit the signed data (this format result is a [](prefixed-signature)), or
+- The verifier would need to process the OpenPGP message twice:
+    - once to read the signature packets at the end to determine the hash algorithm, and
+    - a second time to process the body of the message, and calculate the hash verifying the signature.
+
+The one-pass signature packet solves this issue by allowing both the *creation* and *verification* of a signed message in a single pass. The one-pass signature packet effectively contains an advance copy of the data in the signature packet, but without the cryptographic signature data.
+
+The signer can easily emit the metadata in the one-pass signature packet before processing the full message. For the verifier, availability of this metadata at the start of the signed message enables processing of the message body.
+
+Even in stream processing mode, signers can efficiently generate one-pass signed messages, and verifiers can efficiently check them.
+
+#### Creation
+
+To produce a {term}`one-pass inline signature<One-pass signed Message>`, the {term}`signer` decides on a hash algorithm and emits a {term}`one-pass signature packet<One-pass Signature Packet>` into the destination {term}`OpenPGP message`. This contains essential information such as the {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`signing key<OpenPGP Component Key>` and the {term}`hash<Hash Digest>` algorithm used for computing the {term}`signature<OpenPGP Signature Packet>`'s {term}`hash digest`. The signer then processes the entirety of the signed message, emitting it as a series of one or more {term}`packets<Packet>` into the message as well. Once the data is processed, the {term}`signer` calculates a {term}`cryptographic signature` using the calculated hash value. Lastly, the result is emitted as a {term}`data signature packet` to the output message, and the whole packet sequence can be efficiently stored or transmitted.
+
+#### Verification
+
+For efficient {term}`verification`, an application must understand how to handle the {term}`OpenPGP message` prior to reading from it. This requirement is addressed by the {term}`one-pass signature packets<One-pass Signature Packet>` located at the beginning of {term}`inline signed<Inline Signature>` messages. This setup enables the verifier to process the data correctly and efficiently in a single pass.
+
+Strictly speaking, knowing just the hash algorithm would be sufficient to begin the verification process. However, having efficient access to the signer's fingerprint or key ID upfront allows OpenPGP software to fetch the signer's certificate(s) before processing the entirety of the - potentially large - signed data. This may involve downloading the certificate from a keyserver. In case fetching the signer's certificate(s) fails, or requires additional input from the user, it is better to signal the user about this before processing the data.
+
+{term}`one-pass inline signed messages<One-pass signed Message>` enable efficient {term}`verification` in *one pass*, structured as follows:
+
+1. **Initiation with {term}`one-pass signature packets<One-pass Signature Packet>`**: These {term}`packets<Packet>` begin the {term}`verification` process. They include the {term}`signer`'s {term}`key ID`/{term}`fingerprint<OpenPGP Fingerprint>`, essential for identifying the appropriate {term}`public key<OpenPGP Certificate>` for signature {term}`validation`.
+
+2. **Processing the {term}`OpenPGP message`**: This step involves {term}`hashing<Hash Digest>` its data, preparing it for {term}`signature<OpenPGP Signature Packet>` {term}`verification`.
+
+3. **{term}`Verifying<Verification>` {term}`signature packets<OpenPGP Signature Packet>`**: Located at the end of the message, these {term}`packets<Packet>` are checked against the previously calculated {term}`hash digest`.
+
+Important to note, the {term}`signer`'s {term}`public key<OpenPGP Certificate>`, critical for the final {term}`verification` step, is not embedded in the message. Verifiers must acquire this {term}`key` externally (e.g., from a {term}`key server`) to authenticate the {term}`signature<OpenPGP Signature Packet>` successfully.
+
+#### Nesting of one-pass signatures
+
+A {term}`one-pass signed message` can actually contain multiple, nested, signatures.
+
+Formally, this is the case because in the [OpenPGP message grammar](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages) when an input OpenPGP message is one-pass signed, the resulting sequence of packets is in turn also considered an OpenPGP message.
+
+Thus, this signed message can be one-pass signed yet again. This construction means that all signature packet pairs bracket the innermost message, and the outermost one-pass signature packet corresponds to the outermost signature packet.
+
+##### Two semantics of nested signatures
+
+There are two different use cases and semantics for nested one-pass signatures:
+
+- Multiple signers issue independent cryptographic signatures that are stored in one shared (and thus space-efficient) inline signed message. In this case, each signer makes a cryptographic statement about just the signed message. The signatures are independent of each other.
+- Alternatively, a signer can sign not just the input message, but also include previous signatures in their signature. In this case, the signer makes a cryptographic statement about the pre-existing signature(s) combined with the signed message. This means that the new signer attests the previous signature(s)[^but-why].
+
+[^but-why]: It's unclear to the authors of this text if any real-world use case for signatures that notarize inner signatures exists.
+
+##### How to pick one
+
+When nesting one-pass signatures, the default expectation would be that each enclosing signature makes a statement about the complete message it contains, including any one-pass signatures within the inner message.
+
+Issuers of signatures can choose the semantics of their signature, using the ["nested" flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1) in the {term}`one-pass signature packet`. The "nested" flag has a value of either `1` or `0`.
+
+Meaning of the "nested" flag:
+
+- `0` means that the one-pass signature that this signature encloses is *not* signed/attested. The new signature doesn't make a cryptographic statement about the directly enclosed signature. If the directly enclosed one-pass signature also has its "nested" flag set to `0`, the enclosing signature also doesn't include the subsequent inner signature in its hashing, and so on.
+- `1` means that this one-pass signature makes a cryptographic statement about the full message that it encloses, including all enclosed signatures, if any.
+
+A typical pattern of use is to set the "nested" flag to `1` on the innermost signature and to `0` on all enclosing signatures. With this pattern, all signatures are independent of each other. Each signature makes a statement about just the innermost message payload (which is stored in a literal data packet).
+
+##### Examples
 
 As a practical example, consider the following notation:
 * `LIT("Hello World")` represents a literal data packet with the content `Hello World`.
 * `COMP(XYZ)` represents a compressed data packet over some other packet `XYZ`.
-* `OPS₁` represents a one-pass-signature packet with the nested flag set to `1`. Analogous, `OPS₀` has the nested flag set to `0`.
+* `OPS₁` represents a one-pass signature packet with the nested flag set to `1`. Analogous, `OPS₀` has the nested flag set to `0`.
 * `SIG` represents a signature packet.
 
-A normal, one-pass-signed message looks like this:
+A normal, one-pass signed message looks like this:
 `OPS₁ LIT("Hello World") SIG`
 
-Here, the signature is calculated over the plaintext `Hello World`, as is it in a message that has the following form: `OPS₁ COMP(LIT("Hello World")) SIG`.
+Here, the signature is calculated over the payload `Hello World`. The signature doesn't change if the signed message is instead stored as: `OPS₁ COMP(LIT("Hello World")) SIG` (also see [](hashing-inline-data)).
 
-A message, where multiple one-pass-signatures are calculated over the same plaintext looks the following:
-`OPS₀ OPS₀ OPS₁ LIT("Hello World") SIG SIG SIG`
+A message, where multiple independent one-pass signatures are calculated over the same payload looks the following:
+`OPS₀ OPS₀ OPS₁ LIT("Hello World") SIG SIG SIG` - all three signatures are calculated over the same payload `Hello World`.
 
-All three signatures are calculated over the same plaintext `Hello World`.
+By contrast, a message, where the signer attests an already signed message has the following format:
+`OPS₁ OPS₁ LIT("Hello World") SIG SIG`. While the inner signature is calculated over the usual payload `Hello World`, the outer signature is instead calculated over `OPS₁ Hello World SIG`.
 
-Now, a message, where the signer attests an already signed message has the following format:
-`OPS₁ OPS₁ LIT("Hello World") SIG SIG`
+(prefixed-signature)=
+### Prefixed signed message
 
-While the inner signature is calculated over the usual plaintext `Hello World`, the outer signature is instead calculated over `OPS₁ Hello World SIG`.
+A {term}`prefixed signed message` consists of {term}`signature packet(s)<signature packet>` followed by the message. For the verifier, processing one-pass signed and prefixed signed messages are equally convenient. However, on the signer's side, it takes more resources to generate a {term}`prefixed signed message`.
+
+This is a legacy format. Not all modern implementations support. However, for example, GnuPG 2.4.x can validate messages with this signature format.
+
+#### Structure
+
+In this format, the signature packets are stored ahead of the message itself:
+
+1. **{term}`Data signature packets<OpenPGP Signature Packet>`**: These one or more packets contain the {term}`cryptographic signature` corresponding to the original data.
+
+2. [**{term}`OpenPGP message`**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit): This contains the original data (e.g., the body of a message), without additional interpretation or conversion.
+
+```{figure} ../plain_svg/prefixed-signed-message.svg
+:name: fig-prefixed-signed-message
+:alt: Depicts the structure of a prefixed signed message. As an example, two signature packets lead a literal data packet. Arrows show, how the signatures hash algorithm field is inspected to start the hashing procedure.
+
+Structure of a prefixed signed message.
+```
+
+Compared to a {term}`one-pass signed message`, there are no {term}`one-pass signature packets<One-pass Signature Packet>` in this format, and the (otherwise equivalent) {term}`signature packet(s)<signature packet>` are stored ahead of the signed data.
+
+```{note}
+Even when a prefixed signed message contains multiple signature packets, each signature packet contains an independent signature of just the message payload. Signatures do not include subsequent signatures in their hashes, every signature is only over the raw payload data of the message.
+```
+
+#### Format is inefficient for the signer
+
+For verification, this format is equally convenient as the one-pass signed message form.
+
+However, when a signer creates a {term}`prefixed signed message`, the signed data must be processed twice:
+
+- once reading it to calculate the cryptographic signature, and
+- once more to store the data in the generated OpenPGP message, after the signature packet(s).
+
+(hashing-inline-data)=
+### Hashing the signed payload of an inline signature
+
+When inline signing a message, the hash for the signed content is calculated over just the raw payload contained in a literal data packet. No metadata of the literal data packet is included in the signed hash. Even if a compressed data packet wraps the literal data packet, the inline signature is still calculated over the uncompressed content of the literal data packet.
+
+The calculation of inline data signatures is unusual in two regards:
+
+- Most OpenPGP signature calculations include packet metadata, but for literal data packets, only the payload is hashed.  
+- Packets are usually hashed without transforming the packet content for hashing. Decompressing the content of a compressed data packet for hashing is an exception to this pattern.
+
+However, this approach means that detached signatures and inline signatures are calculated on exactly the same data.
+
+One format can be transformed into the other, after the fact, without requiring the private key material of the signer. A compression layer can be inserted or removed without disturbing the validity of an existing signature.
