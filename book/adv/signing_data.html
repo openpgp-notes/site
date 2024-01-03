@@ -193,7 +193,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>In this format, the signature packets are stored ahead of the message itself:</p>
 <ol class="arabic simple">
 <li><p><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">Data signature packets</span></a></strong>: These one or more packets contain the <a class="reference internal" href="../glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> corresponding to the original data.</p></li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit"><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a></strong></a>: This contains the original data (e.g., the body of a message), without additional interpretation or conversion.</p></li>
+<li><p><strong><a class="reference internal" href="../glossary.html#term-OpenPGP-Message"><span class="xref std std-term">OpenPGP message</span></a></strong>: This contains the original data (e.g., the body of a message), without additional interpretation or conversion.</p></li>
 </ol>
 <figure class="align-default" id="fig-prefixed-signed-message">
 <img alt="Depicts the structure of a prefixed signed message. As an example, two signature packets lead a literal data packet. Arrows show, how the signatures hash algorithm field is inspected to start the hashing procedure." src="../_images/prefixed-signed-message.svg" /><figcaption>
