@@ -226,7 +226,7 @@ Disadvantages/risks of minimizing certificates:
 - Refreshing certificates from key servers may inflate the certificate again, since OpenPGP certificates tend to act as [append-only structures](append-only).
 - Some libraries, such as [anonaddy-sequoia](https://gitlab.com/willbrowning/anonaddy-sequoia/-/blob/master/src/sequoia.rs?ref_type=heads#L125) strip unusable encryption subkeys, but retain at least one subkey, even if all subkeys are expired. Although this may leave only an expired encryption subkey in the certificate, this presents a better UX for the end-user who potentially is still in possession of the private key for decryption.
 
-## Guidelines
+### Guidelines
 
 1. Don't minimize certificates unless you have a good reason to.
 2. When minimizing a certificate, minimize it in a way that suites your use-case. E.g., when minimizing a certificate for distribution alongside a signed software packet, make sure to include enough historical self-signatures as to not break the verification of the signed packet.
