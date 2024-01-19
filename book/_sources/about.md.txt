@@ -23,13 +23,15 @@ With OpenPGP, you can:
 
 Three groups of people interact with OpenPGP:
 
-1. End-users, who use software that contains OpenPGP functionality (e.g., the Thunderbird email software)
+1. End users, who use software that contains OpenPGP functionality (e.g., the Thunderbird email software)
 2. Software developers who build applications that contain OpenPGP functionality
 3. Implementers of OpenPGP libraries (or other software that directly handles the processing of internal OpenPGP data structures)
 
-This document is not intended for end-users or implementers of OpenPGP libraries (or other software that directly handles internal OpenPGP data structures).
+This document is not intended for end users.
 
-Instead, this document is focused on the second group, application developers, who use OpenPGP functionality in their software projects. It describes the properties of the OpenPGP system and its uses. It presupposes solid knowledge of software development concepts and of general cryptographic concepts. Thus, this text describes OpenPGP at the "library-level," teaching concepts that will help software developers get started as a user of any implementation (e.g., [OpenPGP.js](https://openpgpjs.org/), [Sequoia-PGP](https://sequoia-pgp.org/)).
+Instead, this document is mainly aimed at the second group, application developers, who use OpenPGP functionality in their software projects. It describes the properties of the OpenPGP system and its uses. It presupposes solid knowledge of software development concepts and of general cryptographic concepts. Thus, this text describes OpenPGP at the "library-level," teaching concepts that will help software developers get started as a user of any implementation (e.g., [OpenPGP.js](https://openpgpjs.org/), [Sequoia-PGP](https://sequoia-pgp.org/)).
+
+The document may also serve as a useful supplement to the RFC for implementers of OpenPGP libraries (or other software that directly handles internal OpenPGP data structures).
 
 With the emergence of a new crop of modern, high-quality OpenPGP libraries, and the imminent release of the updated [OpenPGP version 6 specification](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/), we think that now is a great time to implement OpenPGP functionality in applications or to modernize existing OpenPGP subsystems.
 

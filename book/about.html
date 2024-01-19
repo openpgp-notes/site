@@ -84,12 +84,13 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <h2><span class="section-number">1.2. </span>Who is the audience for this document?<a class="headerlink" href="#who-is-the-audience-for-this-document" title="Link to this heading">¶</a></h2>
 <p>Three groups of people interact with OpenPGP:</p>
 <ol class="arabic simple">
-<li><p>End-users, who use software that contains OpenPGP functionality (e.g., the Thunderbird email software)</p></li>
+<li><p>End users, who use software that contains OpenPGP functionality (e.g., the Thunderbird email software)</p></li>
 <li><p>Software developers who build applications that contain OpenPGP functionality</p></li>
 <li><p>Implementers of OpenPGP libraries (or other software that directly handles the processing of internal OpenPGP data structures)</p></li>
 </ol>
-<p>This document is not intended for end-users or implementers of OpenPGP libraries (or other software that directly handles internal OpenPGP data structures).</p>
-<p>Instead, this document is focused on the second group, application developers, who use OpenPGP functionality in their software projects. It describes the properties of the OpenPGP system and its uses. It presupposes solid knowledge of software development concepts and of general cryptographic concepts. Thus, this text describes OpenPGP at the “library-level,” teaching concepts that will help software developers get started as a user of any implementation (e.g., <a class="reference external" href="https://openpgpjs.org/">OpenPGP.js</a>, <a class="reference external" href="https://sequoia-pgp.org/">Sequoia-PGP</a>).</p>
+<p>This document is not intended for end users.</p>
+<p>Instead, this document is mainly aimed at the second group, application developers, who use OpenPGP functionality in their software projects. It describes the properties of the OpenPGP system and its uses. It presupposes solid knowledge of software development concepts and of general cryptographic concepts. Thus, this text describes OpenPGP at the “library-level,” teaching concepts that will help software developers get started as a user of any implementation (e.g., <a class="reference external" href="https://openpgpjs.org/">OpenPGP.js</a>, <a class="reference external" href="https://sequoia-pgp.org/">Sequoia-PGP</a>).</p>
+<p>The document may also serve as a useful supplement to the RFC for implementers of OpenPGP libraries (or other software that directly handles internal OpenPGP data structures).</p>
 <p>With the emergence of a new crop of modern, high-quality OpenPGP libraries, and the imminent release of the updated <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/">OpenPGP version 6 specification</a>, we think that now is a great time to implement OpenPGP functionality in applications or to modernize existing OpenPGP subsystems.</p>
 <p>The goal of this document is to offer an implementation-independent introduction to the OpenPGP technology, assisting software developers in quickly familiarizing themselves and serving as a pathway to relevant information in the RFC.</p>
 </section>

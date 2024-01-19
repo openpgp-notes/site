@@ -224,7 +224,7 @@ Disadvantages/risks of minimizing certificates:
 - As the OpenPGP subsystem on a user's computer learns about more certificates, third-party certifications that were previously unusable may become usable. Dropping third-party certifications by unknown issuers as a part of minimization prevents this mechanism.
 - An OpenPGP implementation that minimizes a certificate might remove component keys that it cannot use itself (e.g. because it doesn't support the algorithm of that key), even if the *receiving* implementation supports them.
 - Refreshing certificates from key servers may inflate the certificate again, since OpenPGP certificates tend to act as [append-only structures](append-only).
-- Some libraries, such as [anonaddy-sequoia](https://gitlab.com/willbrowning/anonaddy-sequoia/-/blob/master/src/sequoia.rs?ref_type=heads#L125) strip unusable encryption subkeys, but retain at least one subkey, even if all subkeys are expired. Although this may leave only an expired encryption subkey in the certificate, this presents a better UX for the end-user who potentially is still in possession of the private key for decryption.
+- Some libraries, such as [anonaddy-sequoia](https://gitlab.com/willbrowning/anonaddy-sequoia/-/blob/master/src/sequoia.rs?ref_type=heads#L125) strip unusable encryption subkeys, but retain at least one subkey, even if all subkeys are expired. Although this may leave only an expired encryption subkey in the certificate, this presents a better UX for the end user who potentially is still in possession of the private key for decryption.
 
 ### Guidelines
 

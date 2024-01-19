@@ -20,14 +20,14 @@ A central element of signature packets is the hash digest of the input data. Ope
 
 Different hash mechanisms offer different trade-offs:
 
-- *Hash digest size*: The size of the hash digest is a crucial consideration. Generally, a larger hash size is more robust against cryptanalysis. Hash digests are relatively small – typically ranging in size from 32 to 64 bytes. However, in some cases - especially where messages are transmitted over bandwidth-limited networks - larger hash sizes may unacceptably increase message size.
-- *Computational cost*: Different hash algorithms have different computational costs. Where computing environments are constrained, for example, some OpenPGP users may prefer to limit this cost.
+- *Hash digest size*: The size of the hash digest is a crucial consideration. Generally, a larger hash size is more robust against cryptanalysis. Hash digests are relatively small – typically ranging in size from 32 to 64 bytes. However, in some cases - especially where small messages are transmitted over bandwidth-limited networks - larger hash sizes may unacceptably increase message size.
+- *Computational cost*: Different hash algorithms have different computational costs. Where computing environments are constrained, some OpenPGP users may prefer to limit this cost.
 
 Choosing the hash algorithm is not arbitrary but is guided by specific preferences associated with the OpenPGP certificates involved. The following sections discuss how these preferences influence which hash algorithm is chosen.
 
 ### General signature context, local algorithm choice
 
-In many instances, the creation of a signature is not intended for a specific individual or entity. Instead, these signatures are designed to be valid for any recipient who might encounter them.
+In many instances, the creation of a signature is not intended for a specific individual or entity. Instead, these signatures are designed to be legible for any recipient who might encounter them.
 
 Take, for example, the self-signatures that are part of a certificate. These are intended for a wide audience — essentially, anyone who might interact with the certificate. Another example is the data signatures used for software packages. These signatures are not for a single recipient but for any user or system that verifies the signature, potentially spanning years.
 

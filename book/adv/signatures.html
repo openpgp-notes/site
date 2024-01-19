@@ -79,13 +79,13 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>A central element of signature packets is the hash digest of the input data. OpenPGP software typically supports a variety of hash mechanisms. This ability to choose from multiple options is part of what makes OpenPGP flexible in its cryptography, a feature known as <em>cryptographic agility</em>. The chosen mechanism is then used to calculate the hash digest.</p>
 <p>Different hash mechanisms offer different trade-offs:</p>
 <ul class="simple">
-<li><p><em>Hash digest size</em>: The size of the hash digest is a crucial consideration. Generally, a larger hash size is more robust against cryptanalysis. Hash digests are relatively small – typically ranging in size from 32 to 64 bytes. However, in some cases - especially where messages are transmitted over bandwidth-limited networks - larger hash sizes may unacceptably increase message size.</p></li>
-<li><p><em>Computational cost</em>: Different hash algorithms have different computational costs. Where computing environments are constrained, for example, some OpenPGP users may prefer to limit this cost.</p></li>
+<li><p><em>Hash digest size</em>: The size of the hash digest is a crucial consideration. Generally, a larger hash size is more robust against cryptanalysis. Hash digests are relatively small – typically ranging in size from 32 to 64 bytes. However, in some cases - especially where small messages are transmitted over bandwidth-limited networks - larger hash sizes may unacceptably increase message size.</p></li>
+<li><p><em>Computational cost</em>: Different hash algorithms have different computational costs. Where computing environments are constrained, some OpenPGP users may prefer to limit this cost.</p></li>
 </ul>
 <p>Choosing the hash algorithm is not arbitrary but is guided by specific preferences associated with the OpenPGP certificates involved. The following sections discuss how these preferences influence which hash algorithm is chosen.</p>
 <section id="general-signature-context-local-algorithm-choice">
 <h3><span class="section-number">20.2.1. </span>General signature context, local algorithm choice<a class="headerlink" href="#general-signature-context-local-algorithm-choice" title="Link to this heading">¶</a></h3>
-<p>In many instances, the creation of a signature is not intended for a specific individual or entity. Instead, these signatures are designed to be valid for any recipient who might encounter them.</p>
+<p>In many instances, the creation of a signature is not intended for a specific individual or entity. Instead, these signatures are designed to be legible for any recipient who might encounter them.</p>
 <p>Take, for example, the self-signatures that are part of a certificate. These are intended for a wide audience — essentially, anyone who might interact with the certificate. Another example is the data signatures used for software packages. These signatures are not for a single recipient but for any user or system that verifies the signature, potentially spanning years.</p>
 <p>In such cases, where there isn’t a specific recipient in mind, the issuer of the signature has the freedom to select the hash algorithm. This choice is made based on the issuer’s own criteria or requirements, independent of any third party.</p>
 </section>

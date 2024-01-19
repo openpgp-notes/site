@@ -74,10 +74,12 @@ As outlined above, an {term}`OpenPGP signature<OpenPGP Signature Packet>` is a c
 Structure and context of an {term}`OpenPGP signature packet`
 ```
 
-The input data packets differ between specific signature types. Also see {numref}`fig-signature-types`. For example:
+The input data packets differ between specific signature types. Also see {numref}`fig-signature-types`. 
 
-- for a [*binary data signature*](data-signature-types), the input data packet is a *literal data packet*, while
-- for a [*subkey binding signature*](bind-subkey), the input data packets consist of a primary and a subkey packet.
+For example:
+
+- [**Binary data signature**](data-signature-types): The input data packet is a {term}`literal data packet`.
+- [**Subkey binding signature**](bind-subkey): The input data packets consist of a primary and a subkey packet.
 
 ### Creating an OpenPGP signature packet
 

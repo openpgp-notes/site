@@ -126,10 +126,11 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p><span class="caption-number">Fig. 17 </span><span class="caption-text">Structure and context of an <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature packet</span></a></span><a class="headerlink" href="#fig-signature-packet" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The input data packets differ between specific signature types. Also see <a class="reference internal" href="#fig-signature-types"><span class="std std-numref">Fig. 16</span></a>. For example:</p>
+<p>The input data packets differ between specific signature types. Also see <a class="reference internal" href="#fig-signature-types"><span class="std std-numref">Fig. 16</span></a>.</p>
+<p>For example:</p>
 <ul class="simple">
-<li><p>for a <a class="reference internal" href="signing_data.html#data-signature-types"><span class="std std-ref"><em>binary data signature</em></span></a>, the input data packet is a <em>literal data packet</em>, while</p></li>
-<li><p>for a <a class="reference internal" href="signing_components.html#bind-subkey"><span class="std std-ref"><em>subkey binding signature</em></span></a>, the input data packets consist of a primary and a subkey packet.</p></li>
+<li><p><a class="reference internal" href="signing_data.html#data-signature-types"><span class="std std-ref"><strong>Binary data signature</strong></span></a>: The input data packet is a <a class="reference internal" href="glossary.html#term-Literal-Data-Packet"><span class="xref std std-term">literal data packet</span></a>.</p></li>
+<li><p><a class="reference internal" href="signing_components.html#bind-subkey"><span class="std std-ref"><strong>Subkey binding signature</strong></span></a>: The input data packets consist of a primary and a subkey packet.</p></li>
 </ul>
 <section id="creating-an-openpgp-signature-packet">
 <h3><span class="section-number">6.3.1. </span>Creating an OpenPGP signature packet<a class="headerlink" href="#creating-an-openpgp-signature-packet" title="Link to this heading">¶</a></h3>
