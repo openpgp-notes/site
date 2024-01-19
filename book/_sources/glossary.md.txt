@@ -292,8 +292,12 @@ Key Holder
     See {term}`Certificate Holder`.
 
 Key ID
-    The high-order (leftmost) 64 bits of an {term}`OpenPGP Fingerprint`.
-    Historically, this term refers to the low-order (rightmost) 64 bits of an {term}`OpenPGP Fingerprint`.
+    A Key ID is a shorthand identifier for OpenPGP certificates (or for individual subkeys). A Key ID is a shortened versions of a {term}`fingerprint<OpenPGP Fingerprint>`:
+    
+    - For OpenPGP v6 keys, the Key ID consists of the high-order (leftmost) 64 bits of their {term}`OpenPGP Fingerprint`.
+    - For OpenPGP v4 keys, the Key ID consists of the low-order (rightmost) 64 bits of their {term}`OpenPGP Fingerprint`.
+    
+    Note that since Key IDs are relatively short, they don't meaningfully guard against collisions. Applications must not assume that Key IDs are unique.
 
 Key Material
     May refer to {term}`Public Key Material` or {term}`Private Key Material`.
