@@ -69,7 +69,7 @@ As outlined above, an {term}`OpenPGP signature<OpenPGP Signature Packet>` is a c
 
 ```{figure} plain_svg/OpenPGP_Signature_packet_2.svg
 :name: fig-signature-packet
-:alt: Depicts a diagram with the title "OpenPGP signature packet". A box with green dotted frame and white background provides the title "Signature", while inside the box the text reads "Signature over; Input data, Signature metadata". The words "Signature metadata" serve as title for a yellow box at the lower half of the signature type box. The yellow box also bears the green cryptographic signature symbol.
+:alt: Depicts a diagram with the title "OpenPGP signature packet." A plain white rectangle with green-dotted borders is titled "Signature." Within that rectangle are three lines of text that reads "Signature over:", "Input data", and "Signature metadata." The latter text ("Signature metadata") is the the title for a yellow tag within which there are two lines of text that read "signature type" and "additional metadata" respectively. On the top right corner of the yellow tag, the green cryptographic signature symbol ("sig") is visible.
 
 Structure and context of an {term}`OpenPGP signature packet`
 ```
