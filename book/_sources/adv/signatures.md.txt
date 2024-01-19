@@ -16,30 +16,30 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 ## Choosing the hash algorithm for a signature
 
-A central element of signature packets is the hash digest of the input data. Most OpenPGP software supports a set of different hash mechanisms, of which one is chosen for each signature packet (this is one aspect of OpenPGP's *cryptographic agility*), and used to calculate the hash digest.
+A central element of signature packets is the hash digest of the input data. OpenPGP software typically supports a variety of hash mechanisms. This ability to choose from multiple options is part of what makes OpenPGP flexible in its cryptography, a feature known as *cryptographic agility*. The chosen mechanism is then used to calculate the hash digest.
 
 Different hash mechanisms offer different trade-offs:
 
-- *Hash digest size*: Larger hash size tends to correspond with greater strength against cryptanalysis, and hash digests are relatively small: at the time of this writing, typical sizes are 32 to 64 bytes. However, for some use cases - especially where small messages are sent over a bandwidth-limited transport - larger hash sizes may unacceptably increase message size.
-- *Computational cost*: Different hash algorithms may have different computational costs. Some OpenPGP users may prefer to limit this cost, for example on constrained computing environments.
+- *Hash digest size*: The size of the hash digest is a crucial consideration. Generally, a larger hash size is more robust against cryptanalysis. Hash digests are relatively small – typically ranging in size from 32 to 64 bytes. However, in some cases - especially where messages are transmitted over bandwidth-limited networks - larger hash sizes may unacceptably increase message size.
+- *Computational cost*: Different hash algorithms have different computational costs. Where computing environments are constrained, for example, some OpenPGP users may prefer to limit this cost.
 
-The following sections discuss how the hash algorithm is chosen, based on preferences that are associated with the involved OpenPGP certificates.
+Choosing the hash algorithm is not arbitrary but is guided by specific preferences associated with the OpenPGP certificates involved. The following sections discuss how these preferences influence which hash algorithm is chosen.
 
-### Typically: Local determination
+### General signature context, local algorithm choice
 
-Often, signature creation isn't targeted at a specific receiver. Many signatures are issued for an indeterminate set of "anyone who receives the signature."
+In many instances, the creation of a signature is not intended for a specific individual or entity. Instead, these signatures are designed to be valid for any recipient who might encounter them.
 
-For example, self-signatures that form a certificate are aimed at everyone who interacts with that certificate. Similarly, when creating a data signature for a software package, this signature is aimed at "anyone who will check the signature," often over a long period of time, easily spanning years.
+Take, for example, the self-signatures that are part of a certificate. These are intended for a wide audience — essentially, anyone who might interact with the certificate. Another example is the data signatures used for software packages. These signatures are not for a single recipient but for any user or system that verifies the signature, potentially spanning years.
 
-In such cases, the issuer of that signature chooses the hash algorithm locally, without following preferences of a third party.
+In such cases, where there isn't a specific recipient in mind, the issuer of the signature has the freedom to select the hash algorithm. This choice is made based on the issuer's own criteria or requirements, independent of any third party.
 
-### With a specific recipient: "Negotiation" based on recipient's preferences
+### Specific signature context, recipient-driven choice
 
-In contrast, when a message is created for a specific recipient, the sender can - and should - choose the hash algorithm for the signature packet [based on the recipient's hash algorithm preference](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithm-preferences).
+When a message is being prepared for a particular recipient, the selection of the hash algorithm for the signature packet should be guided by [the recipient's hash algorithm preference](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithm-preferences).
 
-The recipient's hash algorithm preference is defined in metadata of their certificate, see {ref}`preferences-features` for more details.
+The recipient's hash algorithm preference is defined in the metadata of their OpenPGP certificate. See {ref}`preferences-features` for more details.
 
-In this workflow, the signed hash digest is created with a hash algorithm that follows the recipient's preferences, and its intersection with the sender's capabilities and preferences.
+In this workflow, the signed hash digest is created with a hash algorithm representing the intersection of the recipient's preferences and the sender's capabilities and preferences.
 
 ## Signature versions
 
