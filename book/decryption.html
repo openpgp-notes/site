@@ -199,7 +199,9 @@ For each chunk, the chunk index starting at <code class="docutils literal notran
 </section>
 <section id="sed">
 <h2><span class="section-number">11.5. </span>SED<a class="headerlink" href="#sed" title="Link to this heading">¶</a></h2>
-<p>Legacy mode: may be decrypted, but not produced.</p>
+<p>The Symmetrically Encrypted Data packet predates the SEIPD packet and is nowadays deprecated.
+Due to the lack of integrity protection, this packet is susceptible to a whole class of attacks where the attacker modifies the ciphertext.
+Therefore, implementations MUST NOT produce this packet and are encouraged not to accept incoming SED packages from untrusted sources.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="rsa-spec" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>

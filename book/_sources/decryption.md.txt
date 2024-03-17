@@ -181,4 +181,6 @@ Each chunk is decrypted using AEAD using the message key and an IV with appended
 
 ## SED
 
-Legacy mode: may be decrypted, but not produced.
+The Symmetrically Encrypted Data packet predates the SEIPD packet and is nowadays deprecated.
+Due to the lack of integrity protection, this packet is susceptible to a whole class of attacks where the attacker modifies the ciphertext.
+Therefore, implementations MUST NOT produce this packet and are encouraged not to accept incoming SED packages from untrusted sources.
