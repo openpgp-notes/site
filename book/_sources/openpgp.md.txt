@@ -57,7 +57,7 @@ In 2007, the IETF published [RFC 4880](https://datatracker.ietf.org/doc/html/rfc
 
 An extension for Elliptic Curve Cryptography was defined in [RFC 6637](https://www.rfc-editor.org/rfc/rfc6637), specifying the use of three NIST prime field curves.
 
-Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in the [rfc4880bis](https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#name-elliptic-curve-cryptography) document. These algorithms are widely used, even though rfc4880bis has never been finalized as a new version of the standard.
+Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in [draft-koch-eddsa-for-openpgp](https://datatracker.ietf.org/doc/draft-koch-eddsa-for-openpgp/) document. These algorithms are widely used, even though `draft-koch-eddsa-for-openpgp` was never formally standardized.
 
 (major-implementations)=
 ### Major implementations of OpenPGP
@@ -101,7 +101,7 @@ Initial efforts to incorporate support for OpenPGP version 6 have been undertake
 
 ### Post-quantum cryptography in OpenPGP
 
-There is [ongoing work](https://datatracker.ietf.org/doc/draft-wussler-openpgp-pqc/) to standardize and add support for post-quantum {term}`public-key algorithms<Public Key Algorithm>` in OpenPGP. This project is funded by the [german "BSI"](https://en.wikipedia.org/wiki/Federal_Office_for_Information_Security). Goals include adding support for post-quantum cryptography to Thunderbird and GnuPG. A [presentation](https://datatracker.ietf.org/meeting/113/materials/slides-113-openpgp-a-post-quantum-approach-for-openpgp-00) was given at [IETF 113](https://datatracker.ietf.org/meeting/113/session/openpgp/).
+There is [ongoing work](https://datatracker.ietf.org/doc/draft-ietf-openpgp-pqc/) to standardize and add support for post-quantum {term}`public-key algorithms<Public Key Algorithm>` in OpenPGP. This project is funded by the [german "BSI"](https://en.wikipedia.org/wiki/Federal_Office_for_Information_Security). Goals include adding support for post-quantum cryptography to Thunderbird and GnuPG. A [presentation](https://datatracker.ietf.org/meeting/113/materials/slides-113-openpgp-a-post-quantum-approach-for-openpgp-00) was given at [IETF 113](https://datatracker.ietf.org/meeting/113/session/openpgp/).
 
 ## Zooming in: Internal structure of OpenPGP data
 

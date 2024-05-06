@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca9a9bc" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="canonical" href="https://openpgp.dev/book/openpgp.html" />
     <link rel="icon" href="_static/favicon.ico"/>
@@ -108,7 +108,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <h3><span class="section-number">2.3.1. </span>OpenPGP version 4<a class="headerlink" href="#openpgp-version-4" title="Link to this heading">¶</a></h3>
 <p>In 2007, the IETF published <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc4880">RFC 4880</a>, which defines version 4 OpenPGP artifacts. As of late 2023, version 4 is the most commonly used version.</p>
 <p>An extension for Elliptic Curve Cryptography was defined in <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc6637">RFC 6637</a>, specifying the use of three NIST prime field curves.</p>
-<p>Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-rfc4880bis-10.html#name-elliptic-curve-cryptography">rfc4880bis</a> document. These algorithms are widely used, even though rfc4880bis has never been finalized as a new version of the standard.</p>
+<p>Some implementations explored other non-standardized extensions. Notably, algorithms based on Curve 25519 were tentatively defined in <a class="reference external" href="https://datatracker.ietf.org/doc/draft-koch-eddsa-for-openpgp/">draft-koch-eddsa-for-openpgp</a> document. These algorithms are widely used, even though <code class="docutils literal notranslate"><span class="pre">draft-koch-eddsa-for-openpgp</span></code> was never formally standardized.</p>
 </section>
 <section id="major-implementations-of-openpgp">
 <span id="major-implementations"></span><h3><span class="section-number">2.3.2. </span>Major implementations of OpenPGP<a class="headerlink" href="#major-implementations-of-openpgp" title="Link to this heading">¶</a></h3>
@@ -149,7 +149,7 @@ The <a class="reference external" href="https://datatracker.ietf.org/wg/openpgp/
 </section>
 <section id="post-quantum-cryptography-in-openpgp">
 <h3><span class="section-number">2.4.2. </span>Post-quantum cryptography in OpenPGP<a class="headerlink" href="#post-quantum-cryptography-in-openpgp" title="Link to this heading">¶</a></h3>
-<p>There is <a class="reference external" href="https://datatracker.ietf.org/doc/draft-wussler-openpgp-pqc/">ongoing work</a> to standardize and add support for post-quantum <a class="reference internal" href="glossary.html#term-Public-Key-Algorithm"><span class="xref std std-term">public-key algorithms</span></a> in OpenPGP. This project is funded by the <a class="reference external" href="https://en.wikipedia.org/wiki/Federal_Office_for_Information_Security">german “BSI”</a>. Goals include adding support for post-quantum cryptography to Thunderbird and GnuPG. A <a class="reference external" href="https://datatracker.ietf.org/meeting/113/materials/slides-113-openpgp-a-post-quantum-approach-for-openpgp-00">presentation</a> was given at <a class="reference external" href="https://datatracker.ietf.org/meeting/113/session/openpgp/">IETF 113</a>.</p>
+<p>There is <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-openpgp-pqc/">ongoing work</a> to standardize and add support for post-quantum <a class="reference internal" href="glossary.html#term-Public-Key-Algorithm"><span class="xref std std-term">public-key algorithms</span></a> in OpenPGP. This project is funded by the <a class="reference external" href="https://en.wikipedia.org/wiki/Federal_Office_for_Information_Security">german “BSI”</a>. Goals include adding support for post-quantum cryptography to Thunderbird and GnuPG. A <a class="reference external" href="https://datatracker.ietf.org/meeting/113/materials/slides-113-openpgp-a-post-quantum-approach-for-openpgp-00">presentation</a> was given at <a class="reference external" href="https://datatracker.ietf.org/meeting/113/session/openpgp/">IETF 113</a>.</p>
 </section>
 </section>
 <section id="zooming-in-internal-structure-of-openpgp-data">
@@ -255,7 +255,7 @@ The <a class="reference external" href="https://datatracker.ietf.org/wg/openpgp/
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -263,7 +263,7 @@ The <a class="reference external" href="https://datatracker.ietf.org/wg/openpgp/
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
 
 
