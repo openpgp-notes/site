@@ -17,11 +17,12 @@
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
 
     <title>6. OpenPGP Signatures &#8212; OpenPGP for application developers</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca9a9bc" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=09ce168c" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="canonical" href="https://openpgp.dev/book/signatures.html" />
     <link rel="icon" href="_static/favicon.ico"/>
@@ -77,7 +78,8 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <li><p><strong><a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">Cryptographic signature</span></a></strong>: a sequence of bytes created by <a class="reference internal" href="glossary.html#term-Cryptographic-Key"><span class="xref std std-term">cryptographic keys</span></a>, calculated according to a <a class="reference internal" href="glossary.html#term-Signature"><span class="xref std std-term">signature</span></a> scheme.</p></li>
 </ul>
 <figure class="align-default" id="fig-cryptographic-signature">
-<img alt="Depicts a box on white background. In the box, a green seal symbol with the word &quot;sig&quot; is shown on the left side, connected to the text &quot;Cryptographic signature&quot; by a black dotted line." src="_images/cryptographic_signature.svg" /><figcaption>
+<img alt="Depicts a box on white background. In the box, a green seal symbol with the word &quot;sig&quot; is shown on the left side, connected to the text &quot;Cryptographic signature&quot; by a black dotted line." src="_images/cryptographic_signature.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 14 </span><span class="caption-text">A <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a></span><a class="headerlink" href="#fig-cryptographic-signature" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -85,7 +87,8 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <li><p><strong><a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature packets</span></a></strong>: Defined in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-packet-type-id-2">OpenPGP standard</a>, these <a class="reference internal" href="glossary.html#term-Packet"><span class="xref std std-term">packets</span></a> combine a raw <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> along with a <em><a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Type"><span class="xref std std-term">type</span></a></em> designation and additional <a class="reference internal" href="glossary.html#term-Metadata"><span class="xref std std-term">metadata</span></a>.</p></li>
 </ul>
 <figure class="align-default" id="fig-signature-packet-0">
-<img alt="Depicts a box on white background. In the top, the text OpenPGP signature packet is connected to a dotted box. Inside a yellow box is shown. It has the title &quot;signature metadata&quot; and two lines of content, reading &quot;signature type&quot; and &quot;additional metadata&quot;. The yellow box is labeled with the green cryptographic signature symbol. The green symbol is labeled with a dotted line and the text &quot;Cyptographic signature&quot; to its right. On the left side of the box, connected with a dotted line, a small cion-sized representation of the yellow signature packet and its green cryptographic signature are shown. This introducedthe equivalence of the two representations." src="_images/OpenPGP_Signature_packet.svg" /><figcaption>
+<img alt="Depicts a box on white background. In the top, the text OpenPGP signature packet is connected to a dotted box. Inside a yellow box is shown. It has the title &quot;signature metadata&quot; and two lines of content, reading &quot;signature type&quot; and &quot;additional metadata&quot;. The yellow box is labeled with the green cryptographic signature symbol. The green symbol is labeled with a dotted line and the text &quot;Cyptographic signature&quot; to its right. On the left side of the box, connected with a dotted line, a small cion-sized representation of the yellow signature packet and its green cryptographic signature are shown. This introducedthe equivalence of the two representations." src="_images/OpenPGP_Signature_packet.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 15 </span><span class="caption-text">An “<a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP Signature Packet</span></a>”</span><a class="headerlink" href="#fig-signature-packet-0" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -122,7 +125,8 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <li><p><strong>Raw <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a></strong></p></li>
 </ul>
 <figure class="align-default" id="fig-signature-packet">
-<img alt="Depicts a diagram with the title &quot;OpenPGP signature packet.&quot; A plain white rectangle with green-dotted borders is titled &quot;Signature.&quot; Within that rectangle are three lines of text that reads &quot;Signature over:&quot;, &quot;Input data&quot;, and &quot;Signature metadata.&quot; The latter text (&quot;Signature metadata&quot;) is the the title for a yellow tag within which there are two lines of text that read &quot;signature type&quot; and &quot;additional metadata&quot; respectively. On the top right corner of the yellow tag, the green cryptographic signature symbol (&quot;sig&quot;) is visible." src="_images/OpenPGP_Signature_packet_2.svg" /><figcaption>
+<img alt="Depicts a diagram with the title &quot;OpenPGP signature packet.&quot; A plain white rectangle with green-dotted borders is titled &quot;Signature.&quot; Within that rectangle are three lines of text that reads &quot;Signature over:&quot;, &quot;Input data&quot;, and &quot;Signature metadata.&quot; The latter text (&quot;Signature metadata&quot;) is the the title for a yellow tag within which there are two lines of text that read &quot;signature type&quot; and &quot;additional metadata&quot; respectively. On the top right corner of the yellow tag, the green cryptographic signature symbol (&quot;sig&quot;) is visible." src="_images/OpenPGP_Signature_packet_2.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 17 </span><span class="caption-text">Structure and context of an <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">OpenPGP signature packet</span></a></span><a class="headerlink" href="#fig-signature-packet" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -152,7 +156,8 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 </li>
 </ol>
 <figure class="align-default" id="fig-signature-creation">
-<img alt="Depicts a complex diagram with white background and the title &quot;Signature creation&quot;. On the top left side a box with black frame and white background reads &quot;Input Data packets, One or more packets&quot;. Below it the symbol of a signature packet is shown (however, instead of the green signature symbol, only a circle with white background and dotted frame is shown). Both are connected (via green dotted arrows) to a green, right pointing arrow symbol with green dotted frame and the title &quot;Hash mechanism&quot;. Text above the green arrow symbol reads &quot;A hash digest is calculated from the input data packets and the signature metadata&quot;. The &quot;Hash mechanism&quot; arrow points at a box with white background and green frame, which reads &quot;hash digest&quot;. At the top right corner of the diagram the symbol for a component key with both public and private key and the title &quot;Signer private key&quot; is shown. Both hash digest and component key symbol point to a large green arrow symbol, with green dotted frame, at the lower right corner of the diagram, using green dotted arrow lines. The large arrow symbol has the title &quot;Signing mechanism&quot; and text overlaid across it reads &quot;A cryptographic signature is calculated over the hash digest, using the private key material of the signer.&quot;. It points at a cryptographic signature symbol at the bottom of the diagram. The cryptographic signature symbol is connected (via a green dotted arrow line) to the circle with white background and dotted green frame in the signature packet symbol." src="_images/Signature_Creation.svg" /><figcaption>
+<img alt="Depicts a complex diagram with white background and the title &quot;Signature creation&quot;. On the top left side a box with black frame and white background reads &quot;Input Data packets, One or more packets&quot;. Below it the symbol of a signature packet is shown (however, instead of the green signature symbol, only a circle with white background and dotted frame is shown). Both are connected (via green dotted arrows) to a green, right pointing arrow symbol with green dotted frame and the title &quot;Hash mechanism&quot;. Text above the green arrow symbol reads &quot;A hash digest is calculated from the input data packets and the signature metadata&quot;. The &quot;Hash mechanism&quot; arrow points at a box with white background and green frame, which reads &quot;hash digest&quot;. At the top right corner of the diagram the symbol for a component key with both public and private key and the title &quot;Signer private key&quot; is shown. Both hash digest and component key symbol point to a large green arrow symbol, with green dotted frame, at the lower right corner of the diagram, using green dotted arrow lines. The large arrow symbol has the title &quot;Signing mechanism&quot; and text overlaid across it reads &quot;A cryptographic signature is calculated over the hash digest, using the private key material of the signer.&quot;. It points at a cryptographic signature symbol at the bottom of the diagram. The cryptographic signature symbol is connected (via a green dotted arrow line) to the circle with white background and dotted green frame in the signature packet symbol." src="_images/Signature_Creation.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 18 </span><span class="caption-text">Creating a <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> in OpenPGP</span><a class="headerlink" href="#fig-signature-creation" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -167,7 +172,8 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 After calculating the <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hash digest</span></a> from the input data, a <a class="reference internal" href="glossary.html#term-Signature-Verification"><span class="xref std std-term">signature verification</span></a> mechanism is employed. This mechanism uses the <a class="reference internal" href="glossary.html#term-Hash-Digest"><span class="xref std std-term">hash digest</span></a>, the <a class="reference internal" href="glossary.html#term-Cryptographic-Signature"><span class="xref std std-term">cryptographic signature</span></a> from the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature packet</span></a>, and the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> of the <a class="reference internal" href="glossary.html#term-Signer"><span class="xref std std-term">signer</span></a>. Its purpose is to ascertain the cryptographic <a class="reference internal" href="glossary.html#term-Validation"><span class="xref std std-term">validity</span></a> of the <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a>.</p></li>
 </ul>
 <figure class="align-default" id="fig-signature-verification">
-<img alt="Depicts a complex diagram with white background and the title &quot;Signature verification&quot;. On the top left side a box with black frame and white background reads &quot;Input Data packets, One or more packets&quot;. Below it the symbol of a signature packet is shown. Both are connected (via green dotted arrows) to a green, right pointing arrow symbol with green dotted frame and the title &quot;Hash mechanism&quot;. Text above the green arrow symbol reads &quot;A hash digest is calculated from the input data packates and the signature metadata&quot;. The &quot;Hash mechanism&quot; arrow points at a box with white background and green frame, which reads &quot;hash digest&quot;. At the top right corner of the diagram the symbol for a component key with only public key and the title &quot;Signer public key&quot; is shown. Hash digest, component key symbol and the cryptographic signature symbol in the signature packet point to a large green arrow symbol, with green dotted frame, at the lower right corner of the diagram, using green dotted arrow lines. The large arrow symbol has the title &quot;Signature verification mechanism&quot; and text overlaid across it reads &quot;A cryptographic signature is verified against the hash digest, using the public key of the signer.&quot;. It points at a success and fail symbol at the bottom of the diagram." src="_images/Signature_Verification.svg" /><figcaption>
+<img alt="Depicts a complex diagram with white background and the title &quot;Signature verification&quot;. On the top left side a box with black frame and white background reads &quot;Input Data packets, One or more packets&quot;. Below it the symbol of a signature packet is shown. Both are connected (via green dotted arrows) to a green, right pointing arrow symbol with green dotted frame and the title &quot;Hash mechanism&quot;. Text above the green arrow symbol reads &quot;A hash digest is calculated from the input data packates and the signature metadata&quot;. The &quot;Hash mechanism&quot; arrow points at a box with white background and green frame, which reads &quot;hash digest&quot;. At the top right corner of the diagram the symbol for a component key with only public key and the title &quot;Signer public key&quot; is shown. Hash digest, component key symbol and the cryptographic signature symbol in the signature packet point to a large green arrow symbol, with green dotted frame, at the lower right corner of the diagram, using green dotted arrow lines. The large arrow symbol has the title &quot;Signature verification mechanism&quot; and text overlaid across it reads &quot;A cryptographic signature is verified against the hash digest, using the public key of the signer.&quot;. It points at a success and fail symbol at the bottom of the diagram." src="_images/Signature_Verification.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 19 </span><span class="caption-text">Verifying a <a class="reference internal" href="glossary.html#term-OpenPGP-Signature-Packet"><span class="xref std std-term">signature</span></a> in OpenPGP</span><a class="headerlink" href="#fig-signature-verification" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -225,10 +231,10 @@ They are formatted as key-value pairs, where the keys are defined as <a class="r
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo.svg" alt="Logo"/>
+              <img class="logo" src="_static/logo.svg" alt="Logo of OpenPGP for application developers"/>
             </a></p>
 <h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
 
@@ -239,7 +245,16 @@ They are formatted as key-value pairs, where the keys are defined as <a class="r
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
@@ -299,16 +314,6 @@ They are formatted as key-value pairs, where the keys are defined as <a class="r
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -322,7 +327,7 @@ They are formatted as key-value pairs, where the keys are defined as <a class="r
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &#169;2025, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

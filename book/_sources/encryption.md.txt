@@ -35,7 +35,7 @@ Above, "plaintext" means one of:
 - *signed message*.
 
 A *signed message*, in turn, is a packet sequence that either
-- resembles an *inline-signed message* (a *Literal Data* packet sandwhiched between one or more *One-Pass-Signature* and their respective *Signature* packets), or a
+- resembles an *inline-signed message* (a *Literal Data* packet sandwiched between one or more *One-Pass-Signature* and their respective *Signature* packets), or a
 - *prefixed-signed* message (one or more *Signature* packets followed by a single *Literal Data* packet).
 ```
 

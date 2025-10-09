@@ -110,5 +110,5 @@ In conclusion, converting v4 key material to v6 to verify old signatures is not 
 Being able to read old messages using a converted key is also not really viable, since it is equally simple to just re-create the PKESK headers for a fresh v6 key.
 
 ```{note}
-Also see <https://wiki.gnupg.org/OpenPGPEmailSummit202305Notes>
+Also see <https://www.openpgp.org/community/email-summit/2023/minutes/#Historical_email_archive>
 ```

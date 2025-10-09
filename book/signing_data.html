@@ -17,11 +17,12 @@
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
 
     <title>7. Signatures over data &#8212; OpenPGP for application developers</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca9a9bc" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=09ce168c" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="canonical" href="https://openpgp.dev/book/signing_data.html" />
     <link rel="icon" href="_static/favicon.ico"/>
@@ -149,6 +150,9 @@ r13/eqMN8kfCDw==
 <section id="pitfalls">
 <h3><span class="section-number">7.5.4. </span>Pitfalls<a class="headerlink" href="#pitfalls" title="Link to this heading">¶</a></h3>
 <p>Despite their widespread adoption, <a class="reference internal" href="glossary.html#term-Cleartext-Signature"><span class="xref std std-term">cleartext signatures</span></a> have their limitations and are sometimes viewed as a “legacy method”<a class="footnote-reference brackets" href="#csf-gnupg" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>. The <a class="reference internal" href="glossary.html#term-RFC"><span class="xref std std-term">RFC</span></a> details the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-issues-with-the-cleartext-s">pitfalls of cleartext signatures</a>, such as incompatibility with semantically meaningful whitespace, challenges with large messages, and security vulnerabilities related to misleading Hash header manipulations. Given these issues, safer alternatives like <a class="reference internal" href="glossary.html#term-Inline-Signature"><span class="xref std std-term">inline</span></a> and <a class="reference internal" href="glossary.html#term-Detached-Signature"><span class="xref std std-term">detached signature</span></a> forms are advised.</p>
+</section>
+</section>
+</section>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="sign-auth" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
@@ -167,9 +171,6 @@ r13/eqMN8kfCDw==
 <p>https://lists.gnupg.org/pipermail/gnupg-devel/2023-November/035428.html</p>
 </aside>
 </aside>
-</section>
-</section>
-</section>
 
 
           </div>
@@ -191,10 +192,10 @@ r13/eqMN8kfCDw==
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo.svg" alt="Logo"/>
+              <img class="logo" src="_static/logo.svg" alt="Logo of OpenPGP for application developers"/>
             </a></p>
 <h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
 
@@ -205,7 +206,16 @@ r13/eqMN8kfCDw==
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
@@ -266,16 +276,6 @@ r13/eqMN8kfCDw==
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -289,7 +289,7 @@ r13/eqMN8kfCDw==
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &#169;2025, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

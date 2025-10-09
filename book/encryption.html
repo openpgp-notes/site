@@ -17,11 +17,12 @@
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
 
     <title>10. Encryption &#8212; OpenPGP for application developers</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca9a9bc" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=09ce168c" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="canonical" href="https://openpgp.dev/book/encryption.html" />
     <link rel="icon" href="_static/favicon.ico"/>
@@ -119,7 +120,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 </ul>
 <p>A <em>signed message</em>, in turn, is a packet sequence that either</p>
 <ul class="simple">
-<li><p>resembles an <em>inline-signed message</em> (a <em>Literal Data</em> packet sandwhiched between one or more <em>One-Pass-Signature</em> and their respective <em>Signature</em> packets), or a</p></li>
+<li><p>resembles an <em>inline-signed message</em> (a <em>Literal Data</em> packet sandwiched between one or more <em>One-Pass-Signature</em> and their respective <em>Signature</em> packets), or a</p></li>
 <li><p><em>prefixed-signed</em> message (one or more <em>Signature</em> packets followed by a single <em>Literal Data</em> packet).</p></li>
 </ul>
 </div>
@@ -178,7 +179,8 @@ The specification currently recommends to use either <em>Iterated and Salted S2K
 <p>In this version of the SEIPD packet, the session key is used directly as message key, meaning the payload is encrypted symmetrically using the session key.</p>
 <p>When communicating with a mix of recipients, some of whose OpenPGP software only supports OpenPGP version 4, then this mechanism must be used.</p>
 <figure class="align-default" id="fig-encryption-seipdv1-pkesk">
-<img alt="Depicts a dotted hexagon labeled &quot;Plaintext&quot;, from which a curved arrow passes another dotted hexagon &quot;Session Key&quot; and finally points to a &quot;SEIPDv1&quot; packet. Two more curved arrows originate from the session key and pass Alice' and Bob's encryption key, ending in two PKESK packets." src="_images/SEIPDv1-PKESK.svg" /><figcaption>
+<img alt="Depicts a dotted hexagon labeled &quot;Plaintext&quot;, from which a curved arrow passes another dotted hexagon &quot;Session Key&quot; and finally points to a &quot;SEIPDv1&quot; packet. Two more curved arrows originate from the session key and pass Alice' and Bob's encryption key, ending in two PKESK packets." src="_images/SEIPDv1-PKESK.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 24 </span><span class="caption-text">With SEIPDv1, the session key is directly used as message key to encrypt the payload</span><a class="headerlink" href="#fig-encryption-seipdv1-pkesk" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -191,7 +193,8 @@ These quick-check bytes are prepended to the plaintext.</p>
 <p>The modification detection code on the other hand is added to allow detection of unwanted modification of the ciphertext.
 First, the two marker bytes <code class="docutils literal notranslate"><span class="pre">0xD3</span></code> and <code class="docutils literal notranslate"><span class="pre">0x14</span></code> are appended to the plaintext. Then, the SHA1 checksum of the entire plaintext including quick check and marker bytes is calculated and appended to the plaintext.</p>
 <figure class="align-default" id="fig-encryption-mdc">
-<img alt="Depicts, how the prior to encryption, the plaintext bytes are prepended with 18 quick check bytes and appended with 22 bytes of modification detection code. The quick check comprises of 16 random bytes plus 2 repeated bytes. The modification detection code starts with the marker bytes 0xD314, followed by the SHA1 checksum of the entire plaintext including quick check and marker bytes." src="_images/mdc.svg" /><figcaption>
+<img alt="Depicts, how the prior to encryption, the plaintext bytes are prepended with 18 quick check bytes and appended with 22 bytes of modification detection code. The quick check comprises of 16 random bytes plus 2 repeated bytes. The modification detection code starts with the marker bytes 0xD314, followed by the SHA1 checksum of the entire plaintext including quick check and marker bytes." src="_images/mdc.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 25 </span><span class="caption-text">The plaintext inside of a SEIPDv1 packet contains quick check bytes, the actual plaintext and modification detection code</span><a class="headerlink" href="#fig-encryption-mdc" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -209,7 +212,8 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
 <p>The session key can use a different symmetric algorithm than the message key.</p>
 </div>
 <figure class="align-default" id="fig-encryption-seipdv2-pkesk">
-<img alt="TODO" src="_images/SEIPDv2-PKESK.svg" /><figcaption>
+<img alt="TODO" src="_images/SEIPDv2-PKESK.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 26 </span><span class="caption-text">With SEIPDv2, the message key is derived from the session key in an extra step.</span><a class="headerlink" href="#fig-encryption-seipdv2-pkesk" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -238,10 +242,10 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo.svg" alt="Logo"/>
+              <img class="logo" src="_static/logo.svg" alt="Logo of OpenPGP for application developers"/>
             </a></p>
 <h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
 
@@ -252,7 +256,16 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
@@ -313,16 +326,6 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -336,7 +339,7 @@ v2 SEIPD can only be combined with either <a class="reference external" href="ht
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &#169;2025, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

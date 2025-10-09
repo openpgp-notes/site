@@ -84,20 +84,21 @@ Software and protocol development sometimes skips version numbers due to reasons
 
 ### OpenPGP version 6
 
-As of this writing (in 2023), [version 6 of OpenPGP](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/) is approaching publication as an RFC.
-The [IETF OpenPGP working group](https://datatracker.ietf.org/wg/openpgp/about/#autoid-1) is focused on updating the cryptographic mechanisms, adding new algorithms, and the deprecation of obsolete algorithms.
+[RFC 9580](https://www.rfc-editor.org/rfc/rfc9580.html) has been published in July 2024, it specifies new OpenPGP version 6 formats.
+For this revision of the standard, the [IETF OpenPGP working group](https://datatracker.ietf.org/wg/openpgp/about/#autoid-1) has focused on updating the cryptographic mechanisms, adding new algorithms, and the deprecation of obsolete algorithms.
 
 This document describes OpenPGP version 6, while pointing out differences to previous versions that are relevant to application developers.
 
-Significant support for OpenPGP version 6 has already been achieved for multiple implementations, including:
+At this point, support for RFC 9580 and OpenPGP version 6 is available in many implementations, including:
 
-- [Bouncy Castle Java](https://github.com/bcgit/bc-java/issues/1421),
-- [GopenPGP](https://github.com/ProtonMail/gopenpgp/tree/v3),
-- [OpenPGP.js](https://github.com/openpgpjs/openpgpjs/releases/tag/v6.0.0-alpha.0),
-- [PGPy](https://github.com/dkg/PGPy/tree/dkg/crypto-refresh),
-- [Sequoia PGP](https://gitlab.com/sequoia-pgp/sequoia/-/tree/crypto-refresh).
-
-Initial efforts to incorporate support for OpenPGP version 6 have been undertaken in the PGPainless and RNP implementations.
+- [Bouncy Castle Java](https://github.com/bcgit/bc-java/) (since version 1.82),
+- [GopenPGP](https://github.com/ProtonMail/gopenpgp/) (since version 3.0.0),
+- [OpenPGP.js](https://github.com/openpgpjs/openpgpjs/) (since version 6.0.0),
+- [PGPainless](https://github.com/pgpainless/pgpainless/) (since version 2.0.0),
+- [PGPy](https://github.com/dkg/PGPy/tree/dkg/crypto-refresh) (in a fork of the project),
+- [RNP](https://github.com/rnpgp/rnp/) (since version 0.18),
+- [rPGP](https://github.com/rpgp/rpgp/) (since version 0.14.0),
+- [Sequoia PGP](https://gitlab.com/sequoia-pgp/sequoia/) (since version 2.0.0).
 
 ### Post-quantum cryptography in OpenPGP
 

@@ -17,11 +17,12 @@
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
 
     <title>5. Managing private key material in OpenPGP &#8212; OpenPGP for application developers</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca9a9bc" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=09ce168c" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="canonical" href="https://openpgp.dev/book/private_keys.html" />
     <link rel="icon" href="_static/favicon.ico"/>
@@ -80,7 +81,8 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <p>This chapter focuses on the corresponding counterpart to the elements of certificates: the <em>private key material</em> of component keys.</p>
 <p>In this documentation, we treat the private key material as logically separate from the OpenPGP certificate. Operations that use private key material are typically managed by a separate subsystem. It is useful to view OpenPGP certificates and the associated private key material as related but distinct elements<a class="footnote-reference brackets" href="#pkcs11" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
 <figure class="align-default" id="fig-openpgp-certificate-with-private-key-store">
-<img alt="A diagram on a white background showing an OpenPGP certificate and a private keystore. Gray dotted lines connect the green public key symbols of the OpenPGP certificate to red dotted private key symbols in the private keystore." src="_images/OpenPGPCert_with_privatekeystore.svg" /><figcaption>
+<img alt="A diagram on a white background showing an OpenPGP certificate and a private keystore. Gray dotted lines connect the green public key symbols of the OpenPGP certificate to red dotted private key symbols in the private keystore." src="_images/OpenPGPCert_with_privatekeystore.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 11 </span><span class="caption-text">An OpenPGP certificate, with the associated private key material handled in a separate subsystem.</span><a class="headerlink" href="#fig-openpgp-certificate-with-private-key-store" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -90,7 +92,8 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <h2><span class="section-number">5.3. </span>Transferable secret key format<a class="headerlink" href="#transferable-secret-key-format" title="Link to this heading">¶</a></h2>
 <p>Sometimes it is useful to handle OpenPGP certificates combined with private key material in the form of a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-transferable-secret-keys"><em>transferable secret key (TSK)</em></a>. A TSK is a serialized format that combines OpenPGP certificate data with its connected private key material, stored in a single file.</p>
 <figure class="align-default" id="fig-transferable-secret-key">
-<img alt="A box on a white background titled &quot;transferable secret key.&quot; It resembles the figure depicting an OpenPGP certificate, except that in each component key box, below the green public key symbol,  the red-dotted private key symbol is also shown." src="_images/TSK.svg" /><figcaption>
+<img alt="A box on a white background titled &quot;transferable secret key.&quot; It resembles the figure depicting an OpenPGP certificate, except that in each component key box, below the green public key symbol,  the red-dotted private key symbol is also shown." src="_images/TSK.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 12 </span><span class="caption-text">OpenPGP certificate with integrated private key material, as a TSK</span><a class="headerlink" href="#fig-transferable-secret-key" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -110,7 +113,8 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <p>When protecting private key material in OpenPGP, a symmetric key is derived from the user’s passphrase. This derived key is then used to protect the OpenPGP private key data.</p>
 <p>To facilitate this, the OpenPGP standard defines a set of mechanisms known as <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-specifier">string-to-key (S2K)</a>. S2K mechanisms are used to generate high-entropy symmetric encryption keys from lower-entropy passphrases, using a <a class="reference external" href="https://en.wikipedia.org/wiki/Key_derivation_function">key derivation function (KDF)</a>.</p>
 <figure class="align-default" id="fig-passphrase-using-s2k">
-<img alt="A diagram on a white background titled &quot;Converting a passphrase into a symmetric key.&quot; On the left is a light-yellow box with dotted-yellow borders framing the phrase &quot;correct horse battery staple.&quot; A dotted yellow line falls below the box to the term &quot;passphrase.&quot; To the right of the box is a light-green arrow with green-dotted borders and the text &quot;S2K mechanism (string-to-key). The arrow points to its right, where a yellow symmetric key symbol is shown." src="_images/passphrase_using_S2K.svg" /><figcaption>
+<img alt="A diagram on a white background titled &quot;Converting a passphrase into a symmetric key.&quot; On the left is a light-yellow box with dotted-yellow borders framing the phrase &quot;correct horse battery staple.&quot; A dotted yellow line falls below the box to the term &quot;passphrase.&quot; To the right of the box is a light-green arrow with green-dotted borders and the text &quot;S2K mechanism (string-to-key). The arrow points to its right, where a yellow symmetric key symbol is shown." src="_images/passphrase_using_S2K.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 13 </span><span class="caption-text">Deriving a symmetric key from a passphrase</span><a class="headerlink" href="#fig-passphrase-using-s2k" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -160,6 +164,8 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <li><p>Given private key material whose algorithm supports signing, it can calculate a <em>cryptographic signature</em> for a hash digest.</p></li>
 </ol>
 <p>These essential operations require access only to the component keys and their associated private key material, specifically <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats">Secret-Key packets</a>. Additional packets, such as binding signatures, are not required.</p>
+</section>
+</section>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="pkcs11" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
@@ -174,8 +180,6 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <p>In the case of ECDH keys, the KDF parameters (hash function ID and a symmetric encryption algorithm ID) are not stored on the OpenPGP card. This is considered a flaw in the OpenPGP card specification. These missing parameters can be handled in two ways by OpenPGP software on the host computer: either by consulting a copy of the component key (e.g., by inspecting a copy of the certificate) or by deducing the missing KDF parameters from the stored OpenPGP fingerprint on the card.</p>
 </aside>
 </aside>
-</section>
-</section>
 
 
           </div>
@@ -197,10 +201,10 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo.svg" alt="Logo"/>
+              <img class="logo" src="_static/logo.svg" alt="Logo of OpenPGP for application developers"/>
             </a></p>
 <h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
 
@@ -211,7 +215,16 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
@@ -273,16 +286,6 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -296,7 +299,7 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &#169;2025, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

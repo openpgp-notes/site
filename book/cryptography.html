@@ -17,11 +17,12 @@
 <meta property="og:description" content="The essential OpenPGP guide for application developers. Learn the OpenPGP standard for cryptographic operations and how to implement it in your projects. Gain insights into digital signatures, key management, certificates, and more. Version agnostic." />
 
     <title>3. Cryptographic concepts and terms &#8212; OpenPGP for application developers</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca9a9bc" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=09ce168c" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="canonical" href="https://openpgp.dev/book/cryptography.html" />
     <link rel="icon" href="_static/favicon.ico"/>
@@ -95,7 +96,8 @@ One application of KDFs is to generate symmetric key material from a password by
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm">Symmetric-key cryptography</a> uses the same cryptographic key for both encryption and decryption, unlike asymmetric cryptography where a pair of keys is used: a public key for encryption and a corresponding private key for decryption. Symmetric-key cryptographic systems support <em>encryption/decryption</em> operations.</p>
 <p>Participants in symmetric-key operations need to exchange the shared secret over a secure channel.</p>
 <figure class="align-default" id="fig-symmetric-key">
-<img alt="Depicts a box with a white background and the title &quot;Symmetric key&quot;. In the box a single key symbol, rendered with full yellow line, is shown pointing to the right hand side." src="_images/symmetric_key.svg" /><figcaption>
+<img alt="Depicts a box with a white background and the title &quot;Symmetric key&quot;. In the box a single key symbol, rendered with full yellow line, is shown pointing to the right hand side." src="_images/symmetric_key.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 1 </span><span class="caption-text">A symmetric cryptographic key (which acts as a shared secret)</span><a class="headerlink" href="#fig-symmetric-key" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -130,14 +132,16 @@ One application of KDFs is to generate symmetric key material from a password by
 <span id="asymmetric-key-pair"></span><h3><span class="section-number">3.4.1. </span>Asymmetric cryptographic key pairs<a class="headerlink" href="#asymmetric-cryptographic-key-pairs" title="Link to this heading">¶</a></h3>
 <p>Throughout this document, we will frequently reference asymmetric cryptographic key pairs:</p>
 <figure class="align-default" id="fig-asymmetric-keypair">
-<img alt="Depicts a box with white background and the title &quot;Asymmetric keypair&quot;. In the box two key symbols with text next to them are shown. The top key symbol is rendered using full green lines, points to the right hand side and has the accompanying text &quot;Public key&quot;. The lower key symbol is rendered using dotted red lines, points to the left hand side and has the accompanying text &quot;Private key&quot;." src="_images/asymmetric_keypair.svg" /><figcaption>
+<img alt="Depicts a box with white background and the title &quot;Asymmetric keypair&quot;. In the box two key symbols with text next to them are shown. The top key symbol is rendered using full green lines, points to the right hand side and has the accompanying text &quot;Public key&quot;. The lower key symbol is rendered using dotted red lines, points to the left hand side and has the accompanying text &quot;Private key&quot;." src="_images/asymmetric_keypair.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 2 </span><span class="caption-text">An asymmetric cryptographic key pair</span><a class="headerlink" href="#fig-asymmetric-keypair" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Each key pair comprises two parts: the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> and the <a class="reference internal" href="glossary.html#term-Transferable-Secret-Key"><span class="xref std std-term">private key</span></a>. For ease of identification in this documentation, the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> will be shown in green and the private key in red. Additionally, <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public keys</span></a> are depicted with a solid border and pointing to the right, while <a class="reference internal" href="glossary.html#term-Transferable-Secret-Key"><span class="xref std std-term">private keys</span></a> are shown with a dotted border and pointing to the left.</p>
 <p>It’s important to note that in many scenarios, only the <a class="reference internal" href="glossary.html#term-OpenPGP-Certificate"><span class="xref std std-term">public key</span></a> is exposed or used. These situations will be elaborated upon in subsequent sections of this document.</p>
 <figure class="align-default" id="fig-public-key">
-<img alt="Depicts a box with white background and the title &quot;Public part of an asymmetric keypair&quot;. In the box one key symbol with text next to it is shown. The key symbol is rendered using full green lines, points to the right hand side and has the accompanying text &quot;Public key&quot;." src="_images/public_key.svg" /><figcaption>
+<img alt="Depicts a box with white background and the title &quot;Public part of an asymmetric keypair&quot;. In the box one key symbol with text next to it is shown. The key symbol is rendered using full green lines, points to the right hand side and has the accompanying text &quot;Public key&quot;." src="_images/public_key.svg" />
+<figcaption>
 <p><span class="caption-number">Fig. 3 </span><span class="caption-text">The public part of an asymmetric key pair</span><a class="headerlink" href="#fig-public-key" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -168,6 +172,9 @@ One application of KDFs is to generate symmetric key material from a password by
 <section id="id7">
 <h3><span class="section-number">3.5.1. </span>Usage and terminology in OpenPGP<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>OpenPGP uses a <a class="reference internal" href="glossary.html#term-Hybrid-Cryptosystem"><span class="xref std std-term">hybrid cryptosystem</span></a> for encryption.  This approach involves generating unique shared secrets, known as “session keys,” for each session. For detailed information on this topic, please refer to the chapters <a class="reference internal" href="encryption.html"><span class="doc std std-doc">Encryption</span></a> and <a class="reference internal" href="decryption.html"><span class="doc std std-doc">Decryption</span></a>.</p>
+</section>
+</section>
+</section>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="postquantum" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
@@ -186,9 +193,6 @@ One application of KDFs is to generate symmetric key material from a password by
 <p>A variation of the <a class="reference external" href="https://en.wikipedia.org/wiki/EFAIL">EFAIL</a> attack can be prevented by both the MDC and AEAD mechanisms. Also see <a class="reference external" href="https://proton.me/blog/pgp-vulnerability-efail">“No, PGP is not broken, not even with the Efail vulnerabilities,”</a> especially the section “Malleability Gadget Exfiltration Channel Attack.”</p>
 </aside>
 </aside>
-</section>
-</section>
-</section>
 
 
           </div>
@@ -210,10 +214,10 @@ One application of KDFs is to generate symmetric key material from a password by
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo.svg" alt="Logo"/>
+              <img class="logo" src="_static/logo.svg" alt="Logo of OpenPGP for application developers"/>
             </a></p>
 <h1 class="logo"><a href="index.html">OpenPGP for application developers</a></h1>
 
@@ -224,7 +228,16 @@ One application of KDFs is to generate symmetric key material from a password by
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. Introducing OpenPGP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="openpgp.html">2. A high-level view</a></li>
@@ -285,16 +298,6 @@ One application of KDFs is to generate symmetric key material from a password by
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -308,7 +311,7 @@ One application of KDFs is to generate symmetric key material from a password by
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &#169;2025, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 
