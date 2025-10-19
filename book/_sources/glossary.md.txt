@@ -87,7 +87,7 @@ Certification Key Flag
 Certification Revocation Signature Packet
     An {term}`OpenPGP Signature Packet` to {term}`revoke<Revocation>` an earlier {term}`self-certification` of a {term}`User ID`.
 
-    [RFC 5.2.1.13](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-certification-revocation-si)
+    [RFC 5.2.1.13](https://www.rfc-editor.org/rfc/rfc9580.html#name-certification-revocation-si)
 
 Certification Signature
     See {term}`Certification`.
@@ -99,14 +99,14 @@ Certifying Signature
     See {term}`Certification`.
 
 Cipher Type Byte
-    This historical term was defined in [RFC 1991](https://datatracker.ietf.org/doc/html/rfc1991#section-4.1) and was subsequently superseded by {term}`Packet Tag` in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440#section-4.2), which is in turn superseded by {term}`Packet Type ID` in the new [RFC](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers).
+    This historical term was defined in [RFC 1991](https://datatracker.ietf.org/doc/html/rfc1991#section-4.1) and was subsequently superseded by {term}`Packet Tag` in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440#section-4.2), which is in turn superseded by {term}`Packet Type ID` in the new [RFC](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers).
 
 Cleartext Signature
     A {term}`Data Signature` which exists in a combined text format, encapsulating the (readable) text input it was created for. See [](cleartext-signature).
 
 Cleartext Signature Framework
     A framework for creating {term}`cleartext signatures<Cleartext Signature>`.
-    See [RFC 7](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#cleartext-signature).
+    See [RFC 7](https://www.rfc-editor.org/rfc/rfc9580.html#cleartext-signature).
 
 Component
     An element in an {term}`OpenPGP Certificate`, that represents a {term}`component key` or {term}`identity component`.
@@ -166,7 +166,7 @@ Direct Key Signature
 Embedded Signature Subpacket
     An {term}`OpenPGP Signature Subpacket` which contains a complete {term}`OpenPGP Signature Packet`.
 
-    See [RFC 5.2.3.34](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-embedded-signature)
+    See [RFC 5.2.3.34](https://www.rfc-editor.org/rfc/rfc9580.html#name-embedded-signature)
 
 Encrypted Data
     Data that is encrypted.
@@ -189,7 +189,7 @@ Features Subpacket
 
     For an in-depth view on these {term}`subpackets<OpenPGP Signature Subpacket>` see [](zoom-dks).
 
-    See [RFC 5.2.3.32](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-features)
+    See [RFC 5.2.3.32](https://www.rfc-editor.org/rfc/rfc9580.html#name-features)
 
 Fingerprint
     See {term}`OpenPGP Fingerprint`.
@@ -199,7 +199,7 @@ Hard Revocation
 
     See [](hard-vs-soft-revocations).
 
-    See [RFC 5.2.3.31](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation).
+    See [RFC 5.2.3.31](https://www.rfc-editor.org/rfc/rfc9580.html#name-reason-for-revocation).
 
 Hash Algorithm
     See {term}`Hash Function`.
@@ -260,7 +260,7 @@ Issuer
 Issuer Fingerprint Subpacket
     A {term}`Subpacket` specifying the {term}`Fingerprint` of an {term}`Issuer Key`.
 
-    See [RFC 5.2.3.35](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-issuer-fingerprint)
+    See [RFC 5.2.3.35](https://www.rfc-editor.org/rfc/rfc9580.html#name-issuer-fingerprint)
 
 Issuer Key
     The {term}`OpenPGP Component Key` of an {term}`Issuer`, used to create an {term}`OpenPGP Signature Packet`.
@@ -283,7 +283,7 @@ Key
 Key Expiration Time Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the {term}`Expiration Time` for a {term}`key<Component Key>`.
 
-    See [RFC 5.2.3.13](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-expiration-time)
+    See [RFC 5.2.3.13](https://www.rfc-editor.org/rfc/rfc9580.html#name-key-expiration-time)
 
 Key Flag
     A preference encoded in an {term}`OpenPGP Signature Subpacket`, that defines the {term}`Capability` a {term}`OpenPGP Component Key` has. See [](signature-subpackets).
@@ -322,7 +322,7 @@ Literal Data Packet
      
     A literal data packet typically stores the paintext data of an encrypted message, and/or the data of an inline signed message.
      
-     See [RFC 5.9](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#lit).
+     See [RFC 5.9](https://www.rfc-editor.org/rfc/rfc9580.html#lit).
 
 MAC
     See {term}`Message Authentication Code`.
@@ -354,7 +354,7 @@ One-pass Signature Packet
     One or more {term}`packets<Packet>` before the actual data in a {term}`Data Signature` which contain information to allow a receiving {term}`implementation<OpenPGP Implementation>` to create {term}`hashes<Hash Digest>` required for signature verification.
      
      See [](one-pass-signature-packet).
-     Also see [RFC 5.4](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#one-pass-sig).
+     Also see [RFC 5.4](https://www.rfc-editor.org/rfc/rfc9580.html#one-pass-sig).
 
 One-pass signed Message
     The commonly used form of an OpenPGP {term}`Inline Signature`. It combines an {term}`OpenPGP Message` with {term}`signature packets<OpenPGP Signature Packet>` and accompanying auxiliary {term}`One-pass signatures<One-pass Signature Packet>`.
@@ -389,7 +389,7 @@ OpenPGP Message
     - a {term}`compressed message<compressed data packet>`
     - a {term}`literal message<literal data packet>`
 
-    Also see [RFC 10.3](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages).
+    Also see [RFC 10.3](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-messages).
 
 OpenPGP Public Key
     See {term}`OpenPGP Certificate`.
@@ -428,10 +428,10 @@ Packet
     An element in an {term}`OpenPGP Certificate` or {term}`OpenPGP Message`.
 
 Packet Header
-    A section of variable length at the beginning of a {term}`Packet`, which encodes for example the {term}`Packet Type ID`. See the relevant [section in the RFC](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers), which explains this section in more detail.
+    A section of variable length at the beginning of a {term}`Packet`, which encodes for example the {term}`Packet Type ID`. See the relevant [section in the RFC](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers), which explains this section in more detail.
 
 Packet Tag
-    This historical term was defined in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440#section-4.2) and is superseded by {term}`Packet Type ID` in the new [RFC](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers).
+    This historical term was defined in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440#section-4.2) and is superseded by {term}`Packet Type ID` in the new [RFC](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers).
 
 Packet Type ID
     A numerical value encoded in the first octet of a {term}`Packet Header`, defining a {term}`Packet`'s type.
@@ -444,22 +444,22 @@ Positive Certification
 Preferred Compression Algorithms Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the preferred {term}`compression algorithms<Data Compression>` for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which {term}`algorithms<Data Compression>` the {term}`key holder<Certificate Holder>` prefers to receive.
 
-    See [RFC 5.2.3.17](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-compression-algor).
+    See [RFC 5.2.3.17](https://www.rfc-editor.org/rfc/rfc9580.html#name-preferred-compression-algor).
 
 Preferred Hash Algorithms Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the preferred {term}`hash algorithm<Hash Function>` for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive.
 
-    See [RFC 5.2.3.16](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-hash-algorithms).
+    See [RFC 5.2.3.16](https://www.rfc-editor.org/rfc/rfc9580.html#name-preferred-hash-algorithms).
 
 Preferred Symmetric Ciphers for v1 SEIPD Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the preferred version 1 {term}`SEIPD<Symmetrically Encrypted Integrity Protected Data>` algorithms for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive and implicitly signifies the supported algorithms of the {term}`key holder<Certificate Holder>`'s {term}`implementation<OpenPGP Implementation>`.
 
-    See [RFC 5.2.3.14](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-symmetric-ciphers).
+    See [RFC 5.2.3.14](https://www.rfc-editor.org/rfc/rfc9580.html#name-preferred-symmetric-ciphers).
 
 Preferred AEAD Ciphersuites Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the preferred version 2 {term}`SEIPD<Symmetrically Encrypted Integrity Protected Data>` algorithms for an {term}`OpenPGP Certificate` or {term}`Component Key`. This defines which algorithms the {term}`key holder<Certificate Holder>` prefers to receive and implicitly signifies the supported algorithms of the {term}`key holder<Certificate Holder>`'s {term}`implementation<OpenPGP Implementation>`.
 
-    See [RFC 5.2.3.15](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-preferred-aead-ciphersuites)
+    See [RFC 5.2.3.15](https://www.rfc-editor.org/rfc/rfc9580.html#name-preferred-aead-ciphersuites)
 
 Prefixed signed Message
     A type of {term}`Inline Signature`. This form of {term}`Inline Signature` is historical and now rarely used. Superseded by {term}`One-pass signed Message`.
@@ -488,7 +488,7 @@ Primary User ID
 Primary User ID Subpacket
     An {term}`OpenPGP Signature Subpacket` used in {term}`User ID self-signatures<User ID Binding Signature>` which allows to signify whether the {term}`User ID` in question is considered a {term}`Primary User ID`.
 
-    See [RFC 5.2.3.27](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#primary-user-id-subpacket)
+    See [RFC 5.2.3.27](https://www.rfc-editor.org/rfc/rfc9580.html#primary-user-id-subpacket)
 
 Primary User ID Binding Signature
     A {term}`Binding Signature`, which is created by an {term}`OpenPGP Primary Key` to bind a {term}`User ID` to its {term}`OpenPGP Certificate` and marking it as the {term}`Primary User ID`.
@@ -518,7 +518,7 @@ Public Key Material
 Reason For Revocation Subpacket
     An {term}`OpenPGP Signature Subpacket`, which is used in {term}`Certification Revocation Signature Packet` and {term}`key revocation signature packets<Key Revocation Signature Packet>` to describe a reason for the {term}`revocation`.
 
-    See [RFC 5.2.3.31](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation)
+    See [RFC 5.2.3.31](https://www.rfc-editor.org/rfc/rfc9580.html#name-reason-for-revocation)
 
 Reference Time
     A point in time at which an {term}`OpenPGP Certificate` or {term}`OpenPGP Signature` is evaluated.
@@ -532,9 +532,9 @@ Revocation
 Revocation Certificate
     A {term}`Revocation Self-signature` for an {term}`OpenPGP Primary Key` distributed alongside the plain {term}`OpenPGP Primary Key`.
 
-    See [RFC 10.1.2](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-v6-revocation-certi)
+    See [RFC 10.1.2](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-version-6-revocatio)
     
-    Note that in [OpenPGP v4 this term is typically used](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.1.3-6) for a bare {term}`Revocation Self-signature` {term}`packet<OpenPGP Signature Packet>`.
+    Note that in [OpenPGP v4 this term is typically used](https://www.rfc-editor.org/rfc/rfc9580.html#section-10.1.3-6) for a bare {term}`Revocation Self-signature` {term}`packet<OpenPGP Signature Packet>`.
 
 Revocation Code
     A number in a {term}`Reason For Revocation Subpacket` which represents the reason for a {term}`Revocation`.
@@ -555,7 +555,7 @@ Revocation Signature Packet
     Additionally, with the deprecated *Revocation Key* mechanism, {term}`third-party<Third-party Signature>` *Key-* and *Subkey revocations* also exist.
 
 RFC
-    This document, unless noted otherwise, refers to the [OpenPGP version 6 specification](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/) when referring to *RFC*.
+    This document, unless noted otherwise, refers to [OpenPGP RFC 9580](https://www.rfc-editor.org/rfc/rfc9580.html) when referring to *RFC*.
 
 SEIPD
     See {term}`Symmetrically Encrypted Integrity Protected Data`.
@@ -577,7 +577,7 @@ Soft Revocation
 
     See [](hard-vs-soft-revocations).
 
-    See [RFC 5.2.3.31](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-reason-for-revocation).
+    See [RFC 5.2.3.31](https://www.rfc-editor.org/rfc/rfc9580.html#name-reason-for-revocation).
 
 Signature
     See {term}`OpenPGP Signature Packet`.
@@ -585,12 +585,12 @@ Signature
 Signature Creation Time Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the {term}`Creation Time` for an {term}`OpenPGP Signature Packet`.
 
-    See [RFC 5.2.3.11](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-creation-time)
+    See [RFC 5.2.3.11](https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-creation-time)
 
 Signature Expiration Time Subpacket
     An {term}`OpenPGP Signature Subpacket Type` which defines the {term}`Expiration Time` for an {term}`OpenPGP Signature Packet`.
 
-    See [RFC 5.2.3.18](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-expiration-time)
+    See [RFC 5.2.3.18](https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-expiration-time)
 
 Signature On Component
     {term}`Cryptographic signature` associated with {term}`Component Keys<Component Key>` or {term}`Identity Components<Identity Component>`. See [](/signing_components).
@@ -646,7 +646,7 @@ Subkey Binding Signature
 Subkey Revocation Signature Packet
     A {term}`Self-signature` to {term}`revoke<Revocation>` an {term}`OpenPGP Subkey` in an {term}`OpenPGP Certificate`.
 
-    See [RFC 5.2.1.12](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-subkey-revocation-signature)
+    See [RFC 5.2.1.12](https://www.rfc-editor.org/rfc/rfc9580.html#name-subkey-revocation-signature)
 
 Subpacket
     See {term}`OpenPGP Signature Subpacket`.
@@ -660,7 +660,7 @@ Symmetric Cryptography
 Symmetrically Encrypted Integrity Protected Data
     Short *SEIPD*, this refers to {term}`Symmetric Cryptography` based encrypted data, which is used in a Symmetrically Encrypted Integrity Protected Data Packet.
 
-    See [RFC 5.13](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetrically-encrypted-int).
+    See [RFC 5.13](https://www.rfc-editor.org/rfc/rfc9580.html#name-symmetrically-encrypted-and).
 
 Symmetric Secret Key
     The {term}`Private Key Material` used in {term}`Symmetric Cryptography`.
@@ -682,7 +682,7 @@ Trust Amount
     Values less than `120` indicate partial trust, values equal to or greater than `120` indicate complete trust.
 
     See [](trust-amount).
-    See [RFC 5.2.3.21](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-trust-signature)
+    See [RFC 5.2.3.21](https://www.rfc-editor.org/rfc/rfc9580.html#name-trust-signature)
 
 Trust Anchor
     An entity in a {term}`Trust Model` for which trust is assumed and not derived.
@@ -704,7 +704,7 @@ Trust Root
 Trust Signature
     The *trust signature* {term}`subpacket<OpenPGP Signature Subpacket>` on a {term}`certifying signature<Certification>` is used for {term}`delegation` of {term}`authentication` decisions. With this feature, an OpenPGP user can designate a {term}`certificate<OpenPGP Certificate>` as a "{term}`trusted introducer`" and opt to rely on {term}`certifications<Certification>` they issue.
 
-    See [RFC 5.2.3.21](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-trust-signature)
+    See [RFC 5.2.3.21](https://www.rfc-editor.org/rfc/rfc9580.html#name-trust-signature)
 
 Trusted introducer
     OpenPGP users can choose to rely on {term}`certifications<Certification>` issued by a third party. The remote party of such a {term}`delegation` is called a "trusted introducer".

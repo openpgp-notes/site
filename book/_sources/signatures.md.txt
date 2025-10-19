@@ -22,7 +22,7 @@ Within OpenPGP, the term *{term}`signature<OpenPGP Signature Packet>`* can have 
 A {term}`cryptographic signature`
 ```
 
-- **{term}`OpenPGP signature packets<OpenPGP signature packet>`**: Defined in the [OpenPGP standard](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-packet-type-id-2), these {term}`packets<Packet>` combine a raw {term}`cryptographic signature` along with a *{term}`type<OpenPGP Signature Type>`* designation and additional {term}`metadata`.
+- **{term}`OpenPGP signature packets<OpenPGP signature packet>`**: Defined in the [OpenPGP standard](https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-packet-type-id-2), these {term}`packets<Packet>` combine a raw {term}`cryptographic signature` along with a *{term}`type<OpenPGP Signature Type>`* designation and additional {term}`metadata`.
 
 ```{figure} plain_svg/OpenPGP_Signature_packet.svg
 :name: fig-signature-packet-0
@@ -36,7 +36,7 @@ In this document, "{term}`signature<OpenPGP Signature Packet>`" will refer to {t
 (signature-types)=
 ## Signature types in OpenPGP
 
-The OpenPGP standard defines a set of [Signature types](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types), each identified by a numerical *{term}`signature type ID`*. {term}`Signature types<OpenPGP Signature Type>` define the purpose of a {term}`signature packet<OpenPGP Signature Packet>` and how it should be interpreted.
+The OpenPGP standard defines a set of [Signature types](https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-types), each identified by a numerical *{term}`signature type ID`*. {term}`Signature types<OpenPGP Signature Type>` define the purpose of a {term}`signature packet<OpenPGP Signature Packet>` and how it should be interpreted.
 
 {term}`Signature types<OpenPGP Signature Type>` can be predominantly classified in two ways:
 
@@ -130,11 +130,11 @@ Verifying a {term}`signature<OpenPGP Signature Packet>` in OpenPGP
 In the OpenPGP protocol, {term}`signature subpackets<OpenPGP Signature Subpacket>` enhance the expressiveness of a {term}`signature<OpenPGP Signature Packet>` beyond what is conveyed by just the bare {term}`cryptographic signature` and the {term}`signature type ID`. These {term}`subpackets<OpenPGP Signature Subpacket>`, introduced in [RFC 2440](https://datatracker.ietf.org/doc/html/rfc2440), are essential for embedding additional {term}`metadata` within {term}`signature packets<OpenPGP Signature Packet>`.
 
 {term}`Signature subpackets<OpenPGP Signature subpacket>` serve as sub-elements within {term}`signature packets<OpenPGP Signature Packet>`, providing extra context and meaning to a {term}`signature<OpenPGP Signature Packet>`. 
-They are formatted as key-value pairs, where the keys are defined as [subpacket type IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-subpacket-types-r) by the {term}`RFC`. The {term}`RFC` also provides the format and interpretation of the values.
+They are formatted as key-value pairs, where the keys are defined as [subpacket type IDs](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-signature-subpacket) by the {term}`RFC`. The {term}`RFC` also provides the format and interpretation of the values.
 
 ### Examples of signature subpackets
-- The [*issuer fingerprint*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-fingerprint-subpacket) {term}`subpacket<OpenPGP Signature Subpacket>` encodes the {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`component key` that issued the {term}`signature<OpenPGP Signature Packet>`.
-- The [*key flags*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-flags) {term}`subpacket<OpenPGP Signature Subpacket>` defines the {term}`capabilities<capability>` that are assigned to a {term}`component key` within a {term}`certificate<OpenPGP Certificate>`.
+- The [*issuer fingerprint*](https://www.rfc-editor.org/rfc/rfc9580.html#issuer-fingerprint-subpacket) {term}`subpacket<OpenPGP Signature Subpacket>` encodes the {term}`fingerprint<OpenPGP Fingerprint>` of the {term}`component key` that issued the {term}`signature<OpenPGP Signature Packet>`.
+- The [*key flags*](https://www.rfc-editor.org/rfc/rfc9580.html#name-key-flags) {term}`subpacket<OpenPGP Signature Subpacket>` defines the {term}`capabilities<capability>` that are assigned to a {term}`component key` within a {term}`certificate<OpenPGP Certificate>`.
 
 (subpacket-areas)=
 ### Hashed and unhashed signature subpackets
@@ -146,7 +146,7 @@ They are formatted as key-value pairs, where the keys are defined as [subpacket 
 
 The majority of {term}`signature subpackets<OpenPGP Signature Subpacket>` are stored in the {term}`hashed area`.
 
-For detailed information and specifications, refer to [Hashed vs. Unhashed Subpackets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hashed-vs-unhashed-subpacke) in the OpenPGP {term}`RFC`.
+For detailed information and specifications, refer to [Hashed vs. Unhashed Subpackets](https://www.rfc-editor.org/rfc/rfc9580.html#name-hashed-vs-unhashed-subpacke) in the OpenPGP {term}`RFC`.
 
 (criticality-of-subpackets)=
 ### Criticality of subpackets
@@ -157,4 +157,4 @@ This mechanism accounts for different {term}`OpenPGP implementations<OpenPGP Imp
 
 Consider a scenario where an {term}`implementation<OpenPGP Implementation>` does not recognize a {term}`subpacket<OpenPGP Signature Subpacket>` indicating {term}`signature<OpenPGP Signature Packet>` {term}`expiration`. Without understanding this concept, the {term}`implementation<OpenPGP Implementation>` might erroneously accept an already {term}`expired<Expiration>` {term}`signature<OpenPGP Signature Packet>`. By marking the {term}`signature expiration time subpacket` as {term}`critical<Criticality Flag>`, the creator of the {term}`signature<OpenPGP Signature Packet>` ensures that any recipient who cannot process this {term}`subpacket<OpenPGP Signature Subpacket>` will reject the {term}`signature<OpenPGP Signature Packet>` as {term}`invalid<Validation>`.
 
-For specific guidelines on which {term}`subpackets<OpenPGP Signature Subpacket>` should be marked as {term}`critical<Criticality Flag>`, refer to the {term}`RFC` sections [5.2.3.11](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-creation-time) to [5.2.3.36](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-intended-recipient-fingerpr).
+For specific guidelines on which {term}`subpackets<OpenPGP Signature Subpacket>` should be marked as {term}`critical<Criticality Flag>`, refer to the {term}`RFC` sections [5.2.3.11](https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-creation-time) to [5.2.3.36](https://www.rfc-editor.org/rfc/rfc9580.html#name-intended-recipient-fingerpr).

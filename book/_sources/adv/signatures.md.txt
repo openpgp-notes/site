@@ -8,7 +8,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 (notation-signature-subpackets)=
 ## Notation signature subpackets
 
-[Notation signature subpackets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#notation-data) can be used to effectively extend the otherwise limited set of {term}`signature subpacket types<OpenPGP Signature Subpacket Type>` in OpenPGP with user-defined {term}`notations<Notation>`. {term}`Issuers<Issuer>` can use these {term}`notations<Notation>` to add name-value pairs to an {term}`OpenPGP signature<OpenPGP Signature Packet>`.
+[Notation signature subpackets](https://www.rfc-editor.org/rfc/rfc9580.html#notation-data) can be used to effectively extend the otherwise limited set of {term}`signature subpacket types<OpenPGP Signature Subpacket Type>` in OpenPGP with user-defined {term}`notations<Notation>`. {term}`Issuers<Issuer>` can use these {term}`notations<Notation>` to add name-value pairs to an {term}`OpenPGP signature<OpenPGP Signature Packet>`.
 
 {term}`Notation` names - strings encoded in UTF-8 - may reside in the "user namespace." This namespace is characterized by a {term}`notation tag`, followed by a DNS domain name, both in UTF-8 format.
 
@@ -35,7 +35,7 @@ In such cases, where there isn't a specific recipient in mind, the issuer of the
 
 ### Specific signature context, recipient-driven choice
 
-When a message is being prepared for a particular recipient, the selection of the hash algorithm for the signature packet should be guided by [the recipient's hash algorithm preference](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithm-preferences).
+When a message is being prepared for a particular recipient, the selection of the hash algorithm for the signature packet should be guided by [the recipient's hash algorithm preference](https://www.rfc-editor.org/rfc/rfc9580.html#name-hash-algorithm-preferences).
 
 The recipient's hash algorithm preference is defined in the metadata of their OpenPGP certificate. See {ref}`preferences-features` for more details.
 
@@ -43,7 +43,7 @@ In this workflow, the signed hash digest is created with a hash algorithm repres
 
 ## Signature versions
 
-As described in the [RFC](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-packet-type-id-2), the version of a generated signature packet must conform to the version of the key that issues the signature.
+As described in the [RFC](https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-packet-type-id-2), the version of a generated signature packet must conform to the version of the key that issues the signature.
 
 That is:
 

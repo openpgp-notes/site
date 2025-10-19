@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 # Introducing OpenPGP
 
-This documentation project is designed to provide a comprehensive understanding of OpenPGP, highlighting its functionalities and applications for software developers. While this document predominantly references [OpenPGP version 6, as outlined in the latest RFC](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/), it is important to note that the fundamental principles and functionalities of OpenPGP have remained consistent across its versions since its first release as an open standard in RFC 2440 in 1998.
+This documentation project is designed to provide a comprehensive understanding of OpenPGP, highlighting its functionalities and applications for software developers. While this document predominantly references [OpenPGP version 6, as specified in RFC 9580](https://www.rfc-editor.org/rfc/rfc9580.html), it is important to note that the fundamental principles and functionalities of OpenPGP have remained consistent across its versions since its first release as an open standard in RFC 2440 in 1998.
 
 This documentation project seeks to introduce all OpenPGP concepts and functionalities to application developers who wish to use it in their projects.
 
@@ -33,14 +33,13 @@ Instead, this document is mainly aimed at the second group, application develope
 
 The document may also serve as a useful supplement to the RFC for implementers of OpenPGP libraries (or other software that directly handles internal OpenPGP data structures).
 
-With the emergence of a new crop of modern, high-quality OpenPGP libraries, and the imminent release of the updated [OpenPGP version 6 specification](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/), we think that now is a great time to implement OpenPGP functionality in applications or to modernize existing OpenPGP subsystems.
+With the emergence of a new crop of modern, high-quality OpenPGP libraries, and the release of the updated [OpenPGP RFC 9580](https://www.rfc-editor.org/rfc/rfc9580.html), we think that now is a great time to implement OpenPGP functionality in applications or to modernize existing OpenPGP subsystems.
 
 The goal of this document is to offer an implementation-independent introduction to the OpenPGP technology, assisting software developers in quickly familiarizing themselves and serving as a pathway to relevant information in the RFC.
 
 ## Why not just use the OpenPGP RFC?
 
-The [OpenPGP RFC](https://datatracker.ietf.org/doc/draft-ietf-openpgp-crypto-refresh/)
-defines *the message formats used in OpenPGP.* That is, it describes the internal structure of OpenPGP data, which is crucial for OpenPGP library implementers. However, this level of detail is not required for software developers who use OpenPGP via a library.
+The [OpenPGP RFC 9580](https://www.rfc-editor.org/rfc/rfc9580.html) defines *the message formats used in OpenPGP.* That is, it describes the internal structure of OpenPGP data, which is crucial for OpenPGP library implementers. However, this level of detail is not required for software developers who use OpenPGP via a library.
 
 This document describes OpenPGP concepts at the "library" level of abstraction, omitting unnecessary detail about the internal encoding of OpenPGP artifacts. Instead, we focus on the properties of these OpenPGP artifacts and how they are used, while adding context that is not elaborated on in the [RFC](https://en.wikipedia.org/wiki/Request_for_Comments).
 

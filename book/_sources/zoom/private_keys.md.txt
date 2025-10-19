@@ -17,7 +17,7 @@ $ sq packet dump --hex alice.priv
 
 ### Primary Secret-Key packet
 
-The output starts with the (primary) [Secret-Key packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats).
+The output starts with the (primary) [Secret-Key packet](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-packet-formats).
 
 This is the structure of the Secret-Key packet we will now look at.
 
@@ -60,30 +60,30 @@ Secret-Key Packet, new CTB, 2 header bytes + 75 bytes
 
 The Secret-Key packet consists in large part of the actual cryptographic key data. Notice that its content is almost entirely the same as the Public-Key packet [seen in the previous chapter](zoom-public-key). Let's look at the packet field by field:
 
-- `CTB: 0xc5`[^CTB]: The [packet type ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers) for this packet. The binary representation of the value `0xc5` is `11000101`. Bits 7 and 6 show that the packet is in *OpenPGP packet format* (as opposed to in *Legacy packet format*). The remaining 6 bits encode the type ID's value: "5". This is the value for a Secret-Key packet, as shown in the list of [packet type IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-types).
+- `CTB: 0xc5`[^CTB]: The [packet type ID](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers) for this packet. The binary representation of the value `0xc5` is `11000101`. Bits 7 and 6 show that the packet is in *OpenPGP packet format* (as opposed to in *Legacy packet format*). The remaining 6 bits encode the type ID's value: "5". This is the value for a Secret-Key packet, as shown in the list of [packet type IDs](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-types).
 - `length: 0x4b`: The remaining length of this packet.
 
-[^CTB]: Sequoia uses the term CTB ({term}`Cipher Type Byte`) to refer to the [packet type ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers).
+[^CTB]: Sequoia uses the term CTB ({term}`Cipher Type Byte`) to refer to the [packet type ID](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers).
 
-The packet type id defines the semantics of the remaining data in the packet. We're looking at a Secret-Key packet, which is a kind of [Key Material Packet](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-material-packets).
+The packet type id defines the semantics of the remaining data in the packet. We're looking at a Secret-Key packet, which is a kind of [Key Material Packet](https://www.rfc-editor.org/rfc/rfc9580.html#name-key-material-packets).
 
 - `version: 0x06`: The key material is in version 6 format
 
-This means that the next part of the packet follows the structure of [Version 6 Public Keys](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-6-public-keys)
+This means that the next part of the packet follows the structure of [Version 6 Public Keys](https://www.rfc-editor.org/rfc/rfc9580.html#name-version-6-public-keys)
 
-- `creation_time: 0x6516eaa6`: "The time that the key was created" (also see [Time Fields](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-time-fields))
-- `pk_algo: 0x1b`: "The public-key algorithm ID of this key" (decimal value 27, see the list of [Public-Key Algorithms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms))
+- `creation_time: 0x6516eaa6`: "The time that the key was created" (also see [Time Fields](https://www.rfc-editor.org/rfc/rfc9580.html#name-time-fields))
+- `pk_algo: 0x1b`: "The public-key algorithm ID of this key" (decimal value 27, see the list of [Public-Key Algorithms](https://www.rfc-editor.org/rfc/rfc9580.html#name-public-key-algorithms))
 - `public_len: 0x00000020`: "Octet count for the following public key material" (in this case, the length of the following `ed25519_public` field)
-- `ed25519_public`: [Algorithm-specific representation](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ed2) of the public key material (the format is based on the value of `pk_algo`), in this case 32 bytes of Ed25519 public key
+- `ed25519_public`: [Algorithm-specific representation](https://www.rfc-editor.org/rfc/rfc9580.html#name-algorithm-specific-part-for-ed2) of the public key material (the format is based on the value of `pk_algo`), in this case 32 bytes of Ed25519 public key
 
-This concludes the Public Key section of the packet. The remaining data follows the [Secret-Key packet format](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats):
+This concludes the Public Key section of the packet. The remaining data follows the [Secret-Key packet format](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-packet-formats):
 
-- `s2k_usage: 0x00`: The [*S2K usage* value](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption-s2k-u) of `0x00` specifies that the secret-key data is not encrypted
-- `ed25519_secret`: [Algorithm-specific representation](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ed2) of the secret key data (the format is based on the value of `pk_algo`). Because the private key material in this packet is not encrypted, this field
+- `s2k_usage: 0x00`: The [*S2K usage* value](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-secret-key-encrypti) of `0x00` specifies that the secret-key data is not encrypted
+- `ed25519_secret`: [Algorithm-specific representation](https://www.rfc-editor.org/rfc/rfc9580.html#name-algorithm-specific-part-for-ed2) of the secret key data (the format is based on the value of `pk_algo`). Because the private key material in this packet is not encrypted, this field
 
 ```{tip}
 
-The overall structure of OpenPGP packets is described in the [Packet Syntax](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-syntax) chapter of the RFC.
+The overall structure of OpenPGP packets is described in the [Packet Syntax](https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-syntax) chapter of the RFC.
 ```
 
 Note that the *Secret-Key packet* contains both the private and the public part of the key.
@@ -171,18 +171,18 @@ Secret-Key Packet, new CTB, 2 header bytes + 134 bytes
     00000080  4a 3f 33 d9 2c c9 26 46
 ```
 
-The first portion of Bob's Secret-Key packet has the same structure as Alice's, but beginning at the `s2k_usage`, we see different data. The format of this data is described in [Secret-Key Packet Formats](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats).
+The first portion of Bob's Secret-Key packet has the same structure as Alice's, but beginning at the `s2k_usage`, we see different data. The format of this data is described in [Secret-Key Packet Formats](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-packet-formats).
 
-- `s2k_usage: 0xfe`: [S2K usage](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption-s2k-u) is set to `AEAD`, here (decimal value 253).
+- `s2k_usage: 0xfe`: [S2K usage](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-secret-key-encrypti) is set to `AEAD`, here (decimal value 253).
 - `parameters_len: 0x16` (decimal value: 22): "Cumulative length of all the following conditionally included string-to-key parameter fields."
-- `sym_algo: 0x9`: [Symmetric-Key Algorithm](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-algorithms) specifies that AES 256 is used as the AEAD algorithm
+- `sym_algo: 0x9`: [Symmetric-Key Algorithm](https://www.rfc-editor.org/rfc/rfc9580.html#name-symmetric-key-algorithms) specifies that AES 256 is used as the AEAD algorithm
 - `s2k_len: 0x14` (decimal value 20): "[..] count of the size of the one field following this octet"
 
 The next set of data is the "string-to-key (S2K) specifier." Its format depends on the type.
 
-- `s2k_type: 0x04` [String-to-Key (S2K) Specifier Type](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-specifier-), set to *Argon2* here.
+- `s2k_type: 0x04` [String-to-Key (S2K) Specifier Type](https://www.rfc-editor.org/rfc/rfc9580.html#name-string-to-key-s2k-specifier), set to *Argon2* here.
 
-The next fields are [specific to Argon2](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-argon2):
+The next fields are [specific to Argon2](https://www.rfc-editor.org/rfc/rfc9580.html#name-argon2):
 
 - `argon2_salt`: "16-octet salt value"
 - `argon2_t`: "number of passes t"

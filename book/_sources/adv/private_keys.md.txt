@@ -15,7 +15,7 @@ This section examines the diverse architectures and operational mechanics of pri
 The design of private key subsystems within the OpenPGP framework varies, offering different approaches to cryptographic operations:
 
 1. **Separate backend operations**: Some designs execute the primitive cryptographic operations in a separate backend, using only the cryptographic key material. This approach is particularly compatible with general purpose hardware cryptographic devices, such as [trusted platform modules (TPMs)](https://en.wikipedia.org/wiki/Trusted_Platform_Module).
-2. **Component key-based systems**: An OpenPGP private key subsystem may be built around component keys, specifically the content of [Secret-Key packets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats). These packets contain metadata that is required for some operations. ECDH operations, in particular, require metadata as KDF parameters.
+2. **Component key-based systems**: An OpenPGP private key subsystem may be built around component keys, specifically the content of [Secret-Key packets](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-packet-formats). These packets contain metadata that is required for some operations. ECDH operations, in particular, require metadata as KDF parameters.
 3. **Full transferable secret keys**: Some designs maintain copies of full TSKs in the private key subsystem, leveraging these for private key operations.
 
 While private keystore operations require component keys, they do not require access to the entire OpenPGP certificate.
@@ -40,7 +40,7 @@ When implementing a keystore based on hardware cryptographic devices like [OpenP
 - **supplementary layer**: performs additional cryptographic operations that don't directly use the private key material, such as [AES key wrap](https://www.rfc-editor.org/rfc/rfc3394.html) for ECDH.
 
 ```{note}
- The decryption process using ECC algorithms, especially ECDH, has multiple steps. The initial step, potentially performed by devices such as OpenPGP cards, directly uses private key material to produce a "shared secret." Following this, operations like ["AES key unwrap"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-ec-dh-algorithm-ecdh) are conducted in software outside the hardware device. 
+ The decryption process using ECC algorithms, especially ECDH, has multiple steps. The initial step, potentially performed by devices such as OpenPGP cards, directly uses private key material to produce a "shared secret." Following this, operations like ["AES key unwrap"](https://www.rfc-editor.org/rfc/rfc9580.html#name-ecdh-algorithm) are conducted in software outside the hardware device. 
  
  Further details on this process can be found in the "Advanced Encryption Standard (AES) Key Wrap Algorithm" [RFC 3394](https://www.rfc-editor.org/rfc/rfc3394.html).
 ```
@@ -73,7 +73,7 @@ Importantly, KO attacks are particularly relevant in scenarios where an attacker
 
 Understanding KO attacks is crucial due to their potential to compromise the integrity and confidentiality of encrypted communications, and the risk of complete private key material compromise. KO attacks highlight the necessity for robust key validation procedures and the dangers of storing keys in insecure environments. OpenPGP application developers should conduct a risk assessment to determine the relevance of KO attacks to their applications.
 
-Private keys secured with [S2K usage mode 253 (AEAD)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption) are safeguarded against KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields, including the algorithm field, as the *authentication tag* for integrity verification in the decryption process. 
+Private keys secured with [S2K usage mode 253 (AEAD)](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-encryption) are safeguarded against KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields, including the algorithm field, as the *authentication tag* for integrity verification in the decryption process. 
 
 When an attacker alters the unencrypted part of the Secret-Key packet, then decryption of the private key material will fail. This effectively prevents the user from unknowingly using the key material with an altered attacker-controlled algorithm.
 

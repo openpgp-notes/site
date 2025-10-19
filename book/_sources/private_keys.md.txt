@@ -33,7 +33,7 @@ In certain cases, an exception arises where the cryptographic private key materi
 
 ## Transferable secret key format
 
-Sometimes it is useful to handle OpenPGP certificates combined with private key material in the form of a [*transferable secret key (TSK)*](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-transferable-secret-keys). A TSK is a serialized format that combines OpenPGP certificate data with its connected private key material, stored in a single file.
+Sometimes it is useful to handle OpenPGP certificates combined with private key material in the form of a [*transferable secret key (TSK)*](https://www.rfc-editor.org/rfc/rfc9580.html#name-transferable-secret-keys). A TSK is a serialized format that combines OpenPGP certificate data with its connected private key material, stored in a single file.
 
 ```{figure} plain_svg/TSK.svg
 :name: fig-transferable-secret-key
@@ -65,7 +65,7 @@ This method proves effective in scenarios where an unauthorized party obtains th
 
 When protecting private key material in OpenPGP, a symmetric key is derived from the user's passphrase. This derived key is then used to protect the OpenPGP private key data.
 
-To facilitate this, the OpenPGP standard defines a set of mechanisms known as [string-to-key (S2K)](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-specifier). S2K mechanisms are used to generate high-entropy symmetric encryption keys from lower-entropy passphrases, using a [key derivation function (KDF)](https://en.wikipedia.org/wiki/Key_derivation_function).
+To facilitate this, the OpenPGP standard defines a set of mechanisms known as [string-to-key (S2K)](https://www.rfc-editor.org/rfc/rfc9580.html#name-string-to-key-s2k-specifier). S2K mechanisms are used to generate high-entropy symmetric encryption keys from lower-entropy passphrases, using a [key derivation function (KDF)](https://en.wikipedia.org/wiki/Key_derivation_function).
 
 ```{figure} plain_svg/passphrase_using_S2K.svg
 :name: fig-passphrase-using-s2k
@@ -78,10 +78,10 @@ This symmetric key is used to protect the private key material it is in a passiv
 
 #### Mechanisms for symmetric key generation
 
-Over time, OpenPGP has evolved to include various [S2K mechanisms for generating symmetric keys](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-string-to-key-s2k-types-reg), in line with advancements in cryptographic practices. Currently, two mechanisms are universally recommended:
+Over time, OpenPGP has evolved to include various [S2K mechanisms for generating symmetric keys](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-string-to-key-s2k-t), in line with advancements in cryptographic practices. Currently, two mechanisms are universally recommended:
 
-- [**Argon2**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-argon2): Introduced in OpenPGP version 6, Argon2 is a memory-hard mechanism designed to reduce the efficiency of brute-force attacks using specialized hardware.
-- [**Iterated and Salted S2K**](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-iterated-and-salted-s2k): This mechanism is a staple with OpenPGP version 4 implementations.
+- [**Argon2**](https://www.rfc-editor.org/rfc/rfc9580.html#name-argon2): Introduced in OpenPGP version 6, Argon2 is a memory-hard mechanism designed to reduce the efficiency of brute-force attacks using specialized hardware.
+- [**Iterated and Salted S2K**](https://www.rfc-editor.org/rfc/rfc9580.html#name-iterated-and-salted-s2k): This mechanism is a staple with OpenPGP version 4 implementations.
 
 A third mechanism is conditionally allowed for key generation. Decryption of private keys that use obsolete mechanisms is also allowed.
 
@@ -93,7 +93,7 @@ The generation of a symmetric key from a passphrase leads to its subsequent use 
 
 The RFC uses the term "String-to-Key Usage (S2K usage)" for the mechanism used to *apply* the symmetric key.
 
-Different mechanisms are specified [for encryption of OpenPGP private key material](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption).
+Different mechanisms are specified [for encryption of OpenPGP private key material](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-encryption).
 
 ### Component-based passphrase protection
 
@@ -130,4 +130,4 @@ Specifically, an OpenPGP private keystore implements two primitives:
 1. Given private key material whose algorithm supports decryption, it can decrypt a *session key*.
 2. Given private key material whose algorithm supports signing, it can calculate a *cryptographic signature* for a hash digest.
 
-These essential operations require access only to the component keys and their associated private key material, specifically [Secret-Key packets](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats). Additional packets, such as binding signatures, are not required. 
+These essential operations require access only to the component keys and their associated private key material, specifically [Secret-Key packets](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-packet-formats). Additional packets, such as binding signatures, are not required. 

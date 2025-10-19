@@ -112,8 +112,8 @@ One application of KDFs is to generate symmetric key material from a password by
 <p>Symmetric-key cryptography is used in OpenPGP in three contexts:</p>
 <ul class="simple">
 <li><p>most prominently, as part of a hybrid cryptosystem to encrypt and decrypt data,</p></li>
-<li><p>to encrypt <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption">password-protected private key material</a>, and</p></li>
-<li><p>for <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-encrypted-ses">password-protected data encryption</a>, a less commonly used feature of the standard.</p></li>
+<li><p>to encrypt <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-encryption">password-protected private key material</a>, and</p></li>
+<li><p>for <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-symmetric-key-encrypted-ses">password-protected data encryption</a>, a less commonly used feature of the standard.</p></li>
 </ul>
 <p>Where symmetric keys are used in OpenPGP for data encryption, they are called either “message keys” or “session keys<a class="footnote-reference brackets" href="#sessionkey" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.”</p>
 </section>
@@ -182,7 +182,7 @@ One application of KDFs is to generate symmetric key material from a password by
 </aside>
 <aside class="footnote brackets" id="sessionkey" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
-<p>In OpenPGP version 6, the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-2-symmetrically-enc">“Version 2 Symmetrically Encrypted Integrity Protected Data Packet Format”</a> requires that a “message key” is derived from a “session key.” In contrast, up to OpenPGP version 4, and in version 6 when using <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-1-symmetrically-enc">“Version 1 Symmetrically Encrypted Integrity Protected Data Packet Format”</a>, the “session key” was used directly as a symmetric encryption key.</p>
+<p>In OpenPGP version 6, the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-version-2-symmetrically-enc">“Version 2 Symmetrically Encrypted Integrity Protected Data Packet Format”</a> requires that a “message key” is derived from a “session key.” In contrast, up to OpenPGP version 4, and in version 6 when using <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-version-1-symmetrically-enc">“Version 1 Symmetrically Encrypted Integrity Protected Data Packet Format”</a>, the “session key” was used directly as a symmetric encryption key.</p>
 </aside>
 <aside class="footnote brackets" id="mdc" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>

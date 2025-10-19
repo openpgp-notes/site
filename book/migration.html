@@ -72,7 +72,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>The OpenPGP protocol has developed over time, and will continue to do so, adapting to new challenges and expectations.</p>
 <p>Some of these changes might be subtle, like the addition of a new hash algorithm, while others are more invasive, like a new OpenPGP key format.</p>
 <p>This makes it necessary to migrate both implementations and existing user keys and certificates.</p>
-<p>In this chapter, we want to explore possible steps to migrate from OpenPGP v4 as defined by RFC4880 to v6 (crypto-refresh).</p>
+<p>In this chapter, we want to explore possible steps to migrate from OpenPGP v4 as defined by RFC4880 to OpenPGP v6 as defined by RFC 9580 (crypto-refresh).</p>
 <section id="adoption-of-new-features">
 <h2><span class="section-number">17.1. </span>Adoption of new features<a class="headerlink" href="#adoption-of-new-features" title="Link to this heading">¶</a></h2>
 <p>The new standard introduced a number of new features, which improve security aspects of the protocol.
@@ -88,8 +88,8 @@ Some of these features can only be used with new OpenPGP version 6 keys, and req
 <span id="migration-s2k"></span><h3><span class="section-number">17.1.2. </span>S2K usage mode AEAD<a class="headerlink" href="#s2k-usage-mode-aead" title="Link to this heading">¶</a></h3>
 <p>Another good example is the S2K mechanism for secret-key encryption.</p>
 <p>This feature concerns local copies of OpenPGP private keys on each user’s machine. There is, by definition, no interoperability concern around this feature: Passphrase-protection of the private key material is a local implementation detail on each user’s machine.</p>
-<p>The RFC <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-avoiding-ciphertext-malleab">states</a> that: “Users are RECOMMENDED to migrate to AEAD.”</p>
-<p>In the context of this chapter, this means that encrypted private keys should be upgraded by the user’s OpenPGP software to use <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption-s2k-u">S2K usage mode 253</a> (AEAD) to encrypt the user’s private key material.</p>
+<p>The RFC <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-avoiding-ciphertext-malleab">states</a> that: “Users are RECOMMENDED to migrate to AEAD.”</p>
+<p>In the context of this chapter, this means that encrypted private keys should be upgraded by the user’s OpenPGP software to use <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-encryption">S2K usage mode 253</a> (AEAD) to encrypt the user’s private key material.</p>
 <p>Note that S2K usage mode 253 (AEAD) can be applied to both version 6 and version 4 private keys, with sufficiently up-to-date OpenPGP software. This S2K usage mode is strongly recommended for private keys of all versions.</p>
 <section id="s2k-method-argon2">
 <h4><span class="section-number">17.1.2.1. </span>S2K method Argon2<a class="headerlink" href="#s2k-method-argon2" title="Link to this heading">¶</a></h4>
@@ -106,16 +106,16 @@ Some of these features can only be used with new OpenPGP version 6 keys, and req
 <section id="software-migration">
 <h3><span class="section-number">17.1.4. </span>Software migration<a class="headerlink" href="#software-migration" title="Link to this heading">¶</a></h3>
 <p>Over time, steadily more OpenPGP libraries and tools will add support for OpenPGP v6 features. This migration might take a while, while implementers catch up.</p>
-<p>The OpenPGP v6 standard gives guidance for library authors to extend an OpenPGP implementation to support version 6 in <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-upgrade-guidance-adapting-i">Appendix B. Upgrade Guidance</a>.</p>
+<p>The OpenPGP v6 standard gives guidance for library authors to extend an OpenPGP implementation to support version 6 in <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-upgrade-guidance-adapting-i">Appendix B. Upgrade Guidance</a>.</p>
 </section>
 </section>
 <section id="key-migration">
 <h2><span class="section-number">17.2. </span>Key migration<a class="headerlink" href="#key-migration" title="Link to this heading">¶</a></h2>
 <p>Some OpenPGP v6 features are only available for use with keys in the v6 format.</p>
-<p>For example, only an <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-versions-in-signatur">OpenPGP v6 key can issue a v6 signature</a>.</p>
+<p>For example, only an <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-versions-in-signatur">OpenPGP v6 key can issue a v6 signature</a>.</p>
 <p>On the other hand, an OpenPGP v6 key can <em>only</em> issue v6 signatures, so if you require compatibility with v4 verifiers, you shouldn’t yet migrate to a v6 key/certificate.</p>
 <p>When migrating to a v6 key, generating a fresh v6 key is the recommended approach.</p>
-<p>It is not possible to adopt v4 subkeys into a v6 key, since every subkey to a v6 primary key must itself be a v6 subkey, see in <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.1.1-5">OpenPGP v6 certificate structure</a>.</p>
+<p>It is not possible to adopt v4 subkeys into a v6 key, since every subkey to a v6 primary key must itself be a v6 subkey, see in <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#section-10.1.1-5">OpenPGP v6 certificate structure</a>.</p>
 <section id="converting-v4-component-keys-into-v6-component-keys">
 <h3><span class="section-number">17.2.1. </span>Converting v4 component keys into v6 component keys<a class="headerlink" href="#converting-v4-component-keys-into-v6-component-keys" title="Link to this heading">¶</a></h3>
 <p>That is, taking the existing key material from a v4 component key and re-framing it as a v6 component key, for use with an OpenPGP version 6 certificate.</p>

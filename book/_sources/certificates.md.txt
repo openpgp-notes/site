@@ -68,7 +68,7 @@ An {term}`OpenPGP certificate` usually contains multiple {term}`component keys<O
 
 {term}`OpenPGP component keys<OpenPGP Component Key>` logically consist of an [asymmetric cryptographic keypair](asymmetric-key-pair) and a creation timestamp. Once created, these attributes of a {term}`component key<OpenPGP Component Key>` remain fixed (for ECDH keys, two additional parameters are part of a {term}`component key`'s constitutive data[^ecdh-parameters]).
 
-[^ecdh-parameters]: For [ECDH](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ecd) {term}`component keys<OpenPGP Component Key>`, two additional algorithm parameters are integral to the {term}`component key<OpenPGP Component Key>`'s constitutive and immutable properties. Those parameters specify a hash function and a {term}`symmetric<Symmetric Cryptography>` encryption algorithm.
+[^ecdh-parameters]: For [ECDH](https://www.rfc-editor.org/rfc/rfc9580.html#name-algorithm-specific-part-for-ecd) {term}`component keys<OpenPGP Component Key>`, two additional algorithm parameters are integral to the {term}`component key<OpenPGP Component Key>`'s constitutive and immutable properties. Those parameters specify a hash function and a {term}`symmetric<Symmetric Cryptography>` encryption algorithm.
 
 ```{figure} plain_svg/Component_Key.svg
 :name: fig-component-key
@@ -139,7 +139,7 @@ While {term}`subkeys<OpenPGP Subkey>` have the same structural attributes as the
 (user-ids)=
 ### User IDs in OpenPGP certificates
 
-{term}`OpenPGP certificates<OpenPGP Certificate>` can contain multiple [User IDs](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid). Each {term}`User ID` associates the {term}`certificate<OpenPGP Certificate>` with an {term}`identity`.
+{term}`OpenPGP certificates<OpenPGP Certificate>` can contain multiple [User IDs](https://www.rfc-editor.org/rfc/rfc9580.html#uid). Each {term}`User ID` associates the {term}`certificate<OpenPGP Certificate>` with an {term}`identity`.
 
 ```{figure} plain_svg/Binding_a_UserID.svg
 :name: fig-user-ids
@@ -165,7 +165,7 @@ Consider this scenario: A third party is confident about the email-based {term}`
 (primary-user-id)=
 ### Implications of the Primary User ID
 
-Within a {term}`certificate<OpenPGP Certificate>`, a specific {term}`User ID` is designated as the [Primary User ID](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-primary-user-id).
+Within a {term}`certificate<OpenPGP Certificate>`, a specific {term}`User ID` is designated as the [Primary User ID](https://www.rfc-editor.org/rfc/rfc9580.html#name-primary-user-id).
 
 Each {term}`User ID` carries associated preference settings, such as preferred encryption algorithms, which is detailed in {numref}`zoom-user-id`). When a {term}`certificate<OpenPGP Certificate>` is used in the context of a specific {term}`identity`, then the preferences associated with that {term}`identity component` are used. When a {term}`certificate<OpenPGP Certificate>` is used without reference to a specific {term}`identity`, the preferences associated with the {term}`direct key signature`, or the {term}`primary User ID` take precedence by default.
 
@@ -174,9 +174,9 @@ The {term}`primary User ID` was historically the main store for preferences that
 (user-attributes)=
 ### User attributes in OpenPGP
 While 
-[user attributes](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#user-attribute-packet) are similar to {term}`User IDs<User ID>`, they are less commonly used.
+[user attributes](https://www.rfc-editor.org/rfc/rfc9580.html#user-attribute-packet) are similar to {term}`User IDs<User ID>`, they are less commonly used.
 
-Currently, the OpenPGP standard prescribes only one format to be stored in user attributes: an [image](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-the-image-attribute-subpack) in JPEG format. Typically, this image represents the key owner, although it is not required.
+Currently, the OpenPGP standard prescribes only one format to be stored in user attributes: an [image](https://www.rfc-editor.org/rfc/rfc9580.html#name-image-attribute-subpacket) in JPEG format. Typically, this image represents the key owner, although it is not required.
 
 ## Linking the components
 
@@ -214,7 +214,7 @@ It is crucial to note that the {term}`components<Component>` of an {term}`OpenPG
 (key-flags)=
 ### Defining operational capabilities of component keys with key flags
 
-Each {term}`component key` has a set of ["key flags"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-flags) that delineate the operations a key can perform.
+Each {term}`component key` has a set of ["key flags"](https://www.rfc-editor.org/rfc/rfc9580.html#key-flags) that delineate the operations a key can perform.
 
 Commonly used {term}`key flags<Key Flag>` include:
 
@@ -223,10 +223,10 @@ Commonly used {term}`key flags<Key Flag>` include:
 - **{term}`Encryption<Encryption Key Flag>`**: allows the key to encrypt data
 - **{term}`Authentication<Authentication Key Flag>`**: primarily used for SSH authentication[^auth-flag]
 
-[^auth-flag]: It's important to note that the function of the  [authentication](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-authentication-via-digital-) {term}`key flag` is unrelated to the {term}`authentication` process used in certifying OpenPGP {term}`identities<Identity>` and linking them to {term}`certificate<OpenPGP Certificate>`. Rather, this flag indicates a mechanism that uses {term}`cryptographic signatures<OpenPGP Signature Packet>` to confirm control of {term}`private key material` with a remote system.
+[^auth-flag]: It's important to note that the function of the  [authentication](https://www.rfc-editor.org/rfc/rfc9580.html#name-authentication-via-digital-) {term}`key flag` is unrelated to the {term}`authentication` process used in certifying OpenPGP {term}`identities<Identity>` and linking them to {term}`certificate<OpenPGP Certificate>`. Rather, this flag indicates a mechanism that uses {term}`cryptographic signatures<OpenPGP Signature Packet>` to confirm control of {term}`private key material` with a remote system.
 
 ```{note}
-Distinct {term}`component keys<Component Key>` handle specific operations. Only the {term}`primary key<OpenPGP Primary Key>` can be used for {term}`certification`, although it can have additional {term}`capabilities<Capability>`. {term}`Subkeys<OpenPGP Subkey>` can be used for signing, encryption, and authentication but cannot have the {term}`certification` {term}`capability`. A {term}`component key` can technically have multiple {term}`capabilities<Capability>`. It is considered good practice, however, to [use separate keys for each capability](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-10.1.5-7). 
+Distinct {term}`component keys<Component Key>` handle specific operations. Only the {term}`primary key<OpenPGP Primary Key>` can be used for {term}`certification`, although it can have additional {term}`capabilities<Capability>`. {term}`Subkeys<OpenPGP Subkey>` can be used for signing, encryption, and authentication but cannot have the {term}`certification` {term}`capability`. A {term}`component key` can technically have multiple {term}`capabilities<Capability>`. It is considered good practice, however, to [use separate keys for each capability](https://www.rfc-editor.org/rfc/rfc9580.html#section-10.1.5-7). 
 
 Notably, in many algorithms, encryption and signing-related functionalities (i.e., {term}`certification<Certification Key Flag>`, {term}`signing<Signing Key Flag>`, {term}`authentication<Authentication Key Flag>`) are mutually exclusive, because the algorithms only support one of those two families of operations[^key-flag-sharing].
 ```
@@ -244,11 +244,11 @@ However, this approach requires that OpenPGP software determine the cryptographi
 
 Negotiation mechanisms in OpenPGP include:
 
-- [Preferred hash algorithms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-hashes-subpacket)
-- [Preferred symmetric ciphers for v1 SEIPD](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-v1-seipd)  
-- [Preferred AEAD ciphersuites](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-v2-seipd)
-- [Features subpacket](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#features-subpacket)
-- [Preferred compression algorithms](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-compression-subpacket)
+- [Preferred hash algorithms](https://www.rfc-editor.org/rfc/rfc9580.html#preferred-hashes-subpacket)
+- [Preferred symmetric ciphers for v1 SEIPD](https://www.rfc-editor.org/rfc/rfc9580.html#preferred-v1-seipd)  
+- [Preferred AEAD ciphersuites](https://www.rfc-editor.org/rfc/rfc9580.html#preferred-v2-seipd)
+- [Features subpacket](https://www.rfc-editor.org/rfc/rfc9580.html#features-subpacket)
+- [Preferred compression algorithms](https://www.rfc-editor.org/rfc/rfc9580.html#preferred-compression-subpacket)
 
 Beyond these explicitly expressed preferences, implementations also deduce {term}`capabilities<Capability>` of communication partners based on the version of the {term}`OpenPGP certificate` they possess.
 

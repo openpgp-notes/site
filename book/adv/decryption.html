@@ -75,7 +75,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 This check consists of 16 random bytes, followed by a copy of the two last bytes, which are prefixed to the plaintext.
 During decrypting, these 2 bytes can be compared to the 15th and 16th random byte to detect use of the wrong session key.</p>
 <p>Since the chance to accidentally end up with matching quick check bytes albeit the use of the wrong session key is 1:65536, some implementations validate further contents of the plaintext, such as the packet headers.</p>
-<p>The standard <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-risks-of-a-quick-check-orac">warns against</a> using the quick check mechanism, as it introduces the risk of a decryption oracle. Instead, the use of SEIPDv2 is recommended, as the AEAD mechanism automatically detects use of the wrong session key early on after the first chunk has been decrypted.</p>
+<p>The standard <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-risks-of-a-quick-check-orac">warns against</a> using the quick check mechanism, as it introduces the risk of a decryption oracle. Instead, the use of SEIPDv2 is recommended, as the AEAD mechanism automatically detects use of the wrong session key early on after the first chunk has been decrypted.</p>
 </section>
 <section id="anonymous-recipients">
 <span id="decryption-anonymous-recipient"></span><h2><span class="section-number">25.2. </span>Anonymous recipients<a class="headerlink" href="#anonymous-recipients" title="Link to this heading">¶</a></h2>

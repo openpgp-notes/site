@@ -119,8 +119,8 @@ alice.pub-9--Signature
 <h3><span class="section-number">26.1.3. </span>Inspecting this certificate<a class="headerlink" href="#inspecting-this-certificate" title="Link to this heading">¶</a></h3>
 <p>This version of Alice’s certificate contains just two packets:</p>
 <ul class="simple">
-<li><p>the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-packet-formats"><em>Public-Key packet</em></a> for the primary key, and</p></li>
-<li><p>a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-direct-key"><em>Direct Key Signature</em></a>, which is a self-signature that binds metadata to the primary key.</p></li>
+<li><p>the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-public-key-packet-formats"><em>Public-Key packet</em></a> for the primary key, and</p></li>
+<li><p>a <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#sigtype-direct-key"><em>Direct Key Signature</em></a>, which is a self-signature that binds metadata to the primary key.</p></li>
 </ul>
 <p>This is the shape of the packets we’ll explore in the subsequent sections:</p>
 <figure class="align-default" id="fig-public-certificate-minimal">
@@ -151,7 +151,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </section>
 <section id="public-key-packet">
 <span id="zoom-public-key"></span><h3><span class="section-number">26.1.4. </span>Public-Key packet<a class="headerlink" href="#public-key-packet" title="Link to this heading">¶</a></h3>
-<p>The output begins with a (primary) <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-packet-formats">Public-Key packet</a>:</p>
+<p>The output begins with a (primary) <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-public-key-packet-formats">Public-Key packet</a>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Public-Key Packet, new CTB, 2 header bytes + 42 bytes
     Version: 6
     Creation time: 2023-09-29 15:17:58 UTC
@@ -173,19 +173,19 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </div>
 <p>The Public-Key packet consists primarily of the cryptographic key data. Let’s look at the packet field by field:</p>
 <p><strong>OpenPGP packet syntax</strong></p>
-<p>The first fields of a packet are governed by the general <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-syntax">Packet Syntax</a>:</p>
+<p>The first fields of a packet are governed by the general <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-syntax">Packet Syntax</a>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">CTB:</span> <span class="pre">0xc6</span></code><a class="footnote-reference brackets" href="#ctb" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>: This is the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">packet type ID</a> for this packet. The binary representation of the value <code class="docutils literal notranslate"><span class="pre">0xc6</span></code> is <code class="docutils literal notranslate"><span class="pre">11000110</span></code>. The first two bits show that the packet is in <em>OpenPGP packet format</em> (as opposed to in <em>Legacy packet format</em>) and the remaining 6 bits encode the type ID value, which is “6.” This type ID value corresponds to a Public-Key packet, as listed in the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-types">packet type IDs</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CTB:</span> <span class="pre">0xc6</span></code><a class="footnote-reference brackets" href="#ctb" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>: This is the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers">packet type ID</a> for this packet. The binary representation of the value <code class="docutils literal notranslate"><span class="pre">0xc6</span></code> is <code class="docutils literal notranslate"><span class="pre">11000110</span></code>. The first two bits show that the packet is in <em>OpenPGP packet format</em> (as opposed to in <em>Legacy packet format</em>) and the remaining 6 bits encode the type ID value, which is “6.” This type ID value corresponds to a Public-Key packet, as listed in the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-types">packet type IDs</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">length:</span> <span class="pre">0x2a</span></code>: This indicates the remaining length of this packet.</p></li>
 </ul>
 <p><strong>Public-Key packet syntax</strong></p>
-<p>The packet type ID (“6”) defines the semantics of the following data within the packet. In this case, it is a Public-Key packet, which is a kind of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-key-material-packets">Key Material Packet</a>.</p>
+<p>The packet type ID (“6”) defines the semantics of the following data within the packet. In this case, it is a Public-Key packet, which is a kind of <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-key-material-packets">Key Material Packet</a>.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">0x06</span></code>: The key material is in version 6 format. This means that the next part of the packet adheres to the structure of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-6-public-keys">Version 6 Public Keys</a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">creation_time:</span> <span class="pre">0x6516eaa6</span></code>: This field represents the key’s creation time. (See also <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-time-fields">Time Fields</a>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pk_algo:</span> <span class="pre">0x1b</span></code>: This corresponds to the key’s public-key algorithm ID, which has a decimal value of 27. Refer to the list of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms">Public-Key Algorithms</a>) for more details.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">0x06</span></code>: The key material is in version 6 format. This means that the next part of the packet adheres to the structure of <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-version-6-public-keys">Version 6 Public Keys</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">creation_time:</span> <span class="pre">0x6516eaa6</span></code>: This field represents the key’s creation time. (See also <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-time-fields">Time Fields</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pk_algo:</span> <span class="pre">0x1b</span></code>: This corresponds to the key’s public-key algorithm ID, which has a decimal value of 27. Refer to the list of <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-public-key-algorithms">Public-Key Algorithms</a>) for more details.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">public_len:</span> <span class="pre">0x00000020</span></code>: This field specifies the octet count for the subsequent public key material. In this case, it represents the length of the following <code class="docutils literal notranslate"><span class="pre">ed25519_public</span></code> field.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ed25519_public</span></code>: This is the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-part-for-ed2">algorithm-specific representation</a> of the public key material. The format is based on the value of <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code>, which, in this case, is 32 bytes of Ed25519 public key data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ed25519_public</span></code>: This is the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-algorithm-specific-part-for-ed2">algorithm-specific representation</a> of the public key material. The format is based on the value of <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code>, which, in this case, is 32 bytes of Ed25519 public key data.</p></li>
 </ul>
 <p>Note that the <em>Public-Key packet</em> contains only the public part of the key.</p>
 <figure class="align-default" id="fig-public-key-packet">
@@ -197,7 +197,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </section>
 <section id="direct-key-signature">
 <span id="zoom-dks"></span><h3><span class="section-number">26.1.5. </span>Direct Key Signature<a class="headerlink" href="#direct-key-signature" title="Link to this heading">¶</a></h3>
-<p>The next packet in the certificate is a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#sigtype-direct-key"><em>Direct Key Signature</em></a>, which plays a crucial role in binding specific information to the primary key. This signature is contained within the file <code class="docutils literal notranslate"><span class="pre">alice.pub-1--Signature</span></code>.</p>
+<p>The next packet in the certificate is a <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#sigtype-direct-key"><em>Direct Key Signature</em></a>, which plays a crucial role in binding specific information to the primary key. This signature is contained within the file <code class="docutils literal notranslate"><span class="pre">alice.pub-1--Signature</span></code>.</p>
 <p>This packet binds the data within the signature subpackets with the primary key. Each entry under “Signature Packet -&gt; Hashed area” is one signature subpacket, providing essential information such as algorithm preferences, including <em>symmetric algorithm preference</em> and <em>hash algorithm preferences</em>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Signature Packet, new CTB, 2 header bytes + 182 bytes
     Version: 6
@@ -268,39 +268,39 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </div>
 <p>Below is a field-by-field examination of the packet:</p>
 <p><strong>OpenPGP packet syntax</strong></p>
-<p>The first fields of a packet are governed by the general <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-syntax">Packet Syntax</a>:</p>
+<p>The first fields of a packet are governed by the general <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-syntax">Packet Syntax</a>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">CTB:</span> <span class="pre">0xc2</span></code>: This field indicates the Packet type ID for this packet. Bits 7 and 6 show that the packet is in “OpenPGP packet format.” The remaining 6 bits encode the type ID’s value, which is “2” for a Signature packet.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">length:</span> <span class="pre">0xb6</span></code>: This field shows the remaining length of this packet.</p></li>
 </ul>
 <p><strong>Signature packet syntax</strong></p>
-<p>The packet type ID (“2”) defines the semantics of the remaining data in the packet. In this case, as it indicates a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#signature-packet">Signature packet</a>, the following data is specific to this packet type:</p>
+<p>The packet type ID (“2”) defines the semantics of the remaining data in the packet. In this case, as it indicates a <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#signature-packet">Signature packet</a>, the following data is specific to this packet type:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">0x06</span></code>: This is a version 6 signature.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">0x1f</span></code>: This indicates the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types">Signature Type</a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pk_algo:</span> <span class="pre">0x1b</span></code>: This specifies the Public-Key algorithm ID, with decimal 27 corresponding to <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms">Ed25519</a>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hash_algo:</span> <span class="pre">0x0a</span></code>: This specifies the hash algorithm ID, with decimal 10 corresponding to <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-hash-algorithms">SHA2-512</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">0x1f</span></code>: This indicates the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-types">Signature Type</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pk_algo:</span> <span class="pre">0x1b</span></code>: This specifies the Public-Key algorithm ID, with decimal 27 corresponding to <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-public-key-algorithms">Ed25519</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hash_algo:</span> <span class="pre">0x0a</span></code>: This specifies the hash algorithm ID, with decimal 10 corresponding to <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-hash-algorithms">SHA2-512</a>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">hashed_area_len:</span> <span class="pre">0x0000003d</span></code>: This specifies the length of the following hashed subpacket data.</p></li>
 </ul>
 <p>The next segment of this packet contains the hashed subpacket data.</p>
 <p>In OpenPGP Signatures, there are two sets of subpacket data: hashed and unhashed. Hashed subpackets are protected by the digital signature of the packet, while unhashed subpackets are not.</p>
 <p>A subpacket data set in an OpenPGP Signature contains a list of zero or more Signature subpackets.</p>
-<p>The following subpacket data consists of sets of “subpacket length, subpacket type ID, data.” Each subpacket is displayed as one line, starting with the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-subpacket-specifi">subpacket type description</a> (based on the subpacket type ID). Note that bit 7 of the subpacket type ID signals if that subpacket is <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.2.3.7-7">“critical.”</a></p>
+<p>The following subpacket data consists of sets of “subpacket length, subpacket type ID, data.” Each subpacket is displayed as one line, starting with the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-subpacket-specifi">subpacket type description</a> (based on the subpacket type ID). Note that bit 7 of the subpacket type ID signals if that subpacket is <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#section-5.2.3.7-7">“critical.”</a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Critical here means that the receiver must interpret the subpacket and is expected to fail, otherwise. Non-critical subpackets may be ignored by the receiver.</p>
 </div>
 <p>The subpacket details are as follows:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#signature-creation-subpacket"><strong>Signature Creation Time</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#signature-creation-subpacket"><strong>Signature Creation Time</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">2</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">Yes</span></code></p></li>
 <li><p>Value: <code class="docutils literal notranslate"><span class="pre">0x6516eaa6</span></code></p></li>
-<li><p>Notes: See also <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-time-fields">Time Fields</a>.</p></li>
+<li><p>Notes: See also <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-time-fields">Time Fields</a>.</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-expiration-subpacket"><strong>Key Expiration Time</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#key-expiration-subpacket"><strong>Key Expiration Time</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">9</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">Yes</span></code></p></li>
@@ -308,7 +308,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <li><p>Notes: Defined as number of seconds after the key creation time</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-v1-seipd"><strong>Preferred Symmetric Ciphers for v1 SEIPD</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#preferred-v1-seipd"><strong>Preferred Symmetric Ciphers for v1 SEIPD</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">11</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">No</span></code></p></li>
@@ -316,7 +316,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <li><p>Notes: Values correspond to <em>AES with 256-bit key</em> and <em>AES with 128-bit key</em></p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#preferred-hashes-subpacket"><strong>Preferred Hash Algorithms</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#preferred-hashes-subpacket"><strong>Preferred Hash Algorithms</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">21</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">No</span></code></p></li>
@@ -324,7 +324,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <li><p>Notes: Values correspond to <em>SHA2-512</em> and <em>SHA2-256</em>.</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#key-flags"><strong>Key Flags</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#key-flags"><strong>Key Flags</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">27</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">Yes</span></code></p></li>
@@ -332,7 +332,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <li><p>Notes: Value corresponds to the <em>certifications</em> key flag.</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#features-subpacket"><strong>Features</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#features-subpacket"><strong>Features</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">30</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">No</span></code></p></li>
@@ -340,7 +340,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <li><p>Notes: Value corresponds to <em>Symmetrically Encrypted Integrity Protected Data packet version 1</em></p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-fingerprint-subpacket"><strong>Issuer Fingerprint</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#issuer-fingerprint-subpacket"><strong>Issuer Fingerprint</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">33</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">No</span></code></p></li>
@@ -355,7 +355,7 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 </ul>
 <p>As above, the following subpacket data consists of sets of subpacket length, subpacket type id, and data. In this case, only one subpacket follows:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#issuer-keyid-subpacket"><strong>Issuer Key ID</strong></a></p>
+<li><p><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#issuer-keyid-subpacket"><strong>Issuer Key ID</strong></a></p>
 <ul>
 <li><p>Type: <code class="docutils literal notranslate"><span class="pre">16</span></code></p></li>
 <li><p>Critical: <code class="docutils literal notranslate"><span class="pre">No</span></code></p></li>
@@ -368,10 +368,10 @@ gAIl6FM5SWuQxg12j0S07ExCOI5NPRDCrSnAV85mAXOzeIGeiVLPQ40oEal3CX/L
 <p>This next section shows the remaining fields of this signature packet, which relate to the cryptographic digital signature:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">digest_prefix:</span> <span class="pre">0x6747</span></code>: the left 16 bits of the signed hash digest</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">salt_len,</span> <span class="pre">salt</span></code>: a random <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-advantages-of-salted-signat">salt value</a> with size <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#hash-algorithms-registry">matching the hash algorithm</a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ed25519_sig</span></code>: <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-algorithm-specific-fields-for-ed2">algorithm-specific</a> representation of the signature (here: 64 bytes of Ed25519 signature)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">salt_len,</span> <span class="pre">salt</span></code>: a random <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-advantages-of-salted-signat">salt value</a> with size <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#hash-algorithms-registry">matching the hash algorithm</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ed25519_sig</span></code>: <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-algorithm-specific-fields-for-ed2">algorithm-specific</a> representation of the signature (here: 64 bytes of Ed25519 signature)</p></li>
 </ul>
-<p>The hash digest is calculated from the following data (see <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-computing-signatures">Computing Signatures</a> in the RFC):</p>
+<p>The hash digest is calculated from the following data (see <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-computing-signatures">Computing Signatures</a> in the RFC):</p>
 <ul class="simple">
 <li><p>the signature’s salt</p></li>
 <li><p>the serialized primary key’s public data</p></li>
@@ -428,8 +428,8 @@ Public-Subkey Packet, new CTB, 2 header bytes + 42 bytes
 </div>
 <p>Notice that the structure of this <em>Public-Subkey packet</em> mirrors the primary key’s <a class="reference internal" href="#zoom-public-key"><span class="std std-ref"><em>Public-Key packet</em></span></a> above. However, there are notable differences between the two packets:</p>
 <ul class="simple">
-<li><p>The packet type ID (<code class="docutils literal notranslate"><span class="pre">CTB</span></code>) in this packet shows type 14 (<a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-subkey-packet-type-i"><em>Public-Subkey packet</em></a>).</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code> value is set to <code class="docutils literal notranslate"><span class="pre">0x19</span></code> (decimal 25), which <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-public-key-algorithms">corresponds to X25519</a>. Notably, though both the primary key and this subkey use a cryptographic mechanism based on Curve25519, the encryption key uses Curve 25519 in a different way: namely, X25519 is a Diffie–Hellman function constructed from Curve25519.</p></li>
+<li><p>The packet type ID (<code class="docutils literal notranslate"><span class="pre">CTB</span></code>) in this packet shows type 14 (<a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-public-subkey-packet-type-i"><em>Public-Subkey packet</em></a>).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code> value is set to <code class="docutils literal notranslate"><span class="pre">0x19</span></code> (decimal 25), which <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-public-key-algorithms">corresponds to X25519</a>. Notably, though both the primary key and this subkey use a cryptographic mechanism based on Curve25519, the encryption key uses Curve 25519 in a different way: namely, X25519 is a Diffie–Hellman function constructed from Curve25519.</p></li>
 <li><p>Accordingly, the public part of the cryptographic key pair is labeled <code class="docutils literal notranslate"><span class="pre">x25519_public</span></code>, as implied by the value (<code class="docutils literal notranslate"><span class="pre">0x19</span></code>) of <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code>. However, the actual data is just 32 bytes of cryptographic key material, without any type information.</p></li>
 </ul>
 </section>
@@ -495,7 +495,7 @@ Signature Packet, new CTB, 2 header bytes + 171 bytes
 </pre></div>
 </div>
 <p>The analysis of this packet dump will be less extensive, given that its structure mirrors the <em>Direct Key Signature</em> explored above.</p>
-<p>One notable difference is the <code class="docutils literal notranslate"><span class="pre">type</span></code> field, showing that this signature is of type <code class="docutils literal notranslate"><span class="pre">0x18</span></code> (<a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-subkey-binding-signature-ty">Subkey Binding Signature</a>).</p>
+<p>One notable difference is the <code class="docutils literal notranslate"><span class="pre">type</span></code> field, showing that this signature is of type <code class="docutils literal notranslate"><span class="pre">0x18</span></code> (<a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-subkey-binding-signature-ty">Subkey Binding Signature</a>).</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code> value of this signature derives from the algorithm of the primary key (<code class="docutils literal notranslate"><span class="pre">0x1b</span></code>, corresponding to Ed25519). This signature is issued by the primary key, thus using the signing algorithm of the primary key. (The algorithm used to produce the cryptographic signature in this packet is entirely independent of the <code class="docutils literal notranslate"><span class="pre">pk_algo</span></code> of the key material of this subkey itself, which uses the X25519 mechanism.)</p>
 <p>As shown in the text at the top of this packet dump, the hashed subpacket data contains four pieces of information:</p>
 <ul class="simple">
@@ -517,7 +517,7 @@ Signature Packet, new CTB, 2 header bytes + 171 bytes
 <li><p>the serialized subkey’s public data</p></li>
 <li><p>the serialized subkey binding signature packet (excluding the unhashed area)</p></li>
 </ul>
-<p>Refer to <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-computing-signatures">Computing Signatures</a> in the RFC for details.</p>
+<p>Refer to <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-computing-signatures">Computing Signatures</a> in the RFC for details.</p>
 </section>
 </section>
 <section id="signing-subkey">
@@ -633,7 +633,7 @@ Signature Packet, new CTB, 3 header bytes + 325 bytes
 <span id="zoom-user-id"></span><h2><span class="section-number">26.4. </span>Adding an identity component<a class="headerlink" href="#adding-an-identity-component" title="Link to this heading">¶</a></h2>
 <p>In this section, we’ll look at an identity associated with Alice’s certificate.</p>
 <p>User IDs are a mechanism for connecting <a class="reference internal" href="../certificates.html#identity-components"><span class="std std-ref">identities</span></a> with an OpenPGP certificate. Typically, a User ID is a string combining a name and an email address.</p>
-<p>To understand the internal packet structure of this identity and its connection to the OpenPGP certificate, we’ll examine two packets that constitute the identity component. One is the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid">User ID packet</a>, located in the file <code class="docutils literal notranslate"><span class="pre">alice.pub-2--UserID</span></code>, which contains identity information. The other is a  certifying self-signature, specifically a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-positive-certification-of-a">Positive certification of a User ID and Public-Key packet</a> located in the file <code class="docutils literal notranslate"><span class="pre">alice.pub-3--Signature</span></code>. This certification, issued after substantial verification of the identity claim, validates the association between the User ID and the certificate’s public key. These packets are snippets from Alice’s full OpenPGP certificate.</p>
+<p>To understand the internal packet structure of this identity and its connection to the OpenPGP certificate, we’ll examine two packets that constitute the identity component. One is the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#uid">User ID packet</a>, located in the file <code class="docutils literal notranslate"><span class="pre">alice.pub-2--UserID</span></code>, which contains identity information. The other is a  certifying self-signature, specifically a <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#sigtype-positive-cert">Positive certification of a User ID and Public-Key packet</a> located in the file <code class="docutils literal notranslate"><span class="pre">alice.pub-3--Signature</span></code>. This certification, issued after substantial verification of the identity claim, validates the association between the User ID and the certificate’s public key. These packets are snippets from Alice’s full OpenPGP certificate.</p>
 <section id="user-id-packet">
 <h3><span class="section-number">26.4.1. </span>User ID packet<a class="headerlink" href="#user-id-packet" title="Link to this heading">¶</a></h3>
 <p>First, let’s look at the User ID packet, which encodes an identity that is associated with an OpenPGP certificate:</p>
@@ -648,7 +648,7 @@ User ID Packet, new CTB, 2 header bytes + 19 bytes
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">CTB:</span> <span class="pre">0xcd</span></code>: This is the packet type ID for this packet. Bits 7 and 6 show that the packet is in “OpenPGP packet format” (not “Legacy packet format”). The remaining 6 bits encode the type ID’s value: “13,” which is the value for a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#uid">User ID packet</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CTB:</span> <span class="pre">0xcd</span></code>: This is the packet type ID for this packet. Bits 7 and 6 show that the packet is in “OpenPGP packet format” (not “Legacy packet format”). The remaining 6 bits encode the type ID’s value: “13,” which is the value for a <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#uid">User ID packet</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">length:</span> <span class="pre">0x13</span></code>: This field shows the remaining length of the packet (here: 19 bytes).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: This comprises 19 bytes of data that contain UTF-8 encoded text. The value corresponds to the string <code class="docutils literal notranslate"><span class="pre">&lt;alice&#64;example.org&gt;</span></code>. With this identity component, Alice asserts usage and control over the specified email address. Note that the email address is enclosed in <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> characters, in line with the conventions of  <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc2822">RFC 2822</a>.</p></li>
 </ul>
@@ -730,7 +730,7 @@ Signature Packet, new CTB, 2 header bytes + 185 bytes
 </pre></div>
 </div>
 <p>Because this packet structure closely mirrors the <a class="reference internal" href="#zoom-dks"><span class="std std-ref">Direct Key Signature</span></a> discussed above, we will cover this succinctly.</p>
-<p>We’re again looking at a Signature packet. Its <code class="docutils literal notranslate"><span class="pre">type</span></code> is <code class="docutils literal notranslate"><span class="pre">0x13</span></code> (<a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-signature-types">corresponding to a <em>positive certification</em> signature</a>).</p>
+<p>We’re again looking at a Signature packet. Its <code class="docutils literal notranslate"><span class="pre">type</span></code> is <code class="docutils literal notranslate"><span class="pre">0x13</span></code> (<a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-types">corresponding to a <em>positive certification</em> signature</a>).</p>
 <p>The designated public key algorithm and hash function for this signature are Ed25519 and SHA512, respectively.</p>
 <p>As shown in the text atop this packet dump, the hashed subpacket data contains the following metadata:</p>
 <ul class="simple">
@@ -748,7 +748,7 @@ Signature Packet, new CTB, 2 header bytes + 185 bytes
 <p class="admonition-title">Note</p>
 <p>Historically, the self-signature that binds the primary User ID to the certificate also contains subpackets relevant not to the User ID, but to the primary key itself.</p>
 <p>Setting key expiration time and key flags on the primary User ID self-signature is one mechanism to configure the primary key.</p>
-<p>The interaction between metadata on direct key signatures and User ID binding self-signatures <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-notes-on-self-signatures">is subtle</a>, with changes between version 6 and version 4.</p>
+<p>The interaction between metadata on direct key signatures and User ID binding self-signatures <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-notes-on-self-signatures">is subtle</a>, with changes between version 6 and version 4.</p>
 </div>
 <p>This section is followed, again, by the (informational) unhashed subpacket area.</p>
 <p>Subsequently, we see a salt value for the signature and the signature itself.</p>
@@ -759,7 +759,7 @@ Signature Packet, new CTB, 2 header bytes + 185 bytes
 <li><p>the serialized User ID
 This section specifies- the serialized self-signature packet (excluding the unhashed area)</p></li>
 </ul>
-<p>Refer to <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-computing-signatures">Computing Signatures</a> in the RFC for details.</p>
+<p>Refer to <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-computing-signatures">Computing Signatures</a> in the RFC for details.</p>
 </section>
 </section>
 <section id="certifications-third-party-signatures">
@@ -780,7 +780,7 @@ This section specifies- the serialized self-signature packet (excluding the unha
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="ctb" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Sequoia uses the term CTB (<a class="reference internal" href="../glossary.html#term-Cipher-Type-Byte"><span class="xref std std-term">Cipher Type Byte</span></a>) to refer to the <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-packet-headers">packet type ID</a>.</p>
+<p>Sequoia uses the term CTB (<a class="reference internal" href="../glossary.html#term-Cipher-Type-Byte"><span class="xref std std-term">Cipher Type Byte</span></a>) to refer to the <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-packet-headers">packet type ID</a>.</p>
 </aside>
 </aside>
 

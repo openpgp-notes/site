@@ -77,7 +77,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>The design of private key subsystems within the OpenPGP framework varies, offering different approaches to cryptographic operations:</p>
 <ol class="arabic simple">
 <li><p><strong>Separate backend operations</strong>: Some designs execute the primitive cryptographic operations in a separate backend, using only the cryptographic key material. This approach is particularly compatible with general purpose hardware cryptographic devices, such as <a class="reference external" href="https://en.wikipedia.org/wiki/Trusted_Platform_Module">trusted platform modules (TPMs)</a>.</p></li>
-<li><p><strong>Component key-based systems</strong>: An OpenPGP private key subsystem may be built around component keys, specifically the content of <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-packet-formats">Secret-Key packets</a>. These packets contain metadata that is required for some operations. ECDH operations, in particular, require metadata as KDF parameters.</p></li>
+<li><p><strong>Component key-based systems</strong>: An OpenPGP private key subsystem may be built around component keys, specifically the content of <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-packet-formats">Secret-Key packets</a>. These packets contain metadata that is required for some operations. ECDH operations, in particular, require metadata as KDF parameters.</p></li>
 <li><p><strong>Full transferable secret keys</strong>: Some designs maintain copies of full TSKs in the private key subsystem, leveraging these for private key operations.</p></li>
 </ol>
 <p>While private keystore operations require component keys, they do not require access to the entire OpenPGP certificate.</p>
@@ -99,7 +99,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The decryption process using ECC algorithms, especially ECDH, has multiple steps. The initial step, potentially performed by devices such as OpenPGP cards, directly uses private key material to produce a “shared secret.” Following this, operations like <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-ec-dh-algorithm-ecdh">“AES key unwrap”</a> are conducted in software outside the hardware device.</p>
+<p>The decryption process using ECC algorithms, especially ECDH, has multiple steps. The initial step, potentially performed by devices such as OpenPGP cards, directly uses private key material to produce a “shared secret.” Following this, operations like <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-ecdh-algorithm">“AES key unwrap”</a> are conducted in software outside the hardware device.</p>
 <p>Further details on this process can be found in the “Advanced Encryption Standard (AES) Key Wrap Algorithm” <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc3394.html">RFC 3394</a>.</p>
 </div>
 </section>
@@ -128,7 +128,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <section id="mitigation">
 <h3><span class="section-number">19.2.2. </span>Mitigation<a class="headerlink" href="#mitigation" title="Link to this heading">¶</a></h3>
 <p>Understanding KO attacks is crucial due to their potential to compromise the integrity and confidentiality of encrypted communications, and the risk of complete private key material compromise. KO attacks highlight the necessity for robust key validation procedures and the dangers of storing keys in insecure environments. OpenPGP application developers should conduct a risk assessment to determine the relevance of KO attacks to their applications.</p>
-<p>Private keys secured with <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption">S2K usage mode 253 (AEAD)</a> are safeguarded against KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields, including the algorithm field, as the <em>authentication tag</em> for integrity verification in the decryption process.</p>
+<p>Private keys secured with <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-encryption">S2K usage mode 253 (AEAD)</a> are safeguarded against KO attacks. This mode ensures the integrity of the private key by using its unencrypted fields, including the algorithm field, as the <em>authentication tag</em> for integrity verification in the decryption process.</p>
 <p>When an attacker alters the unencrypted part of the Secret-Key packet, then decryption of the private key material will fail. This effectively prevents the user from unknowingly using the key material with an altered attacker-controlled algorithm.</p>
 <p>Note that while S2K usage mode 253 (AEAD) has been introduced in the OpenPGP version 6 specification, it can also be applied to OpenPGP version 4 key material (see <a class="reference internal" href="../migration.html#migration-s2k"><span class="std std-ref">S2K usage mode AEAD</span></a>).</p>
 <section id="resources">

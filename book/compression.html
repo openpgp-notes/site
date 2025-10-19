@@ -74,7 +74,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <p>This means that to use whatever potential for compression exists, the message must be compressed <em>before</em> encryption. OpenPGP offers an integrated compression mechanism to make this convenient (otherwise, messages would need to be compressed and decompressed before and after encryption, to achieve the same space-efficiency).</p>
 <section id="decompression-yields-a-wrapped-openpgp-packet-stream">
 <h2><span class="section-number">12.1. </span>Decompression yields a ‘wrapped’ OpenPGP packet stream<a class="headerlink" href="#decompression-yields-a-wrapped-openpgp-packet-stream" title="Link to this heading">¶</a></h2>
-<p>Compression in OpenPGP is a simple mechanism: A <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-compressed-data-packet-type">Compressed Data packet</a> acts as a compressed container for a series of OpenPGP packets.</p>
+<p>Compression in OpenPGP is a simple mechanism: A <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-compressed-data-packet-type">Compressed Data packet</a> acts as a compressed container for a series of OpenPGP packets.</p>
 <p>The compressed data packet consists of the specification of which compression algorithm is used, followed by a compressed representation of the contained data.</p>
 <p>The series of OpenPGP packets inside the Compressed Data packet can be handled like any stream of OpenPGP packets.</p>
 </section>

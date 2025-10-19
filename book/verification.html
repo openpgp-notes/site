@@ -150,7 +150,7 @@ Put mathematically, the set of valid signatures is a subset of the set of correc
 Similarly, certification signatures over third-party certificates require the issuer key to carry a valid self-signature with the <em>certification</em> key flag.</p>
 <p>Self-qualifying signatures have no such limitations.</p>
 <p>For example, a certificate consisting only of a primary key and a single key-revocation self-signature contains everything needed to verify the revocation, as key-revocation self-signatures are self-qualifying.
-This construct is referred to as a <a class="reference external" href="https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-v6-revocation-certi">revocation certificate</a>.</p>
+This construct is referred to as a <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-version-6-revocatio">revocation certificate</a>.</p>
 <p>On the other hand, to verify a data signature over a text document, an implementation needs to verify not only the data signature itself, but also the binding signature (and back-signature) of the signing subkey which qualifies the signing subkey.</p>
 <figure class="align-default" id="fig-signature-verification-signature-tree">
 <img alt="Depicts a diagrammatic representation of a certificate and a data signature. Arrows between the primary key and other components of the certificate show, how signatures bind the certificate together. In this example, they form a tree of signatures, which all need to be verified in order for the data signature to be valid." src="_images/09-sigtree.png" />

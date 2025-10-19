@@ -62,12 +62,12 @@ However, exchanging the required shared secret is a problem that needs to be sol
 Symmetric-key cryptography is used in OpenPGP in three contexts:
 
 - most prominently, as part of a hybrid cryptosystem to encrypt and decrypt data,
-- to encrypt [password-protected private key material](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-secret-key-encryption), and
-- for [password-protected data encryption](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-symmetric-key-encrypted-ses), a less commonly used feature of the standard.
+- to encrypt [password-protected private key material](https://www.rfc-editor.org/rfc/rfc9580.html#name-secret-key-encryption), and
+- for [password-protected data encryption](https://www.rfc-editor.org/rfc/rfc9580.html#name-symmetric-key-encrypted-ses), a less commonly used feature of the standard.
 
 Where symmetric keys are used in OpenPGP for data encryption, they are called either "message keys" or "session keys[^sessionkey]."
 
-[^sessionkey]: In OpenPGP version 6, the ["Version 2 Symmetrically Encrypted Integrity Protected Data Packet Format"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-2-symmetrically-enc) requires that a "message key" is derived from a "session key." In contrast, up to OpenPGP version 4, and in version 6 when using ["Version 1 Symmetrically Encrypted Integrity Protected Data Packet Format"](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-version-1-symmetrically-enc), the "session key" was used directly as a symmetric encryption key.
+[^sessionkey]: In OpenPGP version 6, the ["Version 2 Symmetrically Encrypted Integrity Protected Data Packet Format"](https://www.rfc-editor.org/rfc/rfc9580.html#name-version-2-symmetrically-enc) requires that a "message key" is derived from a "session key." In contrast, up to OpenPGP version 4, and in version 6 when using ["Version 1 Symmetrically Encrypted Integrity Protected Data Packet Format"](https://www.rfc-editor.org/rfc/rfc9580.html#name-version-1-symmetrically-enc), the "session key" was used directly as a symmetric encryption key.
 
 ### Authenticated encryption with associated data (AEAD)
 

@@ -28,7 +28,7 @@ A {term}`one-pass signed<One-pass signed Message>` {term}`OpenPGP message` consi
 
 1. **{term}`One-pass signature packets<One-pass signature packet>`**: These one or more {term}`packets<Packet>` precede the signed data and enable {term}`signature<OpenPGP Signature Packet>` computation (both creation and verification) in a single pass.
 
-2. **{term}`OpenPGP message`**: This contains the original payload data (e.g., the body of a message), which is signed without additional interpretation or conversion. Internally, a signed [message](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages) consists of one or more OpenPGP packets. This payload is typically stored as either a {term}`Literal Data Packet`, or a {term}`Compressed Data Packet`.
+2. **{term}`OpenPGP message`**: This contains the original payload data (e.g., the body of a message), which is signed without additional interpretation or conversion. Internally, a signed [message](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-messages) consists of one or more OpenPGP packets. This payload is typically stored as either a {term}`Literal Data Packet`, or a {term}`Compressed Data Packet`.
 
 3. **{term}`Data signature packets<OpenPGP Signature Packet>`**: These contain the {term}`cryptographic signature` corresponding to the signed data.
 
@@ -96,7 +96,7 @@ Important to note, the {term}`signer`'s {term}`public key<OpenPGP Certificate>`,
 
 A {term}`one-pass signed message` can actually contain multiple, nested, signatures.
 
-Formally, this is the case because in the [OpenPGP message grammar](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-messages) when an input OpenPGP message is one-pass signed, the resulting sequence of packets is in turn also considered an OpenPGP message.
+Formally, this is the case because in the [OpenPGP message grammar](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-messages) when an input OpenPGP message is one-pass signed, the resulting sequence of packets is in turn also considered an OpenPGP message.
 
 Thus, this signed message can be one-pass signed yet again. This construction means that all signature packet pairs bracket the innermost message, and the outermost one-pass signature packet corresponds to the outermost signature packet.
 
@@ -113,7 +113,7 @@ There are two different use cases and semantics for nested one-pass signatures:
 
 When nesting one-pass signatures, the default expectation would be that each enclosing signature makes a statement about the complete message it contains, including any one-pass signatures within the inner message.
 
-Issuers of signatures can choose the semantics of their signature, using the ["nested" flag](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#section-5.4-3.8.1) in the {term}`one-pass signature packet`. The "nested" flag has a value of either `1` or `0`.
+Issuers of signatures can choose the semantics of their signature, using the ["nested" flag](https://www.rfc-editor.org/rfc/rfc9580.html#section-5.4-3.8.1) in the {term}`one-pass signature packet`. The "nested" flag has a value of either `1` or `0`.
 
 Meaning of the "nested" flag:
 

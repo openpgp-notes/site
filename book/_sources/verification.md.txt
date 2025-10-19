@@ -98,7 +98,7 @@ Similarly, certification signatures over third-party certificates require the is
 Self-qualifying signatures have no such limitations.
 
 For example, a certificate consisting only of a primary key and a single key-revocation self-signature contains everything needed to verify the revocation, as key-revocation self-signatures are self-qualifying.
-This construct is referred to as a [revocation certificate](https://www.ietf.org/archive/id/draft-ietf-openpgp-crypto-refresh-12.html#name-openpgp-v6-revocation-certi).
+This construct is referred to as a [revocation certificate](https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-version-6-revocatio).
 
 On the other hand, to verify a data signature over a text document, an implementation needs to verify not only the data signature itself, but also the binding signature (and back-signature) of the signing subkey which qualifies the signing subkey.
 
