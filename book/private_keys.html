@@ -22,8 +22,8 @@
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=09ce168c" />
     <link rel="stylesheet" type="text/css" href="_static/html/css/custom.css?v=11a5f932" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="canonical" href="https://openpgp.dev/book/private_keys.html" />
     <link rel="icon" href="_static/favicon.ico"/>
     <link rel="author" title="About these documents" href="about.html" />
@@ -118,7 +118,7 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
 <p><span class="caption-number">Fig. 13 </span><span class="caption-text">Deriving a symmetric key from a passphrase</span><a class="headerlink" href="#fig-passphrase-using-s2k" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>This symmetric key is used to protect the private key material it is in a passive state, for example, when stored on disk. To use a passphrase-protected OpenPGP private key, it is first decrypted using the symmetric key and then used for private key operations, remaining temporarily unlocked in memory.</p>
+<p>This symmetric key is used to protect the private key material when it is in a passive state, for example, when stored on disk. To use a passphrase-protected OpenPGP private key, it is first decrypted using the symmetric key and then used for private key operations, remaining temporarily unlocked in memory.</p>
 <section id="mechanisms-for-symmetric-key-generation">
 <h4><span class="section-number">5.4.1.1. </span>Mechanisms for symmetric key generation<a class="headerlink" href="#mechanisms-for-symmetric-key-generation" title="Link to this heading">¶</a></h4>
 <p>Over time, OpenPGP has evolved to include various <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc9580.html#name-openpgp-string-to-key-s2k-t">S2K mechanisms for generating symmetric keys</a>, in line with advancements in cryptographic practices. Currently, two mechanisms are universally recommended:</p>
@@ -299,7 +299,7 @@ as discussed in the previous chapter (<a class="reference internal" href="certif
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2025, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
+      &#169;2026, <a href="https://codeberg.org/openpgp/notes">The "Notes on OpenPGP" project</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA-4.0</a>.
       
     </div>
 

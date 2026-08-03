@@ -74,7 +74,7 @@ To facilitate this, the OpenPGP standard defines a set of mechanisms known as [s
 Deriving a symmetric key from a passphrase
 ```
 
-This symmetric key is used to protect the private key material it is in a passive state, for example, when stored on disk. To use a passphrase-protected OpenPGP private key, it is first decrypted using the symmetric key and then used for private key operations, remaining temporarily unlocked in memory.
+This symmetric key is used to protect the private key material when it is in a passive state, for example, when stored on disk. To use a passphrase-protected OpenPGP private key, it is first decrypted using the symmetric key and then used for private key operations, remaining temporarily unlocked in memory.
 
 #### Mechanisms for symmetric key generation
 
